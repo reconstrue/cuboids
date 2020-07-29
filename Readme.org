@@ -2,8 +2,32 @@
 
 [[docs/images/cuboids_brandmark.png]]
   
+** Rational
 Reconstrue Cubiods is simply a label for a collection of proven
-software which deals with volumetric data, which is licensed in a
-commercially friendly manner. For example, GPL is [[https://youtu.be/SNTzOBKs1bA?t=96][right out]]. For more
-on the rational behind this, see [[https://github.com/reconstrue/presentations/blob/master/bioimage_2019/bioimage_2019_poster.pdf][Reconstrue Stack]].
+software which deals with [[https://en.wikipedia.org/wiki/Volume_rendering][volumetric data]], all of which is licensed in
+a commercially friendly manner. For example, any GPL licensed code is
+[[https://youtu.be/SNTzOBKs1bA?t=96][right out]].
 
+Most of the software labeled "Reconstrue Cuboids" is actually third
+party i.e. written by people who are not part of the organization,
+Reconstrue. "Reconstrue Cuboids" is simply a label on source code
+denoting that it has been exercised by Reconstrue and found to be
+suitable to task. The community value of this exercise is that
+corporate entities (Reconstrue included) can build upon the code and
+not have to consult with lawyers up-front, thereby increasing the rate
+of open source innovation. For more on the rational behind this, see
+[[https://github.com/reconstrue/presentations/blob/master/bioimage_2019/bioimage_2019_poster.pdf][Reconstrue Stack]].
+
+** Data Structure
+As the name implies, the core data abstraction is cuboids. A cuboid,
+[[https://mathworld.wolfram.com/Cuboid.html][as defined by Wolfram]], is a "closed box composed of three pairs of
+rectangular faces placed opposite each other and joined at right
+angles to each other." Identically shaped cuboids are used to
+tesselate a volume.
+
+Reconstrue Cuboids is software used for dealing with neuroimaging
+datasets, which regular get into the petabyte scale. Some of the
+software can actually handle petabytes of data on commercial cloud
+services (e.g. [[https://bossdb.org/][BossDB on AWS]]) and some runs on a single machine
+(e.g. [[https://github.com/aplbrain/bossphorus][Bossphorus]]). By focusing on the APIs and data protocol, code can
+be developed which can be scaled to multiple hardware deployment.
