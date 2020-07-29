@@ -1,3 +1,9 @@
-* Cuboids
+* Reconstrue Cuboids
 
-This is a test to see if GitHub will use a Readme.org as default file of repo view in HTML
+[[docs/images/cuboids_brandmark.png]]
+  
+Reconstrue Cubiods is simply a label for a collection of proven
+software which deals with volumetric data, which is licensed in a
+commercially friendly manner. For example, GPL is [[https://youtu.be/SNTzOBKs1bA?t=96][right out]]. For more
+on the rational behind this, see [[https://github.com/reconstrue/presentations/blob/master/bioimage_2019/bioimage_2019_poster.pdf][Reconstrue Stack]].
+
