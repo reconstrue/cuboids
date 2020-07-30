@@ -1,0 +1,45 @@
+* MICrONS Project
+
+Note that bossDB, the serverless technology, was used in all three Phases.
+
+- [[https://www.iarpa.gov/index.php/research-programs/microns/microns-baa][2014 proposal by R. Jacob Vogelstein]]
+  #+begin_quote
+  Each phase ends with an information processing challenge that assesses
+  how well the new algorithms perform on increasingly challenging
+  machine learning tasks: similarity discrimination in Phase 1,
+  generalization and classification in Phase 2, and invariant
+  recognition in Phase 3. Performers use the results of their
+  experiments in each phase to guide their development of improved
+  algorithms in the subsequent phase (in Phase 1, performers base their
+  algorithms on the existing neuroscience literature).
+  
+  The MICrONS program comprises three Technical Areas (TAs):
+  
+  TA1 
+  – experimental design, theoretical neuroscience, computational
+    neural modeling, machine learning, neurophysiological data collection,
+    and data analysis;
+  
+  TA2 
+  – neuroanatomical data collection; and
+  
+  TA3 
+  – reconstruction of cortical circuits from neuroanatomical data
+    and development of information technology systems to store, align, and
+    access neural circuit reconstructions with the associated
+    neurophysiological and neuroanatomical data.
+  #+end_quote
+** Phase 1
+[[microns_phase_one_orgs.jpg]]
+** Phase 2
+[[microns_phase_two_dataflow.jpg]]
+** The datasets
+- [ ] Pinky and what?
+
+** Future: Reconstructions atop bossDB
+
+It is not yet known how Seung Lab produced the reconstructed. 
+Suspects: [[https://github.com/seung-lab/chunkflow][Chunkflow]], [[https://github.com/seung-lab/igneous][Igneous]], [[https://github.com/seung-lab/cloud-volume][cloud-volume]], [[https://github.com/seung-lab/kimimaro][kimimaro]], etc.
+
+It is a goal of Reconstrue Cuboids to merge some appropriate
+reconstruction code with bossDB.

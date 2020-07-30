@@ -1,6 +1,6 @@
 * Reconstrue Cuboids
 
-[[docs/images/cuboids_brandmark.png]]
+[[by_topic/cuboids/cuboids_brandmark.png]]
   
 ** Rational
 Reconstrue Cubiods is simply a label for a collection of proven
@@ -29,5 +29,6 @@ Reconstrue Cuboids is software used for dealing with neuroimaging
 datasets, which regular get into the petabyte scale. Some of the
 software can actually handle petabytes of data on commercial cloud
 services (e.g. [[https://bossdb.org/][BossDB on AWS]]) and some runs on a single machine
-(e.g. [[https://github.com/aplbrain/bossphorus][Bossphorus]]). By focusing on the APIs and data protocol, code can
-be developed which can be scaled to multiple hardware deployment.
+(e.g. [[https://github.com/aplbrain/bossphorus][Bossphorus]]). By focusing on data structures, wire protocols, and
+API code can be developed which can be scaled to multiple hardware
+deployment.
