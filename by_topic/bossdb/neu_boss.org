@@ -10,8 +10,8 @@ the AWS Kool-Aid pitcher: more serverless and fully managed services.
 
 In order to distinguish references to the existing and proposed
 codebases, the following terms will be used throughout this document:
-- `bossDB`: the existing codebase, as originally named
-- `neu_boss`: the proposed modified codebase
+- ~bossDB~: the existing codebase, as originally named
+- ~neu_boss~: the proposed modified codebase
 
 There seems to be a trend in JHU/APL's documentation to casually refer
 to the codebase as "the Boss" but here the goal is to distinguish two
