@@ -1,9 +1,6 @@
-* The Neu Boss
+* The Neu Boss Proposal
 
 [[./aux/aws_pitcher.png]]
-
-[[https://vsbattles.fandom.com/wiki/Kool-Aid_Man_(Marvel_Comics)][via fandom.com]]
-
 
 This document proposes modifications to bossDB such that deploys
 involve less server management.  These modification drink deeply from
@@ -11,18 +8,19 @@ the AWS Kool-Aid pitcher: more serverless and fully managed services.
 
 ** Terminology
 
-For clarity, let us label to existing codebase, and the proposed modified codebass
+In order to distinguish references to the existing and proposed
+codebases, the following terms will be used throughout this document:
+- `bossDB`: the existing codebase, as originally named
+- `neu_boss`: the proposed modified codebase
 
-- bossDB: the existing codebase, as originally named
-- neu_boss: the proposed modified codebase
+There seems to be a trend in JHU/APL's documentation to casually refer
+to the codebase as "the Boss" but here the goal is to distinguish two
+variants so the original name "bossDB" is used herein.
 
-There seems to be a trend in JHU/APL's documentation to casually refer to the
-codebase as "the Boss" but here the goal is to distinguish two variants
-
-At the risk of ruining the humor, neu_boss is a pun on "new" (Coke)
-and "neural." The term also follows the trend of dropping the "DB"
-part of the name. Yes, “[[https://en.wikipedia.org/wiki/Bossa_nova][bossa nova]]” -- literally “new trend” -- would
-also be a great name but would lose the "neural" implication.
+At the risk of ruining the humor, `neu_boss` is a word play on "new" (as
+in Coke) and "neural." The term also follows the trend of dropping the
+"DB" part of the name. Yes, “[[https://en.wikipedia.org/wiki/Bossa_nova][bossa nova]]” -- literally “new trend” --
+would also be a great name but would lose the "neural" implication.
 
 So, let's [[https://www.youtube.com/watch?v=SHhrZgojY1Q]["meet the new boss, same as the old boss."]]
  
@@ -124,4 +122,6 @@ Moving to Cognito will simplify per tenant billing and logging.
     has granted bioRxiv a license to display the preprint in
     perpetuity. It is made available under a CC-BY-NC-ND 4.0
     International license.
-- [[https://qz.com/74138/new-watered-down-kool-aid-man-just-wants-to-be-loved/][New, watered-down Kool-Aid Man just wants to be loved]]
+- Kool-Aid
+  - Header image is a hacked up Marvel image, found via [[https://vsbattles.fandom.com/wiki/Kool-Aid_Man_(Marvel_Comics)][fandom.com]]
+  - [[https://qz.com/74138/new-watered-down-kool-aid-man-just-wants-to-be-loved/][New, watered-down Kool-Aid Man just wants to be loved]]
