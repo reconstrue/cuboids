@@ -1,0 +1,127 @@
+* The Neu Boss
+
+[[./aux/aws_pitcher.png]]
+
+[[https://vsbattles.fandom.com/wiki/Kool-Aid_Man_(Marvel_Comics)][via fandom.com]]
+
+
+This document proposes modifications to bossDB such that deploys
+involve less server management.  These modification drink deeply from
+the AWS Kool-Aid pitcher: more serverless and fully managed services.
+
+** Terminology
+
+For clarity, let us label to existing codebase, and the proposed modified codebass
+
+- bossDB: the existing codebase, as originally named
+- neu_boss: the proposed modified codebase
+
+There seems to be a trend in JHU/APL's documentation to casually refer to the
+codebase as "the Boss" but here the goal is to distinguish two variants
+
+At the risk of ruining the humor, neu_boss is a pun on "new" (Coke)
+and "neural." The term also follows the trend of dropping the "DB"
+part of the name. Yes, “[[https://en.wikipedia.org/wiki/Bossa_nova][bossa nova]]” -- literally “new trend” -- would
+also be a great name but would lose the "neural" implication.
+
+So, let's [[https://www.youtube.com/watch?v=SHhrZgojY1Q]["meet the new boss, same as the old boss."]]
+ 
+** Philosophy: drink more AWS Kool-Aid
+
+
+The original purpose of [[https://bossdb.org/][BossDB]] has been to house the dataset for [[https://www.iarpa.gov/index.php/research-programs/microns][the
+MICrONS project]], which is around 2.5 petabyte of data. The codebase 
+was started in the early days of serverless, and since then a lot has
+changed. But for its main purpose: why fix what isn't broke. Nonetheless,
+if it is to be deployed more widely then why not make it much easier to
+deploy? Ergo, let's noodle what a refresh would look like architecturally.
+
+
+
+[[https://www.youtube.com/watch?v=_fjEViOF4JE][Kool-Aid Pitcher Man wall breaks]]
+
+BossDB was an old-school open source car with an AWS serverless turbo-boosed engine dropped in.
+That engince can only run on planet AWS so, while in Rome do like the Romans.
+
+The core of bossDB will  MICrONS data will probably never leave AWS. So, the code the works
+with it will probably never leave AWS. Ergo, by going all-in with AWS
+technology management of the system could be simplified.
+
+How labs can cache the MICrONS data and annotate.
+
+
+** Architecture overview
+
+Consider Figure 7 from [Kleissas et alia, 2017]
+
+[[./aux/kleissas_et_alia_2017_figure_7.png]]
+
+In this document this image will be used as the basis of a butcher's cut chart to illustrate the proposed architectural changes.
+The following diagrams are whiteboard over-drawings of Kleissas et al, 2017, Figure 7.
+
+** The server core
+
+This essentially stays the same. The only changes would be at its
+interface to the auth and audit system. Also related is how they are
+generated. It is proposed to drop Heaviside and adopt AWS CDK in stead.
+
+
+** Arch of BossDB
+
+As is the architecture of BossDB can be considered a hybrid
+architecture which served its purpose well. "Hybrid" here means
+consisting of "old-school" pre-serverless machinery, with a turbo
+booster of serverless tech bolted on. The goal of this refresh is
+to un complicate the hybrid architecture by adopting **more** AWS
+product in the BossDB codebase.
+
+The following are the high level changes proposed
+
+| Existing              | Proposed                   |
+|-----------------------+----------------------------|
+| Hybrid architecture   | Pure AWS architecture      |
+| Self-managed services | Fully managed service      |
+| Lotta set-up          | Deploy via CloudFormations |
+|                       |                            |
+
+The JHUAPL team has a lot of experience grown out of the Hubble
+project.  As such they brought that knowledge with them while working
+on BossDB.  For example, various proven open source tools for storing
+secrets, managing single sign-on, RESTful API request handling,
+etc. None of that is particularly interesting, and why not just reuse
+what they already knew. Also note that
+
+The core engine of BossDB is built upon AWS severless technology:
+Lambda, SQS, DynamoDB, Step Functions, etc. The rest of it is consists
+of proven non-serverless technologies.
+
+The main goal of this project is to de-hybridize the architecture by
+going all-in on AWS technologies which have been introduced by Amazon
+in the interim since the BossDB codebase was initiated. It is arguably
+a bit perverse for open source to be tuned up just for a single commercial
+cloud platform, but the hypothesis herein is that by doing so it will
+make it much easier for other organizations to deploy BossDB, thereby
+speeding up the diffusion of innovation. Ideally the other cloud providers
+would have equivalent tech to those parts of AWS used in the BossDB refresh,
+but sadly that is not the case in mid-2020.
+
+** Specific changes
+
+| Existing | Proposed |
+|----------+----------|
+|          |          |
+
+Moving to Cognito will simplify per tenant billing and logging.
+
+
+*** Open questions
+
+- How does bossDB deal with Redis? Is it fully managed?
+
+** References
+- [[https://www.biorxiv.org/content/10.1101/217745v1.abstract][The Block Object Storage Service (bossDB): A Cloud-Native Approach for Petascale Neuroscience Discovery]]
+  - The copyright holder for this preprint is the author/funder, who
+    has granted bioRxiv a license to display the preprint in
+    perpetuity. It is made available under a CC-BY-NC-ND 4.0
+    International license.
+- [[https://qz.com/74138/new-watered-down-kool-aid-man-just-wants-to-be-loved/][New, watered-down Kool-Aid Man just wants to be loved]]
