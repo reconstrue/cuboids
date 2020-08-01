@@ -17,7 +17,7 @@ projects. In that way Reconstrue's early contribution is in working
 out component integration. For example, a system which uses [[https://bossdb.org/][bossDB]] with
 [[https://github.com/seung-lab/chunkflow][chunkflow]] to reconstruct nuerons from brightfield microscope image stacks.
 
-Beyond tactical progress on any given projecdt, the strategic
+Beyond tactical progress on any given project, the strategic
 community value of this exercise is that corporate entities
 (Reconstrue included) can build upon the code and not have to consult
 with lawyers up-front, thereby increasing the rate of open source
