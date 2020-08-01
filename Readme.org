@@ -11,12 +11,18 @@ a commercially friendly manner. For example, any GPL licensed code is
 Most of the software labeled "Reconstrue Cuboids" is actually third
 party i.e. written by people who are not part of the organization,
 Reconstrue. "Reconstrue Cuboids" is simply a label on source code
-denoting that it has been exercised by Reconstrue and found to be
-suitable to task. The community value of this exercise is that
-corporate entities (Reconstrue included) can build upon the code and
-not have to consult with lawyers up-front, thereby increasing the rate
-of open source innovation. For more on the rational behind this, see
-[[https://github.com/reconstrue/presentations/blob/master/bioimage_2019/bioimage_2019_poster.pdf][Reconstrue Stack]].
+denoting that it has been exercised by Reconstrue, and found to be
+suitable to task. These are tools that have been used together in
+projects. In that way Reconstrue's early contribution is in working
+out component integration. For example, a system which uses [[https://bossdb.org/][bossDB]] with
+[[https://github.com/seung-lab/chunkflow][chunkflow]] to reconstruct nuerons from brightfield microscope image stacks.
+
+Beyond tactical progress on any given projecdt, the strategic
+community value of this exercise is that corporate entities
+(Reconstrue included) can build upon the code and not have to consult
+with lawyers up-front, thereby increasing the rate of open source
+innovation. For more on the rational behind this, see [[https://github.com/reconstrue/presentations/blob/master/bioimage_2019/bioimage_2019_poster.pdf][Reconstrue
+Stack]].
 
 ** Data Structure
 As the name implies, the core data abstraction is cuboids. A cuboid,
