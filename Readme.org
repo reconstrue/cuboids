@@ -14,6 +14,7 @@ The following are codebases that have been adopted into Reconstrue Cuboids:
 | [[https://github.com/jhuapl-boss/boss][bossDB]]        | [[https://github.com/jhuapl-boss/boss/blob/master/LICENSE.md][Apache 2.0]]   |
 | [[https://github.com/seung-lab/chunkflow][chunkflow]]     | [[https://github.com/seung-lab/chunkflow/blob/master/LICENSE][Apache 2.0]]   |
 | [[https://github.com/seung-lab/cloud-volume][cloud-volume]]  | [[https://github.com/seung-lab/cloud-volume/blob/master/LICENSE][BSD 3-Clause]] |
+| [[https://jupyter.org/hub][JupyterHub]]    | [[https://github.com/jupyterhub/jupyterhub/blob/master/COPYING.md][BSD 3-Clause]] |
 | [[https://github.com/jhuapl-boss/ingest-client][ingest-client]] | [[https://github.com/jhuapl-boss/ingest-client/blob/master/LICENSE][Apache 2.0]]   |
 | [[https://github.com/jhuapl-boss/intern][intern]]        | [[https://github.com/jhuapl-boss/intern/blob/master/license][Apache 2.0]]   |
 | [[https://github.com/aplbrain/saber][SABER]]         | [[https://github.com/aplbrain/saber/blob/master/LICENSE][Apache 2.0]]   |
@@ -26,10 +27,9 @@ Reconstrue. "Reconstrue Cuboids" is simply a label on source code
 denoting that it has been exercised by Reconstrue, and found to be
 suitable to task. These are tools that have been used together in
 projects. In that way Reconstrue's early contribution is in working
-out component integration, both technically and with compatable
-licences i.e. commercially friendly. For example, a system which uses
-[[https://bossdb.org/][bossDB]] with [[https://github.com/seung-lab/chunkflow][chunkflow]] to reconstruct nuerons from brightfield
-microscope image stacks.
+out component integration, both technically and legally. For example,
+one project involves a system which uses [[https://bossdb.org/][bossDB]] with [[https://github.com/seung-lab/chunkflow][chunkflow]] to
+reconstruct nuerons from brightfield microscope image stacks.
 
 Beyond tactical progress on any given project, the strategic
 community value of this exercise is that corporate entities

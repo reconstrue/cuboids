@@ -2,9 +2,10 @@
 
 [[./aux/aws_pitcher.png]]
 
-This document proposes modifications to bossDB such that deploys
-involve less server management.  These modification drink deeply from
-the AWS Kool-Aid pitcher: more serverless and fully managed services.
+This document proposes modifications to bossDB codebase such that
+deploys would involve less server management.  The suggested changes 
+drink deeply from the AWS Kool-Aid pitcher: more serverless and fully
+managed services.
 
 ** Terminology
 
@@ -15,12 +16,13 @@ codebases, the following terms will be used throughout this document:
 
 There seems to be a trend in JHU/APL's documentation to casually refer
 to the codebase as "the Boss" but here the goal is to distinguish two
-variants so the original name "bossDB" is used herein.
+variants so the original name ~bossDB=~ is used herein.
 
-At the risk of ruining the humor, `neu_boss` is a word play on "new" (as
-in Coke) and "neural." The term also follows the trend of dropping the
-"DB" part of the name. Yes, “[[https://en.wikipedia.org/wiki/Bossa_nova][bossa nova]]” -- literally “new trend” --
-would also be a great name but would lose the "neural" implication.
+At the risk of ruining the humor, ~neu_boss~ is a word play on "new"
+(as in Coke) and "neural." The term also follows the trend of dropping
+the ~DB~ part of the name. Alternatively, "[[https://en.wikipedia.org/wiki/Bossa_nova][bossa nova]]" -- literally
+“new trend” -- did make the short list but that option would have lost
+the "neural" implication.
 
 So, let's [[https://www.youtube.com/watch?v=SHhrZgojY1Q]["meet the new boss, same as the old boss."]]
  
@@ -52,10 +54,12 @@ How labs can cache the MICrONS data and annotate.
 
 Consider Figure 7 from [Kleissas et alia, 2017]
 
-[[./aux/kleissas_et_alia_2017_figure_7.png]]
+[[./aux/kleissas_et_alia_2017_figure_7_attributed.png]]
 
 In this document this image will be used as the basis of a butcher's cut chart to illustrate the proposed architectural changes.
 The following diagrams are whiteboard over-drawings of Kleissas et al, 2017, Figure 7.
+
+[[./aux/bossdb_changes.png]]
 
 ** The server core
 
@@ -105,9 +109,9 @@ but sadly that is not the case in mid-2020.
 
 ** Specific changes
 
-| Existing | Proposed |
-|----------+----------|
-|          |          |
+| Existing  | Proposed |
+|-----------+----------|
+| [[https://github.com/jhuapl-boss/heaviside][heaviside]] | AWS CDK  |
 
 Moving to Cognito will simplify per tenant billing and logging.
 
