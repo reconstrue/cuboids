@@ -1,8 +1,6 @@
 * Reconstrue Cuboids
 
-#+attr_html: :width 200px
-#+attr_org: :width 200px
-[[by_topic/cuboids/images/cuboids_brandmark.png]]
+[[by_topic/cuboids/images/social_cover.png]]
 
 ** Introduction
 
