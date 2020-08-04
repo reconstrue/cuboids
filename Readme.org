@@ -1,6 +1,6 @@
 * Reconstrue Cuboids
 
-[[by_topic/cuboids/cuboids_brandmark.png]]
+[[by_topic/cuboids/images/cuboids_brandmark.png]]
 
 ** Introduction
 
