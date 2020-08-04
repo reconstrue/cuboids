@@ -28,6 +28,26 @@ So, let's [[https://www.youtube.com/watch?v=SHhrZgojY1Q]["meet the new boss, sam
  
 ** Philosophy: drink more AWS Kool-Aid
 
+There's two ways that changes could be made. I wish the first were
+possible but not at this time.
+1. Stay vendor neutral. Build a serverless engine which works on other vendor's clouds. (Say with serverless.com)
+2. Go all in on the AWS. 
+
+Evolution led to a hybrid architecture, a pre-serverless car platform with
+a turbo serverless engine in the core. This works though. Just could
+reduce difficulty of install and management. Want easier maintenance.
+
+They started with solid old-school code, built ut a cubiods model,
+then implemented for scalability via serverless.
+
+The serverless engine cannot at this time be ported to other cloud providers.
+So, might as well lose the cross-platform goodness and just go all in on AWS.
+Any perfectly good open-sourced component that could be replace with an equivalent
+AWS fully managed service would mean less management. The goal is to make
+deploy and management lower hassle. 
+
+(Rather surprising that the other cloud providers plus serverless.com cannot
+be used to make a vendor neutral bossDB. No StepFunctions. etc?)
 
 The original purpose of [[https://bossdb.org/][BossDB]] has been to house the dataset for [[https://www.iarpa.gov/index.php/research-programs/microns][the
 MICrONS project]], which is around 2.5 petabyte of data. The codebase 
@@ -50,18 +70,101 @@ technology management of the system could be simplified.
 How labs can cache the MICrONS data and annotate.
 
 
-** Architecture overview
+
+
+
+** Architectural before and after
 
 Consider Figure 7 from [Kleissas et alia, 2017]
 
 [[./aux/kleissas_et_alia_2017_figure_7_attributed.png]]
 
 In this document this image will be used as the basis of a butcher's cut chart to illustrate the proposed architectural changes.
-The following diagrams are whiteboard over-drawings of Kleissas et al, 2017, Figure 7.
 
 [[./aux/bossdb_changes.png]]
 
-** The server core
+The 3 red zones represent 3 of the 4 main sub-projects
+- The upper left red zone is the REST interface 
+  - can be replaced by API Gateway etc
+- The upper right red zone can be replaced by Cognito
+- The lower reg zone can be replace with AWS Secrets Manager
+
+The forth main subproject is to replace heaviside with AWS CDK Python code.
+- Want to write bossDB based programs/experiments which are StepFunctions
+- Say, convolving some Vaa3D plug-ins over a volume
+- Say, countless (2,2,2) => (1,1,1) fast pyramid builder
+- Dont want to do that on heaviside.
+- So, replace all existing heaviside with equivalent CDK code, then go forward on AWS tech 
+  - much bigger community than heaviside-users, better community support
+
+Features of the parts to be update
+- Not serverless
+- Requiring server management
+- Undifferentiated, off-the-sheff app infrastructure
+- Quality, proven, platform-independent open source
+
+Features of the parts being kept essentially as they are
+- AWS serverless. The core engine of bossDB
+- Bespoke code for dealing with cuboids
+- Domain specific
+- AWS only open source
+
+Let's be very clear the code to be replaced is good code. 
+- Proven platform independent, scalable open source.
+- It's solid pre-serverless
+
+*** RESTful interface
+API Gateway
+- The upper left red zone can be replaced by API Gateway etc.
+- [ ] What's in that RDS instance
+  - "data model objects & permissions"
+  - Sounds pretty scheme-esque
+  - Aurora Serverless? (if even need a SQL machine)
+
+*** Single sign-on (SSO)
+- The upper right red zone can be replaced by Cognito
+  #+begin_quote
+  We use the open source software package Keycloak as an identity
+  provider to manage users and roles. We created a Django OpenID
+  Connect plugin to simplify the integration of services with the SSO
+  provider.  
+  ...  
+
+  Our identity provider server intentionally runs in- dependently from
+  the rest of bossDB system, forc- ing the bossDB API to authenticate
+  just like any other SSO integrated tool or application, and making
+  fu- ture federation with other data archives or authenti- cation
+  systems easy.
+
+  The Keycloak server is deployed in an auto-scaling group that sits
+  behind an Elastic Load Balancer.
+  #+end_quote
+
+- Want to be able to have a high res billing system.
+  - Cognito makes that easier
+  - Want a University to deploy yet be able to bill distinct departments
+  - Want multi-tenant SaaS, which is similar to the university and departments
+
+- Consider a security interface or delegator
+  - core serverless engine would only talk to the interface/delegator
+  - then security could be config to a Cognito provider
+  - Or maybe even a dummy provider i.e. let anybody, do anything.
+    - simpler management :)
+
+- Perhaps there is already a bridge between Cogniton and whatever they are using for SSO
+  - this way could still respect whatever they have going on but core code only talks Cognito
+  - i.e. the pluggable interface IS Cognito.
+    - So, dummy security would be a Cognito provider that says "whatevs" to anything. 
+
+*** Secrets
+- The lower reg zone can be replace with AWS Secrets Manager
+- Existing
+  - Vault servers are Secrets which store their info in Consul
+  - Consul Servers are for key/value store
+
+
+
+** The AWS serverless core
 
 This essentially stays the same. The only changes would be at its
 interface to the auth and audit system. Also related is how they are
@@ -114,6 +217,11 @@ but sadly that is not the case in mid-2020.
 | [[https://github.com/jhuapl-boss/heaviside][heaviside]] | AWS CDK  |
 
 Moving to Cognito will simplify per tenant billing and logging.
+
+
+
+
+
 
 
 *** Open questions
