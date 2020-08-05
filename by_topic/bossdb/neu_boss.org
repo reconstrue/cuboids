@@ -15,19 +15,17 @@ and velocity of data being throw off by electron microscopes, an AWS
 serverless engine was adopted. This worked well but resulted in
 a mixed architectural style. 
 
-Additionally, the codebase was 
-[started in 2015](https://github.com/jhuapl-boss/boss/graphs/contributors), 
-which was early days in AWS serverless. This neccessitated building out
-various ["undifferentiated heavy lifting"](https://jeremybower.com/articles/undifferentiated-heavy-lifting-2-0.html)
-support machinery in order to get on with the task of building a petascale spatial database.
-In the interim, AWS has gotten around to providing equivalent managed
+Additionally, the codebase was [[https://github.com/jhuapl-boss/boss/graphs/contributors][started in 2015]], which was early days
+in AWS serverless. This neccessitated building out various
+[[https://jeremybower.com/articles/undifferentiated-heavy-lifting-2-0.html]["undifferentiated heavy lifting"]] support machinery in order to get on
+with the task of building a petascale spatial database.  In the
+interim, AWS has gotten around to providing equivalent managed
 services such as API Gateway, Cognito, and AWS Secrets Manager.
 
 This proposal argues to dive headlong down the slippery slope of AWS
 lock-in.  This may seem counterintuitive and even distasteful given
 the original vendor-neutral architecture. Nonetheless, it is argued
-herein that the mixed architecture is harming the [diffusion of
-innovation](https://en.wikipedia.org/wiki/Diffusion_of_innovations),
+herein that the mixed architecture is harming the [[https://en.wikipedia.org/wiki/Diffusion_of_innovations][diffusion of innovation]],
 especially regarding that theory's criteria "complexity" and
 "trialability." So, perhaps we should accept that this codebase will
 never leave AWS and drink up.
