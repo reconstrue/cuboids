@@ -2,10 +2,35 @@
 
 [[./aux/aws_pitcher.png]]
 
-This document proposes modifications to bossDB codebase such that
-deploys would involve less server management.  The suggested changes 
-drink deeply from the AWS Kool-Aid pitcher: more serverless and fully
-managed services.
+** Introduction
+
+This document proposes modifications to the bossDB codebase such that
+deploys would be simplified and ownership would involve less server
+management. The suggested changes drink deeply from the AWS Kool-Aid
+pitcher: less servers, more serverless, and more fully managed services.
+
+The current bossDB codebase reflects a valid and shrewd architectural style
+which values vendor neutral open source. Yet to deal with the sporatic volume
+and velocity of data being throw off by electron microscopes, an AWS
+serverless engine was adopted. This worked well but resulted in
+a mixed architectural style. 
+
+Additionally, the codebase was 
+[started in 2015](https://github.com/jhuapl-boss/boss/graphs/contributors), 
+which was early days in AWS serverless. This neccessitated building out
+various ["undifferentiated heavy lifting"](https://jeremybower.com/articles/undifferentiated-heavy-lifting-2-0.html)
+support machinery in order to get on with the task of building a petascale spatial database.
+In the interim, AWS has gotten around to providing equivalent managed
+services such as API Gateway, Cognito, and AWS Secrets Manager.
+
+This proposal argues to dive headlong down the slippery slope of AWS
+lock-in.  This may seem counterintuitive and even distasteful given
+the original vendor-neutral architecture. Nonetheless, it is argued
+herein that the mixed architecture is harming the [diffusion of
+innovation](https://en.wikipedia.org/wiki/Diffusion_of_innovations),
+especially regarding that theory's criteria "complexity" and
+"trialability." So, perhaps we should accept that this codebase will
+never leave AWS and drink up.
 
 ** Terminology
 
@@ -16,7 +41,7 @@ codebases, the following terms will be used throughout this document:
 
 There seems to be a trend in JHU/APL's documentation to casually refer
 to the codebase as "the Boss" but here the goal is to distinguish two
-variants so the original name ~bossDB=~ is used herein.
+variants so the original name ~bossDB~ is used herein.
 
 At the risk of ruining the humor, ~neu_boss~ is a word play on "new"
 (as in Coke) and "neural." The term also follows the trend of dropping
@@ -57,7 +82,6 @@ if it is to be deployed more widely then why not make it much easier to
 deploy? Ergo, let's noodle what a refresh would look like architecturally.
 
 
-
 [[https://www.youtube.com/watch?v=_fjEViOF4JE][Kool-Aid Pitcher Man wall breaks]]
 
 BossDB was an old-school open source car with an AWS serverless turbo-boosed engine dropped in.
@@ -70,9 +94,6 @@ technology management of the system could be simplified.
 How labs can cache the MICrONS data and annotate.
 
 
-
-
-
 ** Architectural before and after
 
 Consider Figure 7 from [Kleissas et alia, 2017]
@@ -80,6 +101,11 @@ Consider Figure 7 from [Kleissas et alia, 2017]
 [[./aux/kleissas_et_alia_2017_figure_7_attributed.png]]
 
 In this document this image will be used as the basis of a butcher's cut chart to illustrate the proposed architectural changes.
+
+There are 3 big proposed modifications. Those 3 parts of the architecture to be modified are highlighted in red below:
+- The RESTful interface's machinery
+- The Single-Sign On (SSO) machinery
+- The secrets keeping machinery
 
 [[./aux/bossdb_changes.png]]
 
@@ -97,6 +123,10 @@ The forth main subproject is to replace heaviside with AWS CDK Python code.
 - So, replace all existing heaviside with equivalent CDK code, then go forward on AWS tech 
   - much bigger community than heaviside-users, better community support
 
+Note: all four of these changes are simply to support infrastructure, not to the core engine of the spatial database
+- Sticking with the serverless
+- Manimize management by maximally leveraging AWS services equivalent services that can be de delegated to
+
 Features of the parts to be update
 - Not serverless
 - Requiring server management
@@ -112,6 +142,8 @@ Features of the parts being kept essentially as they are
 Let's be very clear the code to be replaced is good code. 
 - Proven platform independent, scalable open source.
 - It's solid pre-serverless
+
+To put is at simply as possible, would love to be able to spin up a serverless spatial DB with just a single CloudFormation
 
 *** RESTful interface
 API Gateway
