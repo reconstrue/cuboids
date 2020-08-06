@@ -27,11 +27,15 @@ bossDB much easier to deploy and maintain.
 
 This proposal argues to dive headlong down the slippery slope of AWS
 lock-in.  This may seem counterintuitive and even distasteful given
-the original vendor-neutral architecture. Nonetheless, it is argued
-herein that the mixed architecture is harming the [[https://en.wikipedia.org/wiki/Diffusion_of_innovations][diffusion of innovation]],
-especially regarding that theory's criteria "complexity" and
-"trialability." So, perhaps we should accept that this codebase will
-never leave AWS and drink up.
+the original vendor-neutral architecture. Although [[https://cloudwars.co/amazon/inside-amazon-aws-no-longer-jeff-bezos-growth-engine/][AWS' lead is
+slipping]], it does not appear that a cross-platform serverless version
+of bossDB is possible yet, given the state of AWS' competitors
+(e.g. no Step Functions).
+
+Therefore, it is argued herein that the mixed architecture is harming
+the [[https://en.wikipedia.org/wiki/Diffusion_of_innovations][diffusion of innovation]], especially regarding that theory's
+criteria "complexity" and "trialability." So, perhaps we should accept
+that this codebase will never leave AWS and drink up to slim down.
 
 ** Terminology
 
@@ -110,19 +114,15 @@ There are 3 big proposed modifications. Those 3 parts of the architecture to be 
 
 [[./aux/bossdb_changes.png]]
 
-The 3 red zones represent 3 of the 4 main sub-projects
+The 3 red zones represent 3 of the 4 main sub-projects:
 - The upper left red zone is the REST interface 
   - can be replaced by API Gateway etc
 - The upper right red zone can be replaced by Cognito
 - The lower reg zone can be replace with AWS Secrets Manager
 
-The forth main subproject is to replace heaviside with AWS CDK Python code.
-- Want to write bossDB based programs/experiments which are StepFunctions
-- Say, convolving some Vaa3D plug-ins over a volume
-- Say, countless (2,2,2) => (1,1,1) fast pyramid builder
-- Dont want to do that on heaviside.
-- So, replace all existing heaviside with equivalent CDK code, then go forward on AWS tech 
-  - much bigger community than heaviside-users, better community support
+The resulting architecture would looks as follows:
+
+[[./aux/neu_boss_arch.png]]
 
 Note: all four of these changes are simply to support infrastructure, not to the core engine of the spatial database
 - Sticking with the serverless
@@ -145,57 +145,6 @@ Let's be very clear the code to be replaced is good code.
 - It's solid pre-serverless
 
 To put is at simply as possible, would love to be able to spin up a serverless spatial DB with just a single CloudFormation
-
-*** RESTful interface
-API Gateway
-- The upper left red zone can be replaced by API Gateway etc.
-- [ ] What's in that RDS instance
-  - "data model objects & permissions"
-  - Sounds pretty scheme-esque
-  - Aurora Serverless? (if even need a SQL machine)
-
-*** Single sign-on (SSO)
-- The upper right red zone can be replaced by Cognito
-  #+begin_quote
-  We use the open source software package Keycloak as an identity
-  provider to manage users and roles. We created a Django OpenID
-  Connect plugin to simplify the integration of services with the SSO
-  provider.  
-  ...  
-
-  Our identity provider server intentionally runs in- dependently from
-  the rest of bossDB system, forc- ing the bossDB API to authenticate
-  just like any other SSO integrated tool or application, and making
-  fu- ture federation with other data archives or authenti- cation
-  systems easy.
-
-  The Keycloak server is deployed in an auto-scaling group that sits
-  behind an Elastic Load Balancer.
-  #+end_quote
-
-- Want to be able to have a high res billing system.
-  - Cognito makes that easier
-  - Want a University to deploy yet be able to bill distinct departments
-  - Want multi-tenant SaaS, which is similar to the university and departments
-
-- Consider a security interface or delegator
-  - core serverless engine would only talk to the interface/delegator
-  - then security could be config to a Cognito provider
-  - Or maybe even a dummy provider i.e. let anybody, do anything.
-    - simpler management :)
-
-- Perhaps there is already a bridge between Cogniton and whatever they are using for SSO
-  - this way could still respect whatever they have going on but core code only talks Cognito
-  - i.e. the pluggable interface IS Cognito.
-    - So, dummy security would be a Cognito provider that says "whatevs" to anything. 
-
-*** Secrets
-- The lower reg zone can be replace with AWS Secrets Manager
-- Existing
-  - Vault servers are Secrets which store their info in Consul
-  - Consul Servers are for key/value store
-
-
 
 ** The AWS serverless core
 
@@ -249,18 +198,73 @@ but sadly that is not the case in mid-2020.
 |-----------+----------|
 | [[https://github.com/jhuapl-boss/heaviside][heaviside]] | AWS CDK  |
 
-Moving to Cognito will simplify per tenant billing and logging.
+
+*** RESTful interface
+API Gateway
+- The upper left red zone can be replaced by API Gateway etc.
+- [ ] What's in that RDS instance
+  - "data model objects & permissions"
+  - Sounds pretty scheme-esque
+  - Aurora Serverless? (if even need a SQL machine)
+
+*** Single sign-on (SSO)
+- Moving to Cognito will simplify per tenant billing and logging.
+- The upper right red zone can be replaced by Cognito
+  #+begin_quote
+  We use the open source software package Keycloak as an identity
+  provider to manage users and roles. We created a Django OpenID
+  Connect plugin to simplify the integration of services with the SSO
+  provider.  
+  ...  
+
+  Our identity provider server intentionally runs in- dependently from
+  the rest of bossDB system, forc- ing the bossDB API to authenticate
+  just like any other SSO integrated tool or application, and making
+  fu- ture federation with other data archives or authenti- cation
+  systems easy.
+
+  The Keycloak server is deployed in an auto-scaling group that sits
+  behind an Elastic Load Balancer.
+  #+end_quote
+
+- Want to be able to have a high res billing system.
+  - Cognito makes that easier
+  - Want a University to deploy yet be able to bill distinct departments
+  - Want multi-tenant SaaS, which is similar to the university and departments
+
+- Consider a security interface or delegator
+  - core serverless engine would only talk to the interface/delegator
+  - then security could be config to a Cognito provider
+  - Or maybe even a dummy provider i.e. let anybody, do anything.
+    - simpler management :)
+
+- Perhaps there is already a bridge between Cogniton and whatever they are using for SSO
+  - this way could still respect whatever they have going on but core code only talks Cognito
+  - i.e. the pluggable interface IS Cognito.
+    - So, dummy security would be a Cognito provider that says "whatevs" to anything. 
+
+*** Secrets
+- The lower reg zone can be replace with AWS Secrets Manager
+- Existing
+  - Vault servers are Secrets which store their info in Consul
+  - Consul Servers are for key/value store
 
 
 
 
-
-
+*** Heaviside => CDK
+The forth main subproject is to replace heaviside with AWS CDK Python code.
+- Want to write bossDB based programs/experiments which are StepFunctions
+- Say, convolving some Vaa3D plug-ins over a volume
+- Say, countless (2,2,2) => (1,1,1) fast pyramid builder
+- Dont want to do that on heaviside.
+- So, replace all existing heaviside with equivalent CDK code, then go forward on AWS tech 
+  - much bigger community than heaviside-users, better community support
 
 *** Open questions
 
 - How does bossDB deal with Redis? Is it fully managed?
-
+  - Figure #7 seems to imply it is
 ** References
 - [[https://www.biorxiv.org/content/10.1101/217745v1.abstract][The Block Object Storage Service (bossDB): A Cloud-Native Approach for Petascale Neuroscience Discovery]]
   - The copyright holder for this preprint is the author/funder, who
