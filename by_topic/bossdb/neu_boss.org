@@ -1,6 +1,6 @@
 * The Neu Boss Proposal
 
-[[./aux/aws_pitcher.png]]
+[[./aux/pitcher_man/aws_pitcher.png]]
 
 ** Introduction
 
