@@ -81,7 +81,7 @@ Cuboids:
 
 
 | Codebase      | License      |
-|---------------+--------------|
+|---------------|--------------|
 | [bossDB](https://github.com/jhuapl-boss/boss)                 | [Apache 2.0](https://github.com/jhuapl-boss/boss/blob/master/LICENSE.md)   |
 | [bossphorus](https://github.com/aplbrain/bossphorus)          | [Apache 2.0](https://github.com/aplbrain/bossphorus/blob/master/LICENSE)   |
 | [chunkflow](https://github.com/seung-lab/chunkflow)           | [Apache 2.0](https://github.com/seung-lab/chunkflow/blob/master/LICENSE)   |
