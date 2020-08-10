@@ -52,7 +52,9 @@ At the risk of ruining the humor, ~neu_boss~ is a word play on "new"
 (as in Coke) and "neural." The term also follows the trend of dropping
 the ~DB~ part of the name. Alternatively, "[[https://en.wikipedia.org/wiki/Bossa_nova][bossa nova]]" -- literally
 “new trend” -- did make the short list but that option would have lost
-the "neural" implication.
+the "neural" implication. It is *not* imagined that there will actually
+be a repository called ~neu_boos~ as the label is just not that good;
+it serves only as a tag for this proposal.
 
 So, let's [[https://www.youtube.com/watch?v=SHhrZgojY1Q]["meet the new boss, same as the old boss."]]
  
@@ -101,7 +103,16 @@ How labs can cache the MICrONS data and annotate.
 
 ** Architectural before and after
 
-Consider Figure 7 from [Kleissas et alia, 2017]
+This section will walk through the the logic of the following triptych. 
+- On the left is the existing architecture
+- In the middle, in red are 3 sub-system which will be changed
+- On the right is the resulting equivalent but easier to manage architecture
+
+[[./aux/triptych.png]]
+
+Notice how the lower left quadrant (the serverless part w/ a Redis cache) is identical in all three panels.
+
+First consider the left panel of the above image, wich is Figure 7 from [Kleissas et alia, 2017]
 
 [[./aux/kleissas_et_alia_2017_figure_7_attributed.png]]
 
