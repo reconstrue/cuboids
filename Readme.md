@@ -85,7 +85,7 @@ Cuboids:
 | [bossDB](https://github.com/jhuapl-boss/boss)                 | [Apache 2.0](https://github.com/jhuapl-boss/boss/blob/master/LICENSE.md)   |
 | [bossphorus](https://github.com/aplbrain/bossphorus)          | [Apache 2.0](https://github.com/aplbrain/bossphorus/blob/master/LICENSE)   |
 | [chunkflow](https://github.com/seung-lab/chunkflow)           | [Apache 2.0](https://github.com/seung-lab/chunkflow/blob/master/LICENSE)   |
-| [cloud-volume](https://github.com/seung-lab/cloud-volume)]    | [BSD 3-Clause](https://github.com/seung-lab/cloud-volume/blob/master/LICENSE) |
+| [cloud-volume](https://github.com/seung-lab/cloud-volume)| [BSD 3-Clause](https://github.com/seung-lab/cloud-volume/blob/master/LICENSE) |
 | [JupyterHub](https://jupyter.org/hub)                         | [BSD 3-Clause](https://github.com/jupyterhub/jupyterhub/blob/master/COPYING.md) |
 | [ingest-client](https://github.com/jhuapl-boss/ingest-client) | [Apache 2.0](https://github.com/jhuapl-boss/ingest-client/blob/master/LICENSE)   |
 | [intern](https://github.com/jhuapl-boss/intern)               | [Apache 2.0](https://github.com/jhuapl-boss/intern/blob/master/license)   |
