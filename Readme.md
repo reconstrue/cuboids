@@ -1,18 +1,15 @@
+# Reconstrue Cuboids
 
-# Table of Contents
-
-1.  [Reconstrue Cuboids](#org0a93fc7)
-    1.  [Introduction](#org8f74601)
-    2.  [Data Structure](#orgdfb2796)
-    3.  [Scope](#orgf6f1c37)
-    4.  [Rational](#orgd1f0acd)
-
+[![img](./by_topic/cuboids/images/logos/cuboids_combination_mark.png)](https://youtu.be/C5NiAoT3xsY)
 
 <a id="org0a93fc7"></a>
 
-# Reconstrue Cuboids
+## Table of Contents
 
-![img](./by_topic/cuboids/images/logos/cuboids_combination_mark.png)
+1.  [Introduction](#org8f74601)
+2.  [Data Structure](#orgdfb2796)
+3.  [Scope](#orgf6f1c37)
+4.  [Rational](#orgd1f0acd)
 
 
 <a id="org8f74601"></a>
@@ -82,76 +79,18 @@ scale when necessary.
 The following are codebases that have been adopted into Reconstrue
 Cuboids:
 
-<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
+| Codebase      | License      |
+|---------------+--------------|
+| [bossDB](https://github.com/jhuapl-boss/boss)                 | [Apache 2.0](https://github.com/jhuapl-boss/boss/blob/master/LICENSE.md)   |
+| [bossphorus](https://github.com/aplbrain/bossphorus)          | [Apache 2.0](https://github.com/aplbrain/bossphorus/blob/master/LICENSE)   |
+| [chunkflow](https://github.com/seung-lab/chunkflow)           | [Apache 2.0](https://github.com/seung-lab/chunkflow/blob/master/LICENSE)   |
+| [cloud-volume](https://github.com/seung-lab/cloud-volume)]    | [BSD 3-Clause](https://github.com/seung-lab/cloud-volume/blob/master/LICENSE) |
+| [JupyterHub](https://jupyter.org/hub)                         | [BSD 3-Clause](https://github.com/jupyterhub/jupyterhub/blob/master/COPYING.md) |
+| [ingest-client](https://github.com/jhuapl-boss/ingest-client) | [Apache 2.0](https://github.com/jhuapl-boss/ingest-client/blob/master/LICENSE)   |
+| [intern](https://github.com/jhuapl-boss/intern)               | [Apache 2.0](https://github.com/jhuapl-boss/intern/blob/master/license)   |
+| [SABER](https://github.com/aplbrain/saber)                    | [Apache 2.0](https://github.com/aplbrain/saber/blob/master/LICENSE)   |
 
-<colgroup>
-<col  class="org-left" />
-
-<col  class="org-left" />
-</colgroup>
-<thead>
-<tr>
-<th scope="col" class="org-left">Codebase</th>
-<th scope="col" class="org-left">License</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td class="org-left">[bossDB](https://github.com/jhuapl-boss/boss)</td>
-<td class="org-left">[Apache 2.0](https://github.com/jhuapl-boss/boss/blob/master/LICENSE.md)</td>
-</tr>
-
-
-<tr>
-<td class="org-left">[bossphorus](https://github.com/aplbrain/bossphorus)</td>
-<td class="org-left">[Apache 2.0](https://github.com/aplbrain/bossphorus/blob/master/LICENSE)</td>
-</tr>
-
-
-<tr>
-<td class="org-left">[chunkflow](https://github.com/seung-lab/chunkflow)</td>
-<td class="org-left">[Apache 2.0](https://github.com/seung-lab/chunkflow/blob/master/LICENSE)</td>
-</tr>
-
-
-<tr>
-<td class="org-left">[cloud-volume](https://github.com/seung-lab/cloud-volume)</td>
-<td class="org-left">[BSD 3-Clause](https://github.com/seung-lab/cloud-volume/blob/master/LICENSE)</td>
-</tr>
-
-
-<tr>
-<td class="org-left">[JupyterHub](https://jupyter.org/hub)</td>
-<td class="org-left">[BSD 3-Clause](https://github.com/jupyterhub/jupyterhub/blob/master/COPYING.md)</td>
-</tr>
-
-
-<tr>
-<td class="org-left">[ingest-client](https://github.com/jhuapl-boss/ingest-client)</td>
-<td class="org-left">[Apache 2.0](https://github.com/jhuapl-boss/ingest-client/blob/master/LICENSE)</td>
-</tr>
-
-
-<tr>
-<td class="org-left">[intern](https://github.com/jhuapl-boss/intern)</td>
-<td class="org-left">[Apache 2.0](https://github.com/jhuapl-boss/intern/blob/master/license)</td>
-</tr>
-
-
-<tr>
-<td class="org-left">precomputed</td>
-<td class="org-left"><span class="underline"><span class="underline">???</span></span></td>
-</tr>
-
-
-<tr>
-<td class="org-left">[SABER](https://github.com/aplbrain/saber)</td>
-<td class="org-left">[Apache 2.0](https://github.com/aplbrain/saber/blob/master/LICENSE)</td>
-</tr>
-</tbody>
-</table>
 
 
 <a id="orgd1f0acd"></a>
