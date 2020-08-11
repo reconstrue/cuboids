@@ -1,4 +1,4 @@
-* The Neu Boss Proposal
+* The Cuboids Manifesto
 
 [[./aux/pitcher_man/aws_pitcher.png]]
 
@@ -7,7 +7,7 @@
 This document proposes modifications to the bossDB codebase such that
 deploys would be simplified and ownership would involve less server
 management. The suggested changes drink deeply from the AWS Kool-Aid
-pitcher: less servers, more serverless, and more fully managed services.
+pitcher: more serverless, less servers, and more fully managed services.
 
 The current bossDB codebase reflects a valid and shrewd architectural style
 which values vendor neutral open source. Yet to deal with the sporatic volume
@@ -104,13 +104,17 @@ How labs can cache the MICrONS data and annotate.
 ** Architectural before and after
 
 This section will walk through the the logic of the following triptych. 
+Notice how radiating out from the lower left quadrant things stay the
+same in all three panels. The reason is that the green region is the
+the serverless core adn w/ a Redis cache)
+
+[[./aux/triptych.png]]
+
+The three panels break out as follows:
 - On the left is the existing architecture
 - In the middle, in red are 3 sub-system which will be changed
 - On the right is the resulting equivalent but easier to manage architecture
 
-[[./aux/triptych.png]]
-
-Notice how the lower left quadrant (the serverless part w/ a Redis cache) is identical in all three panels.
 
 First consider the left panel of the above image, wich is Figure 7 from [Kleissas et alia, 2017]
 
