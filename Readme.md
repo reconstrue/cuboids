@@ -57,6 +57,13 @@ neuroimaging datasets in implementations both dynamic (bossDB RESTful)
 and static (neuroglancers precomputed cuboids format). Therefore,
 Reconstrue Cuboids is software which deals with 4-dimensional cuboids.
 
+Note: it is not necessary to think of the datastructure as a
+[tesseract](https://www.youtube.com/watch?v=iGO12Z5Lw8s), rather
+simply as a tiling of a 3D cuboid representing a volume of physical 3D
+space. The tiling unit is an anisotropic voxel (ergo, cuboids rather
+than cubes). Each voxel can have multiple attributes a.k.a
+channels.
+
 <a id="orgf6f1c37"></a>
 
 ## Scope
