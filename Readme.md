@@ -1,6 +1,6 @@
 # Reconstrue Cuboids
 
-[![img](./by_topic/cuboids/images/logos/cuboids_combination_mark.png)](https://youtu.be/C5NiAoT3xsY)
+[![img](./docs/by_topic/cuboids/images/logos/cuboids_combination_mark.png)](https://youtu.be/C5NiAoT3xsY)
 
 <a id="org0a93fc7"></a>
 
