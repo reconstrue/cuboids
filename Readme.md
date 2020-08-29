@@ -2,9 +2,9 @@
 
 [![img](./docs/by_topic/cuboids/images/logos/cuboids_combination_mark.png)](https://youtu.be/C5NiAoT3xsY)
 
-<a id="org0a93fc7"></a>
 
 ## Table of Contents
+<a id="org0a93fc7"></a>
 
 1.  [Introduction](#org8f74601)
 2.  [Data Structure](#orgdfb2796)
@@ -12,9 +12,8 @@
 4.  [Rational](#orgd1f0acd)
 
 
-<a id="org8f74601"></a>
-
 ## Introduction
+<a id="org8f74601"></a>
 
 Reconstrue Cuboids integrates various open-source codebases that deals
 with [volumetric imaging data](https://en.wikipedia.org/wiki/Volume_rendering) 
@@ -23,23 +22,27 @@ Cuboid projects is licensed in a commercially friendly manner,
 including those parts written by Reconstrue. This means that any GPL
 licensed code is [right out](https://youtu.be/SNTzOBKs1bA?t=96).
 
-The core distinguishing feature of Reconstrue Cuboids is the focus on
-serverless technologies, which enabled bossDB's success in the MICrONS
-project. Cuboids continues what bossDB started and doubles down on the
-AWS lock-in, for now.
-
-<a id="orgdfb2796"></a>
+Although the main technical focus is on APIs and interfaces, in terms
+of implementational details the core distinguishing feature of
+Reconstrue Cuboids is the focus on AWS serverless technologies, which
+enabled bossDB's success in the MICrONS project. Cuboids continues
+what bossDB started and doubles down on the AWS lock-in, for now.
 
 ## Data Structure
+<a id="orgdfb2796"></a>
 
-As the name implies, the core data abstraction is cuboids. Cuboid data
-can be anisotropic, as required by various experimental modalities.
-
+As the name implies, the core data abstraction is cuboids. 
 A cuboid, [as defined by Wolfram](https://mathworld.wolfram.com/Cuboid.html), 
 is a "closed box composed of three pairs of rectangular faces placed
 opposite each other and joined at right angles to each other."
-Identically shaped cuboids are used to (3D) tessellate a volume. A
-voxel is the unit, indivisible cuboid; cuboids are assemblies of voxels.
+
+In this project, identically shaped cuboids are used to (3D)
+tessellate a volume. A voxel is an experiment's unit, indivisible cuboid; cuboids
+can also be assemblies of voxels.  Cuboid data can be <a
+href="https://www.dentalcare.com/en-us/professional-education/ce-courses/ce531/voxel"
+>anisotropic</a>, as required by various experimental modalities.
+The tiling unit is an anisotropic voxel (ergo, "Cuboids" rather
+than "Cubes"). 
 
 Cuboids [as defined by bossDB](https://www.biorxiv.org/content/10.1101/217745v2.article-info) 
 are "multi-channel 3-dimensional image volumes" which means the core
@@ -60,13 +63,12 @@ Reconstrue Cuboids is software which deals with 4-dimensional cuboids.
 Note: it is not necessary to think of the datastructure as a
 [tesseract](https://www.youtube.com/watch?v=iGO12Z5Lw8s), rather
 simply as a tiling of a 3D cuboid representing a volume of physical 3D
-space. The tiling unit is an anisotropic voxel (ergo, cuboids rather
-than cubes). Each voxel can have multiple attributes a.k.a
+space. Each voxel can have multiple attributes a.k.a
 channels.
 
-<a id="orgf6f1c37"></a>
 
 ## Scope
+<a id="orgf6f1c37"></a>
 
 Reconstrue Cuboids is not limited to any specific implementation. The
 subject is software which can handle the massive scale and velocity of
@@ -92,33 +94,30 @@ deployments and scale when necessary.
 The following are codebases that have been adopted into Reconstrue
 Cuboids:
 
-
 | Codebase      | License      |
 |---------------|--------------|
 | [bossDB](https://github.com/jhuapl-boss/boss)                 | [Apache 2.0](https://github.com/jhuapl-boss/boss/blob/master/LICENSE.md)   |
-| [bossphorus](https://github.com/aplbrain/bossphorus)          | [Apache 2.0](https://github.com/aplbrain/bossphorus/blob/master/LICENSE)   |
 | [chunkflow](https://github.com/seung-lab/chunkflow)           | [Apache 2.0](https://github.com/seung-lab/chunkflow/blob/master/LICENSE)   |
 | [cloud-volume](https://github.com/seung-lab/cloud-volume)| [BSD 3-Clause](https://github.com/seung-lab/cloud-volume/blob/master/LICENSE) |
-| [JupyterHub](https://jupyter.org/hub)                         | [BSD 3-Clause](https://github.com/jupyterhub/jupyterhub/blob/master/COPYING.md) |
 | [ingest-client](https://github.com/jhuapl-boss/ingest-client) | [Apache 2.0](https://github.com/jhuapl-boss/ingest-client/blob/master/LICENSE)   |
 | [intern](https://github.com/jhuapl-boss/intern)               | [Apache 2.0](https://github.com/jhuapl-boss/intern/blob/master/license)   |
 | [SABER](https://github.com/aplbrain/saber)                    | [Apache 2.0](https://github.com/aplbrain/saber/blob/master/LICENSE)   |
+| [JupyterHub](https://jupyter.org/hub)                         | [BSD 3-Clause](https://github.com/jupyterhub/jupyterhub/blob/master/COPYING.md) |
+| [bossphorus](https://github.com/aplbrain/bossphorus)          | [Apache 2.0](https://github.com/aplbrain/bossphorus/blob/master/LICENSE)   |
 
-
-
-<a id="orgd1f0acd"></a>
 
 ## Rational
+<a id="orgd1f0acd"></a>
 
 Most of the software labeled "Reconstrue Cuboids" is actually third
 party i.e. written by people who are not part of the organization,
-Reconstrue. Initially "Reconstrue Cuboids" is simply a label on some
-source code denoting that it has been exercised by Reconstrue, and
-found to be suitable to task. These are tools that have been used
-together in projects. As such, Reconstrue's early contribution is in
-working out component integration, in aspects both technical and
-legal. For example, one project involves a system which uses
-[bossDB](https://bossdb.org/) with
+Reconstrue. Initially "Reconstrue Cuboids" is simply a label on
+various source code denoting that it has been exercised by Reconstrue
+to see if it is suitable to task. These are tools that have been used
+together in projects. As such, Reconstrue's early contribution is
+primarily in working out component integration, in aspects both
+technical and legal. For example, one project involves a system which
+uses [bossDB](https://bossdb.org/) with
 [chunkflow](https://github.com/seung-lab/chunkflow) to reconstruct
 neurons from brightfield microscope image stacks.
 
@@ -126,7 +125,6 @@ Beyond tactical progress on any given project, the strategic community
 value of this Reconstrue Cuboids exercise is that corporate entities
 (Reconstrue included) can build upon the code and not have to consult
 with lawyers up-front (of course, talk to your lawyers; no warranty
-implied herein). The mail goal is to increase the rate of open source
+implied herein). The main goal is to increase the rate of open source
 innovation in this field. For more on the rational behind this, see
 [Reconstrue Stack](https://github.com/reconstrue/presentations/blob/master/bioimage_2019/bioimage_2019_poster.pdf).
-
