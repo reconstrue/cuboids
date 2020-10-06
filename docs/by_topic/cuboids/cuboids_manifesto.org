@@ -5,11 +5,11 @@
 ** Introduction
 
 This document proposes modifications to the bossDB codebase such that
-deploys would be simplified and ownership would involve less server
+deploying it would be simplified and ownership would involve less server
 management. The suggested changes drink deeply from the AWS Kool-Aid
 pitcher: more serverless, less servers, and more fully managed services.
 
-The current bossDB codebase reflects a valid and shrewd architectural style
+The current, original bossDB codebase reflects a valid and shrewd architectural style
 which values vendor neutral open source. Yet to deal with the sporatic volume
 and velocity of data being throw off by electron microscopes, an AWS
 serverless engine was adopted. This worked well but resulted in
