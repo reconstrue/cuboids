@@ -15,15 +15,16 @@ and velocity of data being throw off by electron microscopes, an AWS
 serverless engine was adopted. This worked well but resulted in
 a mixed architectural style which is more complex than necessary.
 
-Furthermore, the codebase was [[https://github.com/jhuapl-boss/boss/graphs/contributors][started in 2015]], which was early days
-in AWS serverless. This neccessitated building out various
+Furthermore, the bossDB codebase was [[https://github.com/jhuapl-boss/boss/graphs/contributors][started in 2015]], which was early
+days for AWS serverless, nevermind using such tech to scale to
+petabytes of data. This neccessitated building out various
 [[https://jeremybower.com/articles/undifferentiated-heavy-lifting-2-0.html]["undifferentiated heavy lifting"]] support machinery in order to get on
 with the task of building a petascale spatial database.  In the
-interim, AWS has gotten around to providing managed
-services such as API Gateway, Cognito, and AWS Secrets Manager.
-Simply keeping the current architecture but rewriting those components
-which could be replaced with equivalent AWS service would make
-bossDB much easier to deploy and maintain.
+interim, AWS has gotten around to providing managed services such as
+API Gateway, Cognito, and AWS Secrets Manager.  Simply keeping the
+current architecture but rewriting those components which could be
+replaced with equivalent AWS service would make bossDB much easier to
+deploy and maintain.
 
 This proposal argues to dive headlong down the slippery slope of AWS
 lock-in.  This may seem counterintuitive and even distasteful given
