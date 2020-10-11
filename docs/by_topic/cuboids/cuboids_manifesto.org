@@ -2,6 +2,7 @@
 
 [[./aux/pitcher_man/aws_pitcher.png]]
 
+
 ** Introduction
 
 This document proposes modifications to the bossDB codebase such that
