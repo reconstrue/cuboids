@@ -281,6 +281,14 @@ The forth main subproject is to replace heaviside with AWS CDK Python code.
 
 - How does bossDB deal with Redis? Is it fully managed?
   - Figure #7 seems to imply it is
+** Further
+  [[https://drhelenmiles.medium.com/if-the-mountain-wont-go-to-mohammed-then-mohammed-must-come-to-the-mountain-27fa22148326#:~:text=Far%20Side%20Cartoons-,%E2%80%9CIf%20the%20Mountain%20won't%20go%20to%20Mohammed%2C%20then,must%20come%20to%20the%20Mountain%E2%80%9D.&text='Mahomet%20cald%20the%20Hill%20to,wil%20go%20to%20the%20hil'.][Far Side Mohammed and Hill cartoon]]
+- Francis Bacon
+  #+BEGIN_QUOTE
+  Mahomet cald the Hill to come to him. And when the Hill stood still,
+  he was neuer a whit abashed, but said; If the Hill will not come to
+  Mahomet, Mahomet wil go to the hil
+  #+END_QUOTE
 ** References
 - [[https://www.biorxiv.org/content/10.1101/217745v1.abstract][The Block Object Storage Service (bossDB): A Cloud-Native Approach for Petascale Neuroscience Discovery]]
   - The copyright holder for this preprint is the author/funder, who
