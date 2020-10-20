@@ -295,6 +295,8 @@ The forth main subproject is to replace heaviside with AWS CDK Python code.
 The main the assumptions of this argument is that the data and code will never leave AWS. So, Step Functions is the API to various
 components. One component is like ChuckFlow but as a lambda.
 
+Point is all in with AWS (yuch but real tech sadly) so Step Functions.
+
 ** References
 - [[https://www.biorxiv.org/content/10.1101/217745v1.abstract][The Block Object Storage Service (bossDB): A Cloud-Native Approach for Petascale Neuroscience Discovery]]
   - The copyright holder for this preprint is the author/funder, who
