@@ -1,6 +1,9 @@
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="aux/org.css"/>
+
 * The Cuboids Manifesto
 
-[[./aux/pitcher_man/aws_pitcher.png]]
+#+attr_html: :width 400px
+[[./aux/images/aws_pitcher.png]]
 
 ** Introduction
 
@@ -107,9 +110,10 @@ How labs can cache the MICrONS data and annotate.
 This section will walk through the the logic of the following triptych. 
 Notice how radiating out from the lower left quadrant things stay the
 same in all three panels. The reason is that the green region is the
-the serverless core adn w/ a Redis cache)
+the serverless core with a managed Redis cache.
 
-[[./aux/triptych.png]]
+#+attr_html: :width 100%
+[[./aux/images/triptych.png]]
 
 The three panels break out as follows:
 - On the left is the existing architecture
@@ -119,7 +123,8 @@ The three panels break out as follows:
 
 First consider the left panel of the above image, wich is Figure 7 from [Kleissas et alia, 2017]
 
-[[./aux/kleissas_et_alia_2017_figure_7_attributed.png]]
+#+attr_html: :width 50%
+[[./aux/images/kleissas_et_alia_2017_figure_7_attributed.png]]
 
 In this document this image will be used as the basis of a butcher's cut chart to illustrate the proposed architectural changes.
 
@@ -128,7 +133,8 @@ There are 3 big proposed modifications. Those 3 parts of the architecture to be 
 - The Single-Sign On (SSO) machinery
 - The secrets keeping machinery
 
-[[./aux/bossdb_changes.png]]
+#+attr_html: :width 50%
+[[./aux/images/bossdb_changes.png]]
 
 The 3 red zones represent 3 of the 4 main sub-projects:
 - The upper left red zone is the REST interface 
@@ -138,7 +144,8 @@ The 3 red zones represent 3 of the 4 main sub-projects:
 
 The resulting architecture would looks as follows:
 
-[[./aux/neu_boss_arch.png]]
+#+attr_html: :width 50%
+[[./aux/images/neu_boss_arch.png]]
 
 Note: all four of these changes are simply to support infrastructure, not to the core engine of the spatial database
 - Sticking with the serverless
