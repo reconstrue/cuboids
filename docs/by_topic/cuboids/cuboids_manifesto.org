@@ -1,11 +1,15 @@
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="aux/org.css"/>
-
-* The Cuboids Manifesto
+#+title: The Cuboids Manifest
+#+options: toc:nil
 
 #+attr_html: :width 400px
 [[./aux/images/aws_pitcher.png]]
 
-** Introduction
+
+#+TOC: headlines 2
+
+
+* Introduction
 
 This document proposes modifications to the bossDB codebase such that
 deploying it would be simplified and ownership would involve less server
@@ -41,7 +45,7 @@ the [[https://en.wikipedia.org/wiki/Diffusion_of_innovations][diffusion of innov
 criteria "complexity" and "trialability." So, perhaps we should accept
 that this codebase will never leave AWS and drink up to slim down.
 
-** Terminology
+* Terminology
 
 In order to distinguish references to the existing and proposed
 codebases, the following terms will be used throughout this document:
@@ -62,7 +66,7 @@ it serves only as a tag for this proposal.
 
 So, let's [[https://www.youtube.com/watch?v=SHhrZgojY1Q]["meet the new boss, same as the old boss."]]
  
-** Philosophy: drink more AWS Kool-Aid
+* Philosophy: drink more AWS Kool-Aid
 
 There's two ways that changes could be made. I wish the first were
 possible but not at this time.
@@ -105,7 +109,7 @@ technology management of the system could be simplified.
 How labs can cache the MICrONS data and annotate.
 
 
-** Architectural before and after
+* Architectural before and after
 
 This section will walk through the the logic of the following triptych. 
 Notice how radiating out from the lower left quadrant things stay the
@@ -169,14 +173,14 @@ Let's be very clear the code to be replaced is good code.
 
 To put is at simply as possible, would love to be able to spin up a serverless spatial DB with just a single CloudFormation
 
-** The AWS serverless core
+* The AWS serverless core
 
 This essentially stays the same. The only changes would be at its
 interface to the auth and audit system. Also related is how they are
 generated. It is proposed to drop Heaviside and adopt AWS CDK in stead.
 
 
-** Arch of BossDB
+* Arch of BossDB
 
 As is the architecture of BossDB can be considered a hybrid
 architecture which served its purpose well. "Hybrid" here means
@@ -215,14 +219,14 @@ speeding up the diffusion of innovation. Ideally the other cloud providers
 would have equivalent tech to those parts of AWS used in the BossDB refresh,
 but sadly that is not the case in mid-2020.
 
-** Specific changes
+* Specific changes
 
 | Existing  | Proposed |
 |-----------+----------|
 | [[https://github.com/jhuapl-boss/heaviside][heaviside]] | AWS CDK  |
 
 
-*** RESTful interface
+** RESTful interface
 API Gateway
 - The upper left red zone can be replaced by API Gateway etc.
 - [ ] What's in that RDS instance
@@ -230,7 +234,7 @@ API Gateway
   - Sounds pretty scheme-esque
   - Aurora Serverless? (if even need a SQL machine)
 
-*** Single sign-on (SSO)
+** Single sign-on (SSO)
 - Moving to Cognito will simplify per tenant billing and logging.
 - The upper right red zone can be replaced by Cognito
   #+begin_quote
@@ -266,7 +270,7 @@ API Gateway
   - i.e. the pluggable interface IS Cognito.
     - So, dummy security would be a Cognito provider that says "whatevs" to anything. 
 
-*** Secrets
+** Secrets
 - The lower reg zone can be replace with AWS Secrets Manager
 - Existing
   - Vault servers are Secrets which store their info in Consul
@@ -274,8 +278,7 @@ API Gateway
 
 
 
-
-*** Heaviside => CDK
+** Heaviside => CDK
 The forth main subproject is to replace heaviside with AWS CDK Python code.
 - Want to write bossDB based programs/experiments which are StepFunctions
 - Say, convolving some Vaa3D plug-ins over a volume
@@ -284,11 +287,11 @@ The forth main subproject is to replace heaviside with AWS CDK Python code.
 - So, replace all existing heaviside with equivalent CDK code, then go forward on AWS tech 
   - much bigger community than heaviside-users, better community support
 
-*** Open questions
+** Open questions
 
 - How does bossDB deal with Redis? Is it fully managed?
   - Figure #7 seems to imply it is
-** Further
+* Further
   [[https://drhelenmiles.medium.com/if-the-mountain-wont-go-to-mohammed-then-mohammed-must-come-to-the-mountain-27fa22148326#:~:text=Far%20Side%20Cartoons-,%E2%80%9CIf%20the%20Mountain%20won't%20go%20to%20Mohammed%2C%20then,must%20come%20to%20the%20Mountain%E2%80%9D.&text='Mahomet%20cald%20the%20Hill%20to,wil%20go%20to%20the%20hil'.][Far Side Mohammed and Hill cartoon]]
 - Francis Bacon
   #+BEGIN_QUOTE
@@ -304,7 +307,7 @@ components. One component is like ChuckFlow but as a lambda.
 
 Point is all in with AWS (yuch but real tech sadly) so Step Functions.
 
-** References
+* References
 - [[https://www.biorxiv.org/content/10.1101/217745v1.abstract][The Block Object Storage Service (bossDB): A Cloud-Native Approach for Petascale Neuroscience Discovery]]
   - The copyright holder for this preprint is the author/funder, who
     has granted bioRxiv a license to display the preprint in
