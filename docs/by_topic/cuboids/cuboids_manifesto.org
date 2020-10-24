@@ -1,42 +1,10 @@
-<<<<<<< HEAD
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="aux/org.css"/>
-#+title: The Cuboids Manifest
-#+options: toc:nil
-=======
-<<<<<<< Updated upstream
-* The Cuboids Manifesto
->>>>>>> relink_to_images
-
-#+attr_html: :width 400px
-[[./aux/images/aws_pitcher.png]]
-
-<<<<<<< HEAD
-
-#+TOC: headlines 2
-
-
-* Introduction
-
-This document proposes modifications to the bossDB codebase such that
-deploying it would be simplified and ownership would involve less server
-management. The suggested changes drink deeply from the AWS Kool-Aid
-pitcher: more serverless, less servers, and more fully managed services.
-
-The current, original bossDB codebase reflects a valid and shrewd architectural style
-which values vendor neutral open source. Yet to deal with the sporatic volume
-and velocity of data being throw off by electron microscopes, an AWS
-serverless engine was adopted. This worked well but resulted in
-a mixed architectural style which is more complex than necessary.
-=======
-** Introduction
-=======
 #+html_head: <link rel="stylesheet" type="text/css" href="aux/org.css"/>
 #+title: Cuboids Manifesto
 #+options: toc:nil
 #+options: html-postamble:nil
 
 #+attr_html: :width 80%
-[[./aux/images/logos/cuboids_lettermark_bw.png]]
+[[./images/logos/cuboids_lettermark_bw.png]]
 
 * Abstract
 
@@ -46,7 +14,7 @@ maintain.  The suggested modifications drink deeply from the AWS
 serverless Kool-Aid pitcher: less servers and more fully managed services.
 
 #+attr_html: :width 25%
-[[./aux/images/aws_pitcher.png]]
+[[./images/aws_pitcher.png]]
 
 The [[https://bossdb.org/][bossDB]] is a [[https://en.wikipedia.org/wiki/Volume_rendering][volumetric]] database for storing and processing
 petabytes of data from microscopic imaging of biological tissue.  Its
@@ -70,7 +38,7 @@ platform such that software-based analysis of the data residing in
 a bossDB repository can performed close to the data.
 
 #+attr_html: :width 400px
-[[./aux/images/mohammed_and_the_mountain.jpg]]
+[[./images/mohammed_and_the_mountain.jpg]]
 
 #+TOC: headlines 2
 
@@ -79,7 +47,6 @@ a bossDB repository can performed close to the data.
 | License  | CC0 1.0      |
 
 * Introduction
->>>>>>> Stashed changes
 
 The original bossDB codebase evidences a valid and shrewd
 architectural style which values vendor neutral open source. Yet to
@@ -88,7 +55,6 @@ electron microscopes, an AWS serverless engine was adopted. This
 worked well but resulted in a mixed architectural style which is more
 complex than necessary. Cuboids aims to resolve the complexity by
 going all-in on AWS lock-in.
->>>>>>> relink_to_images
 
 Furthermore, the bossDB codebase was [[https://github.com/jhuapl-boss/boss/graphs/contributors][started in 2015]], which was early
 days for AWS serverless, nevermind using such tech to scale to
@@ -119,18 +85,7 @@ the [[https://en.wikipedia.org/wiki/Diffusion_of_innovations][diffusion of innov
 criteria "complexity" and "trialability." So, perhaps we should accept
 that this codebase will never leave AWS and drink up to slim down.
 
-<<<<<<< HEAD
 * Terminology
-=======
-<<<<<<< Updated upstream
-** Terminology
-=======
-
-
-
-* Terminology
->>>>>>> Stashed changes
->>>>>>> relink_to_images
 
 In order to distinguish references to the existing and proposed
 codebases, the following terms will be used throughout this document:
@@ -151,14 +106,6 @@ it serves only as a tag for this proposal.
 
 So, let's [[https://www.youtube.com/watch?v=SHhrZgojY1Q]["meet the new boss, same as the old boss."]]
  
-<<<<<<< HEAD
-* Philosophy: drink more AWS Kool-Aid
-=======
-<<<<<<< Updated upstream
-** Philosophy: drink more AWS Kool-Aid
->>>>>>> relink_to_images
-
-=======
 * Manifesto philosophy: drink more AWS Kool-Aid
 
 This title is lightheartedly entitled, The Cuboids Manifesto. This is
@@ -170,7 +117,6 @@ good thing but Cuboids consciously jettisons that feature in the
 interests of accellerating innovation via improved developer velocity
 and reduced devops workload.  AWS lock-in is accepted because it re
   
->>>>>>> Stashed changes
 There's two ways that changes could be made. I wish the first were
 possible but not at this time.
 1. Stay vendor neutral. Build a serverless engine which works on other vendor's clouds. (Say with serverless.com)
@@ -218,31 +164,19 @@ he was neuer a whit abashed, but said; If the Hill will not come to
 Mahomet, Mahomet wil go to the hil
 #+END_QUOTE
 
-<<<<<<< HEAD
 * Architectural before and after
-=======
-<<<<<<< Updated upstream
-** Architectural before and after
->>>>>>> relink_to_images
 
 This section will walk through the the logic of the following triptych. 
 Notice how radiating out from the lower left quadrant things stay the
 same in all three panels. The reason is that the green region is the
-<<<<<<< HEAD
 the serverless core with a managed Redis cache.
-=======
-the serverless core adn w/ a Redis cache)
-=======
-
 
 * Proposed architectural modification overview
 
 This section explains the the logic of the following triptych. 
->>>>>>> Stashed changes
->>>>>>> relink_to_images
 
 #+attr_html: :width 100%
-[[./aux/images/triptych.png]]
+[[./images/triptych.png]]
 
 The three panels break out as follows:
 - On the left is the existing architecture
@@ -255,17 +189,9 @@ the serverless core with a managed Redis cache.
 
 First consider the left panel of the above image, wich is Figure 7 from [Kleissas et alia, 2017]
 
-<<<<<<< HEAD
-#+attr_html: :width 50%
-[[./aux/images/kleissas_et_alia_2017_figure_7_attributed.png]]
-=======
-<<<<<<< Updated upstream
-[[./aux/kleissas_et_alia_2017_figure_7_attributed.png]]
-=======
+
 #+attr_html: :width 75%
-[[./aux/images/kleissas_et_alia_2017_figure_7_attributed.png]]
->>>>>>> Stashed changes
->>>>>>> relink_to_images
+[[./images/kleissas_et_alia_2017_figure_7_attributed.png]]
 
 In this document this image will be used as the basis of a butcher's cut chart to illustrate the proposed architectural changes.
 
@@ -274,17 +200,9 @@ There are 3 big proposed modifications. Those 3 parts of the architecture to be 
 - The Single-Sign On (SSO) machinery
 - The secrets keeping machinery
 
-<<<<<<< HEAD
-#+attr_html: :width 50%
-[[./aux/images/bossdb_changes.png]]
-=======
-<<<<<<< Updated upstream
-[[./aux/bossdb_changes.png]]
-=======
+
 #+attr_html: :width 75%
-[[./aux/images/bossdb_changes.png]]
->>>>>>> Stashed changes
->>>>>>> relink_to_images
+[[./images/bossdb_changes.png]]
 
 The 3 red zones represent 3 of the 4 main sub-projects:
 - The upper left red zone is the REST interface 
@@ -294,17 +212,8 @@ The 3 red zones represent 3 of the 4 main sub-projects:
 
 The resulting architecture would looks as follows:
 
-<<<<<<< HEAD
-#+attr_html: :width 50%
-[[./aux/images/neu_boss_arch.png]]
-=======
-<<<<<<< Updated upstream
-[[./aux/neu_boss_arch.png]]
-=======
 #+attr_html: :width 75%
-[[./aux/images/neu_boss_arch.png]]
->>>>>>> Stashed changes
->>>>>>> relink_to_images
+[[./images/neu_boss_arch.png]]
 
 Note: all four of these changes are simply to support infrastructure, not to the core engine of the spatial database
 - Sticking with the serverless
@@ -328,27 +237,14 @@ Let's be very clear the code to be replaced is good code.
 
 To put is at simply as possible, would love to be able to spin up a serverless spatial DB with just a single CloudFormation
 
-<<<<<<< HEAD
 * The AWS serverless core
-=======
-<<<<<<< Updated upstream
-** The AWS serverless core
->>>>>>> relink_to_images
 
 This essentially stays the same. The only changes would be at its
 interface to the auth and audit system. Also related is how they are
 generated. It is proposed to drop Heaviside and adopt AWS CDK in stead.
 
 
-<<<<<<< HEAD
-* Arch of BossDB
-=======
-** Arch of BossDB
-=======
-
 * Architecture of BossDB
->>>>>>> Stashed changes
->>>>>>> relink_to_images
 
 As is the architecture of BossDB can be considered a hybrid
 architecture which served its purpose well. "Hybrid" here means
@@ -387,12 +283,7 @@ speeding up the diffusion of innovation. Ideally the other cloud providers
 would have equivalent tech to those parts of AWS used in the BossDB refresh,
 but sadly that is not the case in mid-2020.
 
-<<<<<<< HEAD
 * Specific changes
-=======
-<<<<<<< Updated upstream
-** Specific changes
-=======
 * The AWS serverless core
 
 This essentially stays the same. The only changes would be at its
@@ -400,13 +291,10 @@ interface to the auth and audit system. Also related is how they are
 generated. It is proposed to drop Heaviside and adopt AWS CDK in stead.
 
 * Specific changes
->>>>>>> Stashed changes
->>>>>>> relink_to_images
 
 | Existing  | Proposed |
 |-----------+----------|
 | [[https://github.com/jhuapl-boss/heaviside][heaviside]] | AWS CDK  |
-
 
 ** RESTful interface
 API Gateway
@@ -458,8 +346,6 @@ API Gateway
   - Vault servers are Secrets which store their info in Consul
   - Consul Servers are for key/value store
 
-
-
 ** Heaviside => CDK
 The forth main subproject is to replace heaviside with AWS CDK Python code.
 - Want to write bossDB based programs/experiments which are StepFunctions
@@ -473,12 +359,7 @@ The forth main subproject is to replace heaviside with AWS CDK Python code.
 
 - How does bossDB deal with Redis? Is it fully managed?
   - Figure #7 seems to imply it is
-<<<<<<< HEAD
-* Further
-=======
-<<<<<<< Updated upstream
-** Further
->>>>>>> relink_to_images
+* Further work
   [[https://drhelenmiles.medium.com/if-the-mountain-wont-go-to-mohammed-then-mohammed-must-come-to-the-mountain-27fa22148326#:~:text=Far%20Side%20Cartoons-,%E2%80%9CIf%20the%20Mountain%20won't%20go%20to%20Mohammed%2C%20then,must%20come%20to%20the%20Mountain%E2%80%9D.&text='Mahomet%20cald%20the%20Hill%20to,wil%20go%20to%20the%20hil'.][Far Side Mohammed and Hill cartoon]]
 - Francis Bacon
   #+BEGIN_QUOTE
@@ -487,9 +368,6 @@ The forth main subproject is to replace heaviside with AWS CDK Python code.
   Mahomet, Mahomet wil go to the hil
   #+END_QUOTE
   We want to minimize data trasfer. Do all compute in AWS on the data in S3.
-=======
-* Further work
->>>>>>> Stashed changes
   
 The existing bossDB APIs could be used to fetch raw data for running
 experiments on.  Nonetheless, it is desirable to minimize trasfering
@@ -506,16 +384,10 @@ components. One component is like ChuckFlow but as a lambda.
 
 With regards to experiments, they can be build upon the exist Lambdas.
 
-<<<<<<< HEAD
-* References
-=======
 So, have a tall glass of AWS.
 
 Point is: go all-in with AWS (yuch but a tech reality, sadly, for now) so Step Functions.
 
-<<<<<<< Updated upstream
-** References
-=======
 https://medium.com/@adhorn/getting-started-with-aws-lambda-layers-for-python-6e10b1f9a5d
 
 * License
@@ -524,8 +396,6 @@ copyright and related or neighboring rights to Cuboids Manifesto. This
 work is published from: United States.
   
 * References
->>>>>>> Stashed changes
->>>>>>> relink_to_images
 - [[https://www.biorxiv.org/content/10.1101/217745v1.abstract][The Block Object Storage Service (bossDB): A Cloud-Native Approach for Petascale Neuroscience Discovery]]
   - The copyright holder for this preprint is the author/funder, who
     has granted bioRxiv a license to display the preprint in
