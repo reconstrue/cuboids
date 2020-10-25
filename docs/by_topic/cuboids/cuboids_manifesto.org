@@ -3,18 +3,34 @@
 #+options: toc:nil
 #+options: html-postamble:nil
 
+| Author   | [[http://tigue.com][John Tigue]]   |
+| Version  | 2020-10-22-1 |
+| License  | CC0 1.0      |
+
 #+attr_html: :width 80%
 [[./images/logos/cuboids_lettermark_bw.png]]
 
 * Abstract
 
 This document proposes modifications to the bossDB open source
-codebase.  The changes would make bossDB easier to deploy and
-maintain.  The suggested modifications drink deeply from the AWS
-serverless Kool-Aid pitcher: less servers and more fully managed services.
+codebase. The main goals are to first simplify deployment and
+maintenance of the existing system and then extend it to internalize
+data processing tasks, for example, neuron reconstruction via image
+recognition machine learning. The proposed codebase has been given
+the working title of Cuboids.
+
+Peta-scale datasets are unlikely to ever migrate from where they are
+initially reposited.  Recognizing this and the fact that the existing
+AWS-only codebase is currently managing petabytes of data on AWS, the
+suggested modifications drink deeply from the AWS serverless Kool-Aid
+pitcher: less servers and more fully managed services.
 
 #+attr_html: :width 25%
 [[./images/aws_pitcher.png]]
+
+#+TOC: headlines 2
+
+* Introduction
 
 The [[https://bossdb.org/][bossDB]] is a [[https://en.wikipedia.org/wiki/Volume_rendering][volumetric]] database for storing and processing
 petabytes of data from microscopic imaging of biological tissue.  Its
@@ -39,14 +55,6 @@ a bossDB repository can performed close to the data.
 
 #+attr_html: :width 400px
 [[./images/mohammed_and_the_mountain.jpg]]
-
-#+TOC: headlines 2
-
-| Author   | [[http://tigue.com][John Tigue]]   |
-| Version  | 2020-10-22-1 |
-| License  | CC0 1.0      |
-
-* Introduction
 
 The original bossDB codebase evidences a valid and shrewd
 architectural style which values vendor neutral open source. Yet to
@@ -90,22 +98,12 @@ that this codebase will never leave AWS and drink up to slim down.
 In order to distinguish references to the existing and proposed
 codebases, the following terms will be used throughout this document:
 - ~bossDB~: the existing codebase, as originally named
-- ~neu_boss~: the proposed modified codebase
+- ~cuboids~: the proposed modified codebase
 
-There seems to be a trend in JHU/APL's documentation to casually refer
-to the codebase as "the Boss" but here the goal is to distinguish two
-variants so the original name ~bossDB~ is used herein.
+Additionally, there seems to be a trend in JHU/APL's documentation to
+casually refer to the codebase as "the Boss" so the Boss and bossDB
+refer to the same thing, that is the originally architected codebase.
 
-At the risk of ruining the humor, ~neu_boss~ is a word play on "new"
-(as in Coke) and "neural." The term also follows the trend of dropping
-the ~DB~ part of the name. Alternatively, "[[https://en.wikipedia.org/wiki/Bossa_nova][bossa nova]]" -- literally
-“new trend” -- did make the short list but that option would have lost
-the "neural" implication. It is *not* imagined that there will actually
-be a repository called ~neu_boos~ as the label is just not that good;
-it serves only as a tag for this proposal.
-
-So, let's [[https://www.youtube.com/watch?v=SHhrZgojY1Q]["meet the new boss, same as the old boss."]]
- 
 * Manifesto philosophy: drink more AWS Kool-Aid
 
 This title is lightheartedly entitled, The Cuboids Manifesto. This is
@@ -242,7 +240,6 @@ To put is at simply as possible, would love to be able to spin up a serverless s
 This essentially stays the same. The only changes would be at its
 interface to the auth and audit system. Also related is how they are
 generated. It is proposed to drop Heaviside and adopt AWS CDK in stead.
-
 
 * Architecture of BossDB
 
@@ -389,6 +386,15 @@ So, have a tall glass of AWS.
 Point is: go all-in with AWS (yuch but a tech reality, sadly, for now) so Step Functions.
 
 https://medium.com/@adhorn/getting-started-with-aws-lambda-layers-for-python-6e10b1f9a5d
+
+It would be very valuable and desirable to not cause a fork in the
+community but it would appear that such may be inevitable. Although the main thrust of
+this proposal is simply an architectural refresh without significant changes to what the
+software does, these changes touch just about every component what with the modification
+of the auth system to Cognito. Nonetheless, a eye will be kept out for areas where interaction
+can be maintained. For example, perhaps two bossDB deploys could interact. Both would be
+on AWS so the data would not need to travel far. This could be how JHUAPL's deploy would
+be the primary repository for the 
 
 * License
 To the extent possible under law, John F Tigue has waived all
