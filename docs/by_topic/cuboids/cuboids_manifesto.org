@@ -363,8 +363,12 @@ highlighted in red below:
 - The Single-Sign On (SSO) machinery
 - The secrets keeping machinery
 
+# +attr_html: :width 75%
+# [[./images/bossdb_changes.png]]
+
+
 #+attr_html: :width 75%
-[[./images/bossdb_changes.png]]
+[[./images/bossdb_delta_components.png]]
 
 The 3 red zones represent 3 of the 4 main sub-projects:
 - The upper left red zone is the REST interface
@@ -607,7 +611,7 @@ rights, to the extent allowed by law.
 You can copy, modify, distribute and perform the work, even for
 commercial purposes, all without asking permission.
 
-* References-
+* References
  Cuboids repository
   - https://github.com/reconstrue/cuboids
 - BossDB preprints
