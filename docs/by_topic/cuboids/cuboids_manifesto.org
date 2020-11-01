@@ -4,7 +4,7 @@
 #+options: html-postamble:nil
 
 | Author  | [[http://tigue.com][John Tigue]]   |
-| Version | 2020-10-31-1 |
+| Version | 2020-11-01-1 |
 | License | CC0 1.0      |
 
 * Abstract
@@ -80,167 +80,29 @@ services.
 #+attr_html: :width 25%
 [[./images/aws_pitcher.png]]
 
-* Origins of the Boss
-
-Development of the Boss codebase was undertaken as part of the MICrONS
-project. According to the MICrONS project site:
-
-#+begin_quote
-MICrONS seeks to revolutionize machine learning by reverse-engineering
-the algorithms of the brain. The program is expressly designed as a
-dialogue between data science and neuroscience.
-#+end_quote
-
-Wikipedia: [[https://en.wikipedia.org/wiki/MICrONS][Machine Intelligence from Cortical Networks]]
-
-#+begin_quote
-The MICrONS program (Machine Intelligence from Cortical Networks) is a
-five-year project run by the United States government through the
-Intelligence Advanced Research Projects Activity (IARPA) with the goal
-of reverse engineering one cubic millimeter—spanning many petabytes of
-volumetric data—of a rodent's brain tissue and use insights from its
-study to improve machine learning and artificial intelligence by
-constructing a connectome. The program is part of the White
-House BRAIN Initiative.
-#+end_quote
-
-Although the Boss is currently being used in other projects, the
-marque benchmark of bossDB performance is still the approximately two
-and a half petabyte dataset generated as part of the MICrONS project.
-
-The MICrONS data is the output of a single experiment wherein a cubic
-millimeter of neural tissue was scanned by electron microscopes. After
-imaging, the data was transfered via Boss HTTP APIs from the
-laboratory to a bossDB instance running on AWS, sometimes in forty
-terabyte spurts involving tens of millions of file. 
-
-Subsequently, the data was downloaded from the repository and machine
-learning based image recognition software processed the raw data to
-reconstruct 3D models of approximately 100,000 neurons, down to
-individual synapses (roughly a dozen million synapses). Along with the
-neurons, other cells are reconstruct, such as glia and vascular cells.
-The segmentation image recognition was performed on systems external
-to bossDB but the resulting reconstructions were uploaded to the
-bossDB repository.
-
-Beyond the technical limitations of AWS serverless technology in 2015,
-there are good reasons why the original bossDB did not perform neuron
-reconstruction internally. The technical architecture reflects the
-multi-team nature of the MICrONS project for which the Boss was
-created. Four different teams each focused on their particular area of
-expertise.
-
-- JHU/APL wrote the Boss repository code and supporting tools
-- Baylor University performed functional imaging experiments on a live mouse
-- The Allen Institute structurally imaged a cubic millimeter of that mouse's sacrificed brain
-- The Seung Lab wrote the machine learning code to reconstruct the imaged neurons
-
-For those unfamiliar with the neuroscientific jargan, the distinction
-between *structural imaging* and *functional imaging* is analogous to
-that between the map of a road network and recordings of traffic over
-the network, respectively. Functional imaging is done while the animal
-is alive performing experimental learning tasks. After the animal
-has been sacrifice and the brain removed, structural imaging is similar
-to passing a leg of ham through a deli slicer and photographing each
-slice. Subsequently, *reconstruction* amounts to using those raw 2D
-image to construct -- via ML image recognition -- 3D models the
-original biological structures.
-
-#+attr_html: :width 100%
-#+caption: Functional Imaging a Head-Fixed, Freely-Moving Mouse in a VR Rig
-[[./images/vr_imaging_experiment.png]]
-
-Data from the functional imaging experiment can be thought of as an
-array of movies at various depths in the volume of brain. Figure A
-below illustrates the functional movie stack co-registered into the 3D
-volume from the structural imaging (colored by segmentation).  When a
-neuron fires there is a point flash in a movie -- as if a star were
-going nova -- at the cell body of a neuron. First, invidual stars need
-to be identified (C) and then their individual brigthness timelines
-studied to find the firing events of each neuron (D). The following
-diagram is taken from Figure 6 of a 2020 pre-print, [[https://www.biorxiv.org/content/10.1101/2020.10.14.338681v2][Multiscale and
-multimodal reconstruction of cortical structure and function]]. It
-ilustrates the software analysis of the functional data:
-
-#+attr_html: :width 100%
-[[./images/mults_figure_6.png]]
-
-- (A) 2-photon calcium recording overview and image plane
-  coregistration. Black squares on the right are the image planes,
-  cropped to only indicate the vertical location.
-- (B) Visual stimulus presented during recording. Oriented stimuli
-  moving in 16 directions were presented, interspersed with the pink
-  noise stimulus, for 30 trials (row: single trial).
-- (C) Example slice of 2-photon recording (A: Anterior, P: Posterior,
-  M: Medial, L: Lateral) with the central area (white dashed box)
-  zoomed in on the lower right.
-- (D) Noise-normalized dF/F traces and deconvolved traces (dashed:
-  activity threshold for “active” trials) for example cells marked in
-  (C) during a single trial (white shade: directional stimulus shown,
-  gray shade: noise stimulus shown). Directions are ordered
-  pseudo-randomly in each trial.
-
-[[https://en.wikipedia.org/wiki/Applied_Physics_Laboratory][JHU/APL]] had the perfect experience for coding up the Boss. JHU/APL was
-behind the Hubble telescope. Hubble can be thought of as a fancy
-imaging machine pumping out lots of data over a constrained data
-channel, that is, from space. Analogously, the MICrONS project has
-fancy microscopes pumping out an extraordinary amount of data, the
-transmission of which taxed some computer networks. Subsequent to
-their Hubble work -- and more specific to neuroscience -- JHU/APL
-worked on [[https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3278382/][the Open Connectome Project]] and [[https://neurodata.io/][NeuroData]]. Therefore, they
-seem like an excellent choice for developing the Boss codebase.
- 
-The Boss is where Baylor and the Allen uploaded the raw experimental
-data they collected, and from where the Seung Lab downloaded that raw
-data to then run through machine learning algorithms in order to reconstruct the
-neurons from within the stacks of images, generating surface mesh
-models. 
-
-After experimental data images were experimentally collected and
-uploaded to the Boss, they were analyzed the Seung Lab at Princeton to
-reconstruct the neurons and identify synapse via machine learning.
-
-Notice that the MICrONS project involved uploading and subsequent
-downloading of all that data. Also notice that when the 2D images are
-stacked they form a volumetric cuboid -- the core data model of the
-Boss -- hence the working title of Cuboids.
-
-Click on the following image to see a video which demonstrates how
-such reconstruction algorithms work:
-
-#+macro: imglnk @@html:<a href="$1"><img src="$2"></a>@@
-{{{imglnk(https://youtu.be/X4eVmSxTZ8Y,images/reconstruction_demo.jpg)}}}
-
-Via [[https://ai.googleblog.com/2018/07/improving-connectomics-by-order-of.html][Improving Connectomics by an Order of Magnitude]]
-
-For more on the technical architecture of the Boss, see the pre-prints
-[X, X] and the Dean Kleissas AWS talks [X, X] ([X] is a rather
-entertaining tech talk with high production value).
-
-In scale, the MICrONS project was the first of its kind. Seeing the
-database pass a 2.5 petabyte stress test is 
-
-The volume of
-data processed by the Boss is a nice stress test, half way between a
-benchmark and and ad.
-
-is an  gave the Boss codebase serious confirmation evidence by stress
-testing it with petabytes of data. Subsequently, [[https://bossdb.org/projects][other projects]] have
-productively used the Boss. The Boss codebase is a poster child for
-software technology produced via DARPA or IARPA grants.
-
-is a quintessential
-example of how US government research grants are supposed to work. Now it
-is time for industry to carry the baton to the next stage.
-
 * Existing high level architecture of the Boss
 
+
+ The technical architecture of the data system of the MICrONS project
+ reflects the multi-team nature of the MICrONS project for which the
+ Boss was created. 
+
+ #+attr_html: :width 100%
+ [[./images/microns_phase_2.jpg]]
+
+  
 In its current form the Boss architecture can be considered a hybrid
 of two styles. The foundational frame consists of non-serverless,
 platform neutral, open source machinery. Within that frame is
 a turbo boosted engine of serverless tech. This choice was made
 for valid reasons back in 2015 and time has shown the resulting
 codebase has served its original purpose well.
+
+Note: the hybrid nature of the Boss architecture is not a result of
+the multi-team social structure. On the other hand, the fact that the
+original Boss does not do reconstruction image recognition is indeed a
+reflection of the social structure. It can also be seen as a wise
+limitation of scope of development of the initial Boss.
 
 The following diagram is taken from the original bossDB pre-print. The
 yellow box has been added to highlight the serverless core of the
