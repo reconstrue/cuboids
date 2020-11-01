@@ -4,64 +4,70 @@
 #+options: html-postamble:nil
 
 | Author  | [[http://tigue.com][John Tigue]]   |
-| Version | 2020-10-27-1 |
+| Version | 2020-10-31-1 |
 | License | CC0 1.0      |
 
 * Abstract
+  
+This document proposes refresh modifications and novel extentions to
+the bossDB open source codebase. The envisioned platform has been
+given the working title of Cuboids.
 
-This document proposes modification and extentions to the bossDB open
-source codebase. The envisioned platform has been given the working
-title of Cuboids.
-
-The initial goal is an architectural refresh leveraging the latest AWS
+The initial goal is an architectural update leveraging the latest AWS
 serverless innovations in order to simplify deployment and maintenance
-of the existing system, while maintaining the existing Boss surface APIs. The
-subsequent goal is to embed the revised bossDB repository into the
-Cuboids platform. The result is to be a "whole product" which can not
-only store but also analyze data, for example, reconstruct neurons
-via image recognition machine learning algorithms.
+of the existing system, while maintaining the existing bossDB surface
+APIs. The subsequent goal is to build out Cuboids with the bossDB
+database repository as the backend.
+
+The resulting Cuboids platform is to be a "whole product" which
+recapitulates the multi-system architecture of the MICrONS project but
+with all tasks -- storage, analysis, visualization, etcetera -- performable
+within a Cuboids instance. The most significant process to be moved
+into the service is reconstruction of neurons via image recognition
+machine learning algorithms.
 
 #+attr_html: :width 80%
 [[./images/logos/cuboids_lettermark_bw.png]]
 
-#+TOC: headlines 1h
+#+TOC: headlines 3h
 
 * Introduction
 
-The [[https://bossdb.org/][bossDB]] (also known colloquially as "the Boss") is a [[https://en.wikipedia.org/wiki/Volume_rendering][volumetric]] database for
-storing petabytes of data resulting from microscopic imaging of
-biological tissue.  Its initial development was funded via grants from
-[[https://www.iarpa.gov/][IARPA]] under [[https://www.iarpa.gov/index.php/research-programs/microns][the MICrONS project]]. As is normal with such funding,
-the resulting codebase is open source and available under [[https://www.apache.org/licenses/LICENSE-2.0][the Apache
-2.0 license]].
+The [[https://bossdb.org/][bossDB]] is a [[https://en.wikipedia.org/wiki/Volume_rendering][volumetric]] database capable of storing petabytes of data
+resulting from microscopic imaging of neurological tissue. It also known
+colloquially as "the Boss" and in this document both terms are
+interchangable. Its initial development was funded via grants from
+[[https://www.iarpa.gov/][IARPA]] under [[https://www.iarpa.gov/index.php/research-programs/microns][the MICrONS project]]. The resulting source code -- spanning
+multiple repositories -- is available under the [[https://www.apache.org/licenses/LICENSE-2.0][Apache
+2.0]] open source license.
 
 The modified bossDB codebase proposed herein is designed to be the
 repository component of a platform which has been given the working
 title of Cuboids. Cuboids builds atop existing work by doubling down
 on the current AWS lock-in of bossDB, in the interests of simplifying
-the architecture and reducing maintenance costs. This part of the
-proposal is simply "better, faster, cheaper" thinking which does not
-change the high-level feature set of the repository.
+the architecture in order to make it easier to administer. This part of the proposal
+is simply "better, faster, cheaper" thinking which does not change the
+high-level feature set of the repository.
 
 Beyond the aforementioned architectural refresh, Cuboids aims to be
 more than just a repository. Given the current architecture of the
-Boss, image processing has to be performed on separate systems,
-requiring the transfer of mountains of data to external
-systems. Cubiods builds on the previous bossDB work such that analysis
-of the data residing in a bossDB repository can performed close to the
-data. Doing so enables Cuboids to be more of a "whole product" for
-microscopy workflows rather than simply a repository accessed by
-external analysis tools.
+Boss, image analysis has to be performed by separate external systems,
+requiring the transfer of mountains of data. Cuboids builds on the
+previous bossDB work such that analysis of the data residing in a
+bossDB repository can performed close to the data. Doing so enables
+Cuboids to be more of a "whole product" for microscopy workflows
+rather than simply a repository accessed by external analysis tools.
 
 The original bossDB codebase evidences a valid and shrewd
 architectural style which values vendor neutral open source. Yet to
 deal with the sporatic volume and velocity of data being throw off by
-the electron microscopes, an AWS serverless engine was adopted. This
+electron microscopes, an AWS serverless engine was adopted. This
 worked well but resulted in a mixed architectural style which is more
-complex than necessary. A purely serverless architectures simply could
-not be build in 2015. Cuboids aims to resolve the complexity by going
-all-in on AWS lock-in by jettisoning any component which can be
-replaced by an equivalent fully managed AWS services. 
+complex than currently necessary. In 2015, when work on the Boss was
+started, a purely serverless architectures simply could not be
+build. Cuboids aims to resolve the complexity by going all-in on AWS
+lock-in by jettisoning any components which can be replaced by
+equivalent fully managed AWS services.
 
 Peta-scale datasets are unlikely to ever migrate from where they are
 initially reposited.  Recognizing this and the fact that the existing
@@ -76,7 +82,8 @@ services.
 
 * Origins of the Boss
 
-According to the MICrONS project site:
+Development of the Boss codebase was undertaken as part of the MICrONS
+project. According to the MICrONS project site:
 
 #+begin_quote
 MICrONS seeks to revolutionize machine learning by reverse-engineering
@@ -84,77 +91,145 @@ the algorithms of the brain. The program is expressly designed as a
 dialogue between data science and neuroscience.
 #+end_quote
 
-Development of the Boss codebase was undertaken as part of the MICrONS
-project. As such, although it is currently being used in other projects, the
-marque benchmark of bossDB performance is still the approximately two and a
-half petabyte dataset generated as part of the MICrONS project.
+Wikipedia: [[https://en.wikipedia.org/wiki/MICrONS][Machine Intelligence from Cortical Networks]]
+
+#+begin_quote
+The MICrONS program (Machine Intelligence from Cortical Networks) is a
+five-year project run by the United States government through the
+Intelligence Advanced Research Projects Activity (IARPA) with the goal
+of reverse engineering one cubic millimeter—spanning many petabytes of
+volumetric data—of a rodent's brain tissue and use insights from its
+study to improve machine learning and artificial intelligence by
+constructing a connectome. The program is part of the White
+House BRAIN Initiative.
+#+end_quote
+
+Although the Boss is currently being used in other projects, the
+marque benchmark of bossDB performance is still the approximately two
+and a half petabyte dataset generated as part of the MICrONS project.
 
 The MICrONS data is the output of a single experiment wherein a cubic
 millimeter of neural tissue was scanned by electron microscopes. After
 imaging, the data was transfered via Boss HTTP APIs from the
 laboratory to a bossDB instance running on AWS, sometimes in forty
-terabyte spurts involving tens of millions of file. Subsequently,
-machine learning based image recognition software processed the raw
-data to reconstruct 3D models of approximately 100,000 neurons, down
-to individual synapses. The image recognition was performed on systems
-external to bossDB but the resulting reconstructions were also added
-to the bossDB repository.
+terabyte spurts involving tens of millions of file. 
 
-There are good reasons why the original bossDB did not perform neuron
+Subsequently, the data was downloaded from the repository and machine
+learning based image recognition software processed the raw data to
+reconstruct 3D models of approximately 100,000 neurons, down to
+individual synapses (roughly a dozen million synapses). Along with the
+neurons, other cells are reconstruct, such as glia and vascular cells.
+The segmentation image recognition was performed on systems external
+to bossDB but the resulting reconstructions were uploaded to the
+bossDB repository.
+
+Beyond the technical limitations of AWS serverless technology in 2015,
+there are good reasons why the original bossDB did not perform neuron
 reconstruction internally. The technical architecture reflects the
 multi-team nature of the MICrONS project for which the Boss was
-created. Four different teams each focused on their particular area of expertise.
+created. Four different teams each focused on their particular area of
+expertise.
 
 - JHU/APL wrote the Boss repository code and supporting tools
-- Baylor College performed functional imaging experiments on the live mouse
+- Baylor University performed functional imaging experiments on a live mouse
 - The Allen Institute structurally imaged a cubic millimeter of that mouse's sacrificed brain
 - The Seung Lab wrote the machine learning code to reconstruct the imaged neurons
 
 For those unfamiliar with the neuroscientific jargan, the distinction
 between *structural imaging* and *functional imaging* is analogous to
-that between the map of a road network and traffic within the network,
-respectively. Functional imaging is done while the animal is alive,
-and after the animal has been sacrifice and the brain removed structural
-imaging is similar to passing a leg of ham through a deli slicer and
-photographing each slice. Subsequently, *reconstruction* amounts to
-using those raw 2D image to construct -- via ML image recognition --
-3D models the original biological structures.
+that between the map of a road network and recordings of traffic over
+the network, respectively. Functional imaging is done while the animal
+is alive performing experimental learning tasks. After the animal
+has been sacrifice and the brain removed, structural imaging is similar
+to passing a leg of ham through a deli slicer and photographing each
+slice. Subsequently, *reconstruction* amounts to using those raw 2D
+image to construct -- via ML image recognition -- 3D models the
+original biological structures.
 
 #+attr_html: :width 100%
 #+caption: Functional Imaging a Head-Fixed, Freely-Moving Mouse in a VR Rig
 [[./images/vr_imaging_experiment.png]]
 
+Data from the functional imaging experiment can be thought of as an
+array of movies at various depths in the volume of brain. Figure A
+below illustrates the functional movie stack co-registered into the 3D
+volume from the structural imaging (colored by segmentation).  When a
+neuron fires there is a point flash in a movie -- as if a star were
+going nova -- at the cell body of a neuron. First, invidual stars need
+to be identified (C) and then their individual brigthness timelines
+studied to find the firing events of each neuron (D). The following
+diagram is taken from Figure 6 of a 2020 pre-print, [[https://www.biorxiv.org/content/10.1101/2020.10.14.338681v2][Multiscale and
+multimodal reconstruction of cortical structure and function]]. It
+ilustrates the software analysis of the functional data:
+
+#+attr_html: :width 100%
+[[./images/mults_figure_6.png]]
+
+- (A) 2-photon calcium recording overview and image plane
+  coregistration. Black squares on the right are the image planes,
+  cropped to only indicate the vertical location.
+- (B) Visual stimulus presented during recording. Oriented stimuli
+  moving in 16 directions were presented, interspersed with the pink
+  noise stimulus, for 30 trials (row: single trial).
+- (C) Example slice of 2-photon recording (A: Anterior, P: Posterior,
+  M: Medial, L: Lateral) with the central area (white dashed box)
+  zoomed in on the lower right.
+- (D) Noise-normalized dF/F traces and deconvolved traces (dashed:
+  activity threshold for “active” trials) for example cells marked in
+  (C) during a single trial (white shade: directional stimulus shown,
+  gray shade: noise stimulus shown). Directions are ordered
+  pseudo-randomly in each trial.
+
 [[https://en.wikipedia.org/wiki/Applied_Physics_Laboratory][JHU/APL]] had the perfect experience for coding up the Boss. JHU/APL was
 behind the Hubble telescope. Hubble can be thought of as a fancy
 imaging machine pumping out lots of data over a constrained data
-channel, that is from space. Analogously, the MICrONS project has
+channel, that is, from space. Analogously, the MICrONS project has
 fancy microscopes pumping out an extraordinary amount of data, the
-transmission of which taxed some networks. Subsequent to their Hubble
-work -- and more specific to neuroscience -- JHU/APL worked on [[https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3278382/][the Open
-Connectome Project]] and [[https://neurodata.io/][NeuroData]]. Therefore, they seem like an excellent
-choice for developing the Boss codebase.
-
-Similarly, the Seung Lab at Princeton is a world class nexus of neuron
-reconstruction talent, with graduates from the lab heading up [[https://research.google/teams/perception/connectomics/][Google
-Connectomic]] which is the other great center of such technical
-expertise.
-
+transmission of which taxed some computer networks. Subsequent to
+their Hubble work -- and more specific to neuroscience -- JHU/APL
+worked on [[https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3278382/][the Open Connectome Project]] and [[https://neurodata.io/][NeuroData]]. Therefore, they
+seem like an excellent choice for developing the Boss codebase.
+ 
 The Boss is where Baylor and the Allen uploaded the raw experimental
 data they collected, and from where the Seung Lab downloaded that raw
-data to run machine learning algorithms in order to reconstruct the
+data to then run through machine learning algorithms in order to reconstruct the
 neurons from within the stacks of images, generating surface mesh
-models. Notice that the MICrONS project involved uploading and
-subsequent downloading of all that data. Also notice that when the 2D
-images are stacked they form a volumetric cuboid, hence the working
-title of Cuboids.
+models. 
+
+After experimental data images were experimentally collected and
+uploaded to the Boss, they were analyzed the Seung Lab at Princeton to
+reconstruct the neurons and identify synapse via machine learning.
+
+Notice that the MICrONS project involved uploading and subsequent
+downloading of all that data. Also notice that when the 2D images are
+stacked they form a volumetric cuboid -- the core data model of the
+Boss -- hence the working title of Cuboids.
+
+Click on the following image to see a video which demonstrates how
+such reconstruction algorithms work:
+
+#+macro: imglnk @@html:<a href="$1"><img src="$2"></a>@@
+{{{imglnk(https://youtu.be/X4eVmSxTZ8Y,images/reconstruction_demo.jpg)}}}
+
+Via [[https://ai.googleblog.com/2018/07/improving-connectomics-by-order-of.html][Improving Connectomics by an Order of Magnitude]]
 
 For more on the technical architecture of the Boss, see the pre-prints
 [X, X] and the Dean Kleissas AWS talks [X, X] ([X] is a rather
 entertaining tech talk with high production value).
 
-In scale, the MICrONS project was the first of its kind. Subsequently,
-[[https://bossdb.org/projects][other projects]] have productively used the Boss. MICrONS was and
-continues to be an success. The Boss codebase is a quintessential
+In scale, the MICrONS project was the first of its kind. Seeing the
+database pass a 2.5 petabyte stress test is 
+
+The volume of
+data processed by the Boss is a nice stress test, half way between a
+benchmark and and ad.
+
+is an  gave the Boss codebase serious confirmation evidence by stress
+testing it with petabytes of data. Subsequently, [[https://bossdb.org/projects][other projects]] have
+productively used the Boss. The Boss codebase is a poster child for
+software technology produced via DARPA or IARPA grants.
+
+is a quintessential
 example of how US government research grants are supposed to work. Now it
 is time for industry to carry the baton to the next stage.
 
@@ -193,6 +268,14 @@ provide amounts to table stakes for a modern, secure, and mature
 application. It made sense to reapply what they already knew how to
 use.
 
+In the arch diagram that old-school stuff can be grouped into three sub-system, here in red:
+- The upper left red zone is the REST interface
+- The Single Sign-on subsystem is in the upper right red zone
+- The lower reg zone can be replace with AWS Secrets Manager
+
+#+attr_html: :width 75%
+[[./images/bossdb_delta_components.png]]
+
 From an external perspective, the resulting architectural structure is
 still sound. Cuboids will maintain the existing Boss HTTP APIs to the
 repository component and only modify its internal structure. Thereby
@@ -203,41 +286,58 @@ annotation.
 
 * Realtechnik of cloud architecting
 
-This document is lightheartedly entitled "The Cuboids Manifesto" in
-order to highlight that there is a [[https://www.ribbonfarm.com/2012/08/16/realtechnik-nausea-and-technological-longing/][realtechnik]] "philosophy" behind
-this proposal, one which accepts two assumptions:
+Significant but non-core parts of the bossDB codebase are from a
+pre-cloud, platform neutral, open source culture. Vendor neutrality is
+a good thing but Cuboids consciously jettisons that feature in the
+interests of accellerating innovation via improved developer velocity
+and reduced devops workload. Any perfectly good open-source component
+of the Boss replaced with an equivalent AWS fully managed service
+means less deployment and management hassles.
+
+In the Swift programming community there has arisen a type of document
+known as a "[[https://www.youtube.com/watch?v=s1AiBi5gf1s][manifesto]]." These serve the purpose of introducing concepts
+which are bigger than a single, small focused proposal. This document
+follows that lighthearted nomenclature, in order to highlight that
+there is a [[https://www.ribbonfarm.com/2012/08/16/realtechnik-nausea-and-technological-longing/][realtechnik]] "philosophy" behind this proposal, one which
+is driven by two assumptions:
 - The original Boss codebase can only be deployed on AWS
 - Very large datasets (in particular, the MICrONS data) are rather immobile
+  
+As to the former assumption, normally it is ideal if open source code
+is platform vendor neutral.  Yet failing the ideal there are still
+benefits to the open source way, for example, innovation shared
+throughout a community of users. The Boss, given its AWS serverless
+engine, is very much not vendor neutral.  For example, the Boss makes
+use of AWS Step Functions. Unfortunately there is currently no
+equivalent abstraction available which works on other cloud platforms
+(which seems odd but c'est la vie). Given the AWS technologies already
+adopted in the bossDB codebase, Cuboids accepts and runs with the
+reality of AWS lock-in, probably in perpetuity.
 
-As to the former, ideally open source code should be platform vendor neutral.
-Yet failing that there are still benefits to the open source way.  The
-Boss, given its AWS serverless engine, is very much not vendor neutral.
-For example, the Boss makes use of AWS Step Functions. Unfortunately
-there is currently no equivalent abstraction available which works on
-the other major commerical cloud providers (which seems odd but c'est
-la vie). Given the current adopted AWS technologies already in the
-bossDB codebase, Cuboids accepts and runs with the reality of AWS
-lock-in.
-
+[ *TODO: use or toss* It is arguably a bit perverse for open source
+to be tuned up just for a single commercial cloud platform, but the
+hypothesis herein is that by doing so it will make it much easier for
+other organizations to deploy BossDB, thereby speeding up the
+diffusion of innovation. Ideally the other cloud providers would have
+equivalent tech to those parts of AWS used in the BossDB refresh, but
+sadly that is not the case in mid-2020.]
+ 
 The latter assumption acknowledges the inertia of peta-scale
 datasets. The MICrONS data is already in AWS S3. Other smaller
-datasets are also accreting in multiple Boss deploys on AWS. So code
-to analyse these dataset which only runs on AWS is not a major
-negative. Of course, this is gradually leading to more lock in. Other
-cloud vendors are missing out on an emerging industry sector. Sure it
-is not the biggest sector in terms of users but this is heading towards
-exo-scale which is not insignificant.
+datasets are also accreting in Boss deploys on AWS. So code
+which analyses these datasets yet only runs on AWS is not a major
+negative. Of course, this too is gradually leading to more AWS lock
+in. Other cloud vendors are missing out on an emerging industry
+sector. Obviously it is not the biggest sector in terms of users but this
+is heading towards exo-scale datasets which is not insignificant.
 
 Datasets on such a scale as that of the MICrONS data form a
 gravitational well inducing system architectures wherein data
-processing can happen as close to the data as possible; it is
-desirable to minimise massive data trasfers. Although the existing
-bossDB APIs can be used to fetch raw data for analysis to be performed
-external to the Boss, Cuboids intends to extend the Boss platform such
-that data analysis can be performed within the system. So, all the
-more reason to not get paralyzed by the vendor lock-in.
-
-Quoting Francis Bacon:
+processing happens as close to the data as possible; it is desirable
+to minimise massive data trasfers. Although the existing bossDB APIs
+can be used to fetch raw data for analysis on systems external to the
+Boss, Cuboids intends to extend the Boss platform such that data
+analysis can be performed within the system. Quoting Francis Bacon:
 #+BEGIN_QUOTE
 Mahomet cald the Hill to come to him. And when the Hill stood still,
 he was neuer a whit abashed, but said; If the Hill will not come to
@@ -247,33 +347,16 @@ Mahomet, Mahomet wil go to the hil. [sic]
 #+attr_html: :width 400px
 [[./images/mohammed_and_the_mountain.jpg]]
 
-
-[ *TODO:* there is repetition in the next few paragraphs. Tighten them up.]
-
-In the case of the Boss the raw image data resides in AWS S3 and is
-indexed in DynamoDB. In 2015 Lambda could not accommodate code
-packages of a size that would result from including the machine
-learning tools, say, scikit-learn. This is another valid reason why image
-processing was performed external to the Boss. Currently though with
-things like Lambda layers and TensorFlow Light it can be done.
-
 The two above assumptions drive the logic of this document. This
 proposal argues to dive headlong down the slippery slope of AWS
-lock-in.  This may seem counterintuitive and even distasteful given
-the platform vendor neutral, open source ecosystem which the Boss grew
-out of. Although [[https://cloudwars.co/amazon/inside-amazon-aws-no-longer-jeff-bezos-growth-engine/][the lead that AWS enjoys over the other cloud
-platform vendors is slipping]], it does not appear that a cross-platform
-serverless version of bossDB is possible yet, given the state of AWS'
-competitors (e.g. a lack of any AWS Step Functions equivalent from
-Google).
-
-Significant but non-core parts of the bossDB codebase are from a
-pre-cloud, platform neutral, open source culture. Vendor neutrality is
-a good thing but Cuboids consciously jettisons that feature in the
-interests of accellerating innovation via improved developer velocity
-and reduced devops workload. Any perfectly good open-source component
-that can be replace with an equivalent AWS fully managed service means
-less deployment and management hassles.
+lock-in. This recommended direction may seem counterintuitive and even
+distasteful given the platform vendor neutral, open source ecosystem
+out of which the Boss grew. Nonetheless, although the lead that AWS
+enjoys over the other cloud platform vendors [[https://cloudwars.co/amazon/inside-amazon-aws-no-longer-jeff-bezos-growth-engine/][is slipping]], it does not
+appear that a cross-platform serverless version of bossDB is possible
+at this time, given the state of those offerings competing with AWS
+(e.g. a lack of an AWS Step Functions equivalent for Google Cloud
+Platform).
 
 Therefore, it is argued herein that the mixed architecture is
 retarding the [[https://en.wikipedia.org/wiki/Diffusion_of_innovations][diffusion of innovation]], especially with regards to that
@@ -281,147 +364,152 @@ theory's criteria of "complexity" and "trialability." So, perhaps we
 should just accept that this codebase will always be locked in to AWS
 and drink their Kool Aid in order to lighten the load. 
 
-As a reality check, there is a decent 2020-10 article, [[https://www.infoq.com/articles/serverless-stalled/][Why the
-Serverless Revolution Has Stalled]], which enumerates situations where
-serverless is not yet living up to its promise. The Boss as a use case
-of serverless technology actually passes those checkpoints: for
-example, it is greenfield, all the code is written in Python, and the
-entire app was explicitly designed to run on a cloud platform. The one
-valid raised concern is vendor lock-in but as argued herein, that is
-acknowledged and accepted.
+As a reality check on this AWS serverless enthusiasm, there is a
+decent 2020-10 article, [[https://www.infoq.com/articles/serverless-stalled/][Why the Serverless Revolution Has Stalled]],
+which enumerates situations where serverless is not yet living up to
+its promise. The Boss as a use case of serverless technology actually
+passes almost all the checkpoints enumerated in that article: for
+example, it is greenfield, all the code is written in Python (i.e. a
+language well supported by AWS Lambda), and the entire app was
+explicitly designed to run on a cloud platform. The single concern
+raised which the Boss is guilty of vendor lock-in but as argued
+herein, that is acknowledged and accepted.
 
 The Cuboids variant of the codebase will remain open source,
 volunarily maintaining the Apache 2.0 license.  Yet the code will be
 very locked to AWS as the vendor, which is a rather ironic form of
 open source.
 
-* Proposed changes
+* Architectural updates
 
-One of the goals of Cuboids is an architectural refresh of the bossDB
-codebase in order to reduce the complexity resulting from the hybrid
-architecture by adopting more AWS services -- many of which simply did
-not exist in 2015 -- into the BossDB codebase. Replacing the
-non-serverless machinery with equivalent AWS services which will reduce the
-complexity of deploying and maintaining.
+The first stage of Cuboids development is to be an architectural
+refresh of the existing Boss codebase, which is the topic of this
+section. 
 
-In the following change delta juxtaposition, the image on the left is
-idential from above. Notice that the yellow backgrounded serverless
-core stays the same.
+Actually, the initial development work will be to simply stand up a
+Boss instance using the existing codebase. This document was written
+after simply reading the code, documentation, and pre-prints; various
+assumptions need to be validated in a hands-on context. Surely the
+deployment experience will cause refinements to what is proposed in
+this manifesto.
 
-#+attr_html: :width 100%
-[[./images/arch_before_and_after.png]]
-
-
-The bossDB codebase was [[https://github.com/jhuapl-boss/boss/graphs/contributors][started in 2015]], which was early
-days for AWS serverless, nevermind using such young technology to scale to
-petabytes of data. This necessitated building out various
-[[https://jeremybower.com/articles/undifferentiated-heavy-lifting-2-0.html]["undifferentiated heavy lifting"]] support machinery in order to get on
-with the task of building a petascale volumetric spatial database.  In the
-interim, AWS has gotten around to providing managed services such as
-API Gateway, Cognito, and AWS Secrets Manager.  Simply keeping the
-current architecture but rewriting those components which could be
-replaced with equivalent AWS service would make bossDB much easier to
-deploy and maintain. Additionally, AWS Lambda -- The core technology
-of serverless -- has mature in the interim such that large Python
-codebases can now be deployed on Lambda. By adopting [[https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html][Lambda layers]] 3D
-image recognition can be performed within a bossDB-based system, which
-was not possible in 2015.
-
-
-
-The main goal of this project is to de-hybridize the architecture by
-going all-in on AWS technologies which have been introduced by Amazon
-in the interim since the BossDB codebase was initiated. It is arguably
-a bit perverse for open source to be tuned up just for a single commercial
-cloud platform, but the hypothesis herein is that by doing so it will
-make it much easier for other organizations to deploy BossDB, thereby
-speeding up the diffusion of innovation. Ideally the other cloud providers
-would have equivalent tech to those parts of AWS used in the BossDB refresh,
-but sadly that is not the case in mid-2020.
-
-
-The goal of the architectural refresh is to keep the serverless core and
-jettison any bespoke components that can be replace with managed AWS services,
-which are enumerated as secondary characters in the bottom row box.
-
-The components in the serverless core will essentially stays the
-same. The only change to them will be at the interface to the auth and audit
-system.
-
+The deployment experience will be documented. Perhaps that will prove
+useful to other adminstrators of Boss deploys.
 
 ** Overview
-  :PROPERTIES:
-  :UNNUMBERED: notoc
-  :END:
 
-This section walks through the the logic of the proposed changes.
+[ *TODO:* This section currently is far enough along to where the
+logic can be followed but there is a lot of repetition. It needs to be
+made terser.]
+   
+The architectural refresh is motivated by abstract goals and those are
+reified as specific coding project. The abstract goals are to effect
+the following changes.
 
-There are thre big proposed modifications, as well as sundry secondary
-changes. Those three parts of the architecture to be modified are
-highlighted in red below:
-- The RESTful interface machinery
-- The Single-Sign On (SSO) machinery
-- The secrets keeping machinery
+| Before                     | After                         |
+|----------------------------+-------------------------------|
+| Hybrid architecture        | Serverless first architecture |
+| Some self-managed services | More fully managed services   |
+| Complex deployment         | Simplified deployment         |
+| JHU/APL's [[https://github.com/jhuapl-boss/heaviside][heaviside]]        | AWS CDK                       |
 
-# +attr_html: :width 75%
-# [[./images/bossdb_changes.png]]
+The main goal of the architectural refresh is to reduce the complexity
+resulting from the hybrid architecture by moving towards a
+serverless-first architecture. 
 
+[ *TODO:* cull?] This is to be accomplished by adopting into the
+codebase more AWS technologies -- some of which simply did not exist
+in 2015 when work started on the codebase. Replacing the
+non-serverless machinery with equivalent AWS services will reduce the
+complexity of deploying and maintaining a Boss instance.
 
-#+attr_html: :width 75%
+The bossDB codebase was [[https://github.com/jhuapl-boss/boss/graphs/contributors][started in 2015]], which was early days for AWS
+serverless, nevermind using such young technology to scale to
+petabytes of data. This necessitated building out various
+[[https://jeremybower.com/articles/undifferentiated-heavy-lifting-2-0.html]["undifferentiated heavy lifting"]] support machinery in order to get on
+with the task of building a petascale volumetric spatial database.
+
+In the interim, AWS has gotten around to providing fully managed
+services such as API Gateway, Cognito, and AWS Secrets Manager. They
+have also built out SDKs such as AWS CDK, the absense of which drove
+JHU/APL to create heaviside. Simply keeping the current serverless
+core architecture but rewriting those components which could be
+replaced with equivalent AWS service would make bossDB easier to
+deploy and maintain.
+
+Note that the goals include *not* significantly modifying the features
+of the Boss repository. Any distinctly novel functionality to be
+introduced in Cuboids which is not present in the Boss codebase will
+be constructed outside the Boss repository component. (Envisioned
+novelties are enumerated in later sections.) 
+
+The serverless core will remain fundamental the same. The most
+significant change to the core will be its interface to the auth and
+audit system which is to be based on AWS Cognito.
+ 
+Any non-serverless components which can be replaced with AWS managed
+services will be jettisoned.
+
+[ *TODO:* This diagram is to be enhanced with a tag for each red block indicating what it is to be replaced with.]
+
+#+attr_html: :width 40%
 [[./images/bossdb_delta_components.png]]
+  
+In the above diagram, the three parts of the architecture to be refurbished are:
+- The RESTful interface machinery: to be handled by Amazon API Gateway
+- The Single-Sign On (SSO) machinery: to be migrated AWS Cognito
+- The secrets keeping machinery: to be replaces with AWS Secrets Manager
 
-The 3 red zones represent 3 of the 4 main sub-projects:
-- The upper left red zone is the REST interface
-  - can be replaced by API Gateway etc
-- The upper right red zone can be replaced by Cognito
-- The lower reg zone can be replace with AWS Secrets Manager
+These sub-systems to be modified are simply necessary
+support infrastructure, not to the core serverless engine of the
+spatial database which is to remain essentially unchanged.
 
-The resulting architecture would looks as follows:
+The three changes seek to minimize management by adopting equivalent
+fully managed AWS services.
 
-#+attr_html: :width 75%
-[[./images/cuboids_arch.png]]
-
-Note: all four of these changes are simply to support infrastructure, not to the core engine of the spatial database
-- Sticking with the serverless
-- Manimize management by maximally leveraging AWS services equivalent services that can be de delegated to
+To be clear, the code to be replaced is good code but require
+management and related infrastructure.
+- Proven platform independent, scalable open source.
+- It's solid pre-serverless tech
 
 Features of the parts to be update
+- Undifferentiated, off-the-shelf app infrastructure, not domain specific
+- Quality, proven, platform-independent open source
 - Not serverless
 - Requiring server management
-- Undifferentiated, off-the-sheff app infrastructure
-- Quality, proven, platform-independent open source
 
 Features of the parts being kept essentially as they are
 - AWS serverless. The core engine of bossDB
 - Bespoke code for dealing with cuboids
 - Domain specific
 - AWS only open source
+  
+In the following before-and-after juxtaposition diagram, the image on
+the left is a repeat of a diagram from earlier in this
+document. Notice that the yellow backgrounded serverless core remains
+the same.
 
-Let's be very clear the code to be replaced is good code.
-- Proven platform independent, scalable open source.
-- It's solid pre-serverless
+#+attr_html: :width 100%
+[[./images/arch_before_and_after.png]]
 
-To put is at simply as possible, would love to be able to spin up a serverless spatial DB with just a single CloudFormation
-Ideally bossDB can be reduced to a single repository containing a full CloudFormation stack.
-
-
-The following are the high level changes proposed.
-
-| Existing                      | Proposed                        |
-|-------------------------------+---------------------------------|
-| Hybrid architecture           | Highly AWS architecture         |
-| Self-managed services         | Fully managed service           |
-| Much set-up of multiple repos | Aim to deploy via a single repo |
-| [[https://github.com/jhuapl-boss/heaviside][heaviside]]                     | AWS CDK                         |
 
 ** RESTful interface machinery
+
+[ *TODO:* API Gateway was [[https://aws.amazon.com/about-aws/whats-new/2015/07/introducing-amazon-api-gateway/][introduced in 2015-07]]. The repo for the boss
+REST API was [[https://github.com/jhuapl-boss/boss/graphs/contributors][started in 2015-11]]. So not sure why it was not adopted. ]
 
 Maintain backwards compatibility of the interface. This is purely
 about simplyfying the machinery which implements the interface, not
 about change the user experience of the interface. There should be a
 test suite which ensures this; one test client that can work with both
 the Boss and Cuboids simply by changing the end-point URL.
-   
+
+API Gateway's main purpose is to provide HTTP interfaces to AWS
+Lambda. Since the core is Lambda-based serverless it is only natural
+to use API Gateway. This is an instance of an undifferentiated
+component which the Boss needed but for which there was no available
+AWS service at the time of initial development of the Boss. 
+
 API Gateway
 - The upper left red zone can be replaced by API Gateway etc.
 - [ ] What's in that RDS instance
@@ -471,11 +559,7 @@ API Gateway
   - Vault servers are Secrets which store their info in Consul
   - Consul Servers are for key/value store
 
-** AWS CDK for infrastructure-as-code
-Python of course
-
-Heaviside was written by Derek Pryor.
-
+** Infrastructure as code tooling
 The forth main subproject is to replace heaviside with AWS CDK Python code.
 - Want to write bossDB based programs/experiments which are StepFunctions
 - Say, convolving some Vaa3D plug-ins over a volume
@@ -487,8 +571,82 @@ The forth main subproject is to replace heaviside with AWS CDK Python code.
 Also related is how they are generated. It is proposed to drop
 Heaviside and adopt AWS CDK in stead.
 
-** More Boss internal programs via Step Functions
+Additionally, there is a non-service technology of the Boss which will
+be replace with equivalent AWS tecnology: Heaviside, which will be
+replaced with AWS CDK based code.
 
+Heaviside is another example of JHU/APL (specifically, Derek Pryor)
+inventing tech needed for sanely building AWS serverless applications.
+Eventually AWS got around to releasing their own equivalent
+technology, AWS CDK.  
+
+So, a decision presents itself: continue to build the core high level
+logic of Boss internal programs atop a one-off tooling library by a
+small team or take the hit of rewriting the existing
+heaviside code as AWS CDK code in order to reap the benefits of
+working with a more mature implementation of a tech which is currently
+diffused throughout a much larger community of developers.
+
+AWS CDK is available for multiple programming languages. The Boss is
+written in Python so it is only logical to use the Python AWS CDK.
+
+* Architectural extensions
+** Additional services as Step Functions based programs
+
+- [[https://aws.amazon.com/blogs/compute/implementing-serverless-manual-approval-steps-in-aws-step-functions-and-amazon-api-gateway/][Implementing Serverless Manual Approval Steps in AWS Step Functions and Amazon API Gateway]]
+- [[https://aws.amazon.com/about-aws/whats-new/2017/02/amazon-api-gateway-integration-with-aws-step-functions/][Amazon API Gateway Integration with AWS Step Functions]]
+- [[https://docs.aws.amazon.com/step-functions/latest/dg/tutorial-api-gateway.html][Creating a Step Functions API Using API Gateway]]  
+
+This is what would make for a serverless first architecture. The state
+that bridges both serverless and non-serverless process is maintained
+in a Step Function.
+
+Deconvolution is a another Step Functions based service.
+
+So, say some novel is to be added, say cuboid segmentation. To the
+outside world the service will manifest as new methods added to the
+REST APIs. Inside AWS, The HTTP messaages containing Boss REST
+requests are handled by AWS API Gateway (APIGW) which initiates a step
+function instance to run a job. So states will be lambdas; some states
+might be long runing Activities, an EC2 instance which runs chunkflow
+processes. 
+
+Chuckflow is a job systems for processing cuboids of data where DCNNs
+are run over small volumes (sub-cuboids) to perform ML based volume
+segmentation to individual neurons etc. There are masters which
+initiate jobs and there are workers who each do their little task. The
+workers and masters could be any machines but are normally EC2
+instances. At its core, their interaction is orchesrated by an SQS queue.
+
+The workers could easily be Lambdas. That's when it becomes hybrid but
+not in a serverless-first fashion. Next would be to wrap the existing
+chuckflow master as a Step Funtions activity. Still not
+serverless-first but could be a component in a StepFunction. So
+experiment first with Lambda chunkflow workers, then if that goes well
+figure out how to take the master code and shoehorn that into Lamba
+somehow. That would be the full serverless implementation achieved in
+stages.
+
+Cuboids could also participate in old-school chunkflow systems. This
+could be simply as Lambdas deployed to work with a stock chunkflow
+system. Another option, Cuboids would be a worker in the main chunkflow system
+and would delegate internally to Lambdas in an internal SQS doing the
+same thing as chunkflow, or just passing through to individual Lambdas is small enough?]
+
+This chuckflow example is used because it illustrates how Step
+Functions can involve both Lamba and EC2 instances. That's why it's
+worth implement services as Step Functions. Step Functions Activities
+(i.e. the EC2 instances) are the escape valve override mechanism for
+processes that cannot be made to work under the limitations of AWS
+serverless e.g. Lambda's runtime limit of 15 minutes. The Step
+Functions programs that treat Lambdas and Activities as equivalents
+(i.e. just state nodes in the main state machine) is the
+serverless-first way to have a hybrid architecture. Say, some CNN
+training needs to be done and the data to train on is in a Boss
+repository. By framing task as a Step Function, both Lambda-base and
+EC2-based servers can be mixed. [ *TODO:* Is this the best example?
+Why would one want to do that?  Ingest and train? ]
+   
 As argued above, is would be desirable for the compute of analysis to
 happen close to the data. Ideally that would happen within the same
 VPN, but simply between AWS VPNs is good enough.
@@ -547,24 +705,63 @@ not have to happen and for now is a digression.)
 
 
 
------
-
-*Note*: 
-Below here is still raw unrefined chunks of text, compared to that above which has gone through some refinement steps. 
-
-
-** Lambda layers for image recognition
+** Lambda layers for image processing Python libraries
+In the case of the Boss, the raw image data resides in AWS S3 and is
+indexed in DynamoDB. In 2015 Lambda could not accommodate code
+packages of a size that would result from including the machine
+learning tools, say, scikit-learn. This is another valid reason why image
+processing was performed external to the Boss. Currently though with
+things like Lambda layers and TensorFlow Light it can be done.
+   
 [[https://medium.com/@adhorn/getting-started-with-aws-lambda-layers-for-python-6e10b1f9a5d][Getting started with AWS Lambda Layers for Python]]
 
 This brings chunkflow and tensorflow into Cuboids
 
-* Open questions
+Reconstruction and classification
 
+[[./images/cmn.png]]
+
+[[https://www.nature.com/articles/s41467-019-10836-3][Learning cellular morphology with neural networks]]
+
+This is Princeton work
+
+Inference
+
+Additionally, AWS Lambda -- The core technology
+of serverless -- has mature in the interim such that large Python
+codebases can now be deployed on Lambda. By adopting [[https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html][Lambda layers]] 3D
+image recognition can be performed within a bossDB-based system, which
+was not possible in 2015.
+
+** High resolution billing 
+
+- Cuboids aims to have multiple users from multiple organizations.
+- Users can initially be anonymous but through Cognito become authenticated.
+  - For the anonymous users, resource usage costs need to be assigned to the hosted dataset.
+  - Authenticated users will be Reconstrue users, probably members of organizations 
+  - Grafting on exist userbases is possible with Cognito. What about mapping that to billing?
+- Fortunately, Lambda makes multi-tenancy easy [[https://narrativescience.com/resource/blog/how-aws-lambda-changed-the-game-of-multi-tenancy/][{1}]] [[https://techcrunch.com/2016/09/01/serverless-is-the-new-multitenancy/][{2}]]
+   
+* Open questions
+- Will there still be a need for the Redis cache manager or will
+  migrating to fully managed [[https://aws.amazon.com/elasticache/redis/fully-managed-redis/][Amazon ElastiCache for Redis]] remove the
+  need for such
 - How does bossDB deal with Redis? Is it fully managed?
   - Figure #7 seems to imply it is
-- What to do about high-resolution billing so the costs can be billed to specific organizations and departments.
-  - Since this in to be an all-in with AWS project the system should probably be instrumented for AWS Marketplace.
-- Cross VPC communications speeds
+- What to do about high-resolution billing so the costs can be billed
+  to specific organizations and departments.
+  - Since this in to be an all-in with AWS project the system should
+    probably be instrumented for AWS Marketplace.
+- Validate guesses about cross VPC communications speeds
+- Perhaps bossDB can be reduced to a single repository containing a full
+  CloudFormation stack which deploys everything needed. For example, the
+  RESTful API machinery is currently in a separate repo but if migrated
+  to Amazon API Gateway, can be reduced to a single module in the
+  serverless repo. It would be neat and clean to be able to spin up a
+  serverless spatial DB as single CloudFormation. Cuboids itself will
+  probably be a separate CloudFormation. But it is to early to predict
+  this. First active coding needs to proceed and then revisit this.
+
     
 * Conclusion
 
@@ -597,23 +794,28 @@ Point is: go all-in with AWS. Yuch, but a realtechnik practicality, sadly, for n
   :PROPERTIES:
   :UNNUMBERED: notoc
   :END:
+This document is licensed under [[https://creativecommons.org/publicdomain/zero/1.0/][the CC0 1.0 Universal (CC0 1.0) Public Domain Dedication]]
+
 To the extent possible under law, John Tigue has waived all
 copyright and related or neighboring rights to Cuboids Manifesto. This
 work is published from: United States.
 
-This document is licensed under [[https://creativecommons.org/publicdomain/zero/1.0/][the CC0 1.0 Universal (CC0 1.0) Public Domain Dedication]]
-
-The person who associated a work with this deed has dedicated the work
-to the public domain by waiving all of his or her rights to the work
-worldwide under copyright law, including all related and neighboring
-rights, to the extent allowed by law.
+John Tigue has dedicated this work to the public domain by waiving all
+of his or her rights to the work worldwide under copyright law,
+including all related and neighboring rights, to the extent allowed by
+law.
 
 You can copy, modify, distribute and perform the work, even for
 commercial purposes, all without asking permission.
 
 * References
- Cuboids repository
-  - https://github.com/reconstrue/cuboids
+  :PROPERTIES:
+  :UNNUMBERED: notoc
+  :END:
+- Cuboids repository
+  - [ ] Code on GitHub.com: [[https://github.com/reconstrue/cuboids][reconstrue/cuboids]]
+  - [ ] Website on GitHub.io;
+  - License: [[https://github.com/reconstrue/cuboids/blob/master/LICENSE][Apache 2.0]]
 - BossDB preprints
   - Hider, Kleissas, et alia, 2019
     - [[https://www.biorxiv.org/content/10.1101/217745v2][The Block Object Storage Service (bossDB): A Cloud-Native Approach for Petascale Neuroscience Discovery]]
