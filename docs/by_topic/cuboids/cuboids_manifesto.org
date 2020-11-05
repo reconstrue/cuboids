@@ -5,7 +5,7 @@
 
 
 | Author   | [[http://tigue.com][John Tigue]]           |
-| Version  | 2020-11-03-1         |
+| Version  | 2020-11-04-1         |
 | License  | CC0 1.0              |
 
 * Abstract
@@ -49,59 +49,49 @@ learning models, and classification by cell type.
 The [[https://bossdb.org/][bossDB]] is a [[https://en.wikipedia.org/wiki/Volume_rendering][volumetric]] database capable of storing petabytes of
 data generated from microscopic imaging of neurological
 tissue. Colloquially, bossDB is also known as "the Boss" and in this
-document both terms are interchangable. Its initial development was
-funded via grants from [[https://www.iarpa.gov/][IARPA]] under [[https://www.iarpa.gov/index.php/research-programs/microns][the MICrONS project]]. The resulting
-source code -- spanning multiple repositories -- is available under
-the [[https://www.apache.org/licenses/LICENSE-2.0][Apache 2.0]] open source license.
+document both terms are interchangable. 
+
+Initial development of the Boss was funded via grants from [[https://www.iarpa.gov/][IARPA]] under
+[[https://www.iarpa.gov/index.php/research-programs/microns][the MICrONS project]]. The resulting source code -- spanning multiple
+repositories -- is available under the [[https://www.apache.org/licenses/LICENSE-2.0][Apache 2.0]] open source license.
 
 The modified bossDB codebase proposed herein is designed to be the
 repository component of a platform which has been given the working
 title of Cuboids. Cuboids builds atop existing work by doubling down
-on the current AWS lock-in of bossDB, in the interests of simplifying
+on the current AWS lock-in of bossDB, in the interests of streamlining
 the architecture in order to make it easier to administer. This part
 of the proposal is simply "better, faster, cheaper" thinking which
 does not change the high-level feature set of the repository.
-
-Beyond the aforementioned architectural refresh, Cuboids aims to be
-more than just a repository. Given the current architecture of the
-Boss, image analysis has to be performed by separate external systems,
-requiring the transfer of mountains of data. Cuboids builds on the
-previous bossDB work such that analysis of the data within a
-bossDB repository can performed close to where the data resides.
-
-This functional expansion can be accomplished by migrating the
-existing serverless boosted architecture towards a serverless-first
-design, that is, by focusing on the existing Step Functions based
-machinery in the Boss. For example, the Downsample service is
-currently a Step Function. Doing so will enable Cuboids to be more
-of a "whole product" for microscopy workflows rather than simply a
-repository accessed by external analysis tools.
-
-Note that "serverless-first" does not exclude non-serverless
-processes. Step Functions can orchestrate both types. Step Functions
-can invoke serverless Lambdas, and other non-serverless processes can
-interact with Step Functions as Activity workers performing
-Tasks. From a Step Function's perspective, the former are "pushed to"
-and the latter "pull from." This means that Step Functions based
-services can benefit from massively scalable serverless tech as
-implemented by AWS Lambdas yet also work with legacy code and/or
-processes which are too big or long running to be executed within AWS
-Lambda. For example, reconstruction can be orchestrated using the
-Seung Lab's [[https://github.com/seung-lab/chunkflow][chunkflow]], which can be wrapped as a Activity which polls
-Step Functions for reconstruction jobs to perform. This is how Cuboids
-will recapitulate the MICrONS multi-system workflow.
 
 The original bossDB codebase evidences a valid and shrewd
 architectural style which values vendor neutral open source. Yet to
 deal with the sporatic, massive volume and velocity of data being
 throw off by electron microscopes, an AWS serverless engine was
 adopted. This worked well but resulted in a mixed architectural style
-which is more complex than currently necessary. In 2015, when work on
-the Boss was started, a serverless-first architecture simply could not
-be build because AWS has not yet built out enough serverless
-products. Cuboids aims to resolve the complexity by going all-in on
-AWS lock-in by jettisoning any existing components which can be
-replaced by equivalent fully managed AWS services.
+which is more complex than currently necessary.  Cuboids aims to
+resolve the complexity by going all-in on AWS lock-in by jettisoning
+any existing components which can be replaced by equivalent fully
+managed AWS services.
+
+Beyond the aforementioned architectural refresh, Cuboids aims to build
+significant analysis functionality close around the repository. Given
+the current architecture of the Boss, image analysis has to be
+performed by separate external systems, requiring the transfer of
+mountains of data. Cuboids builds on the previous bossDB work such
+that analysis of the data within a bossDB repository can be performed
+close to where the data resides.
+
+This functional expansion can be accomplished by shepparding the
+existing serverless boosted architecture towards a serverless-first
+design. In 2015, when work on the Boss was started, a serverless-first
+architecture simply could not be build because AWS has not yet built
+out enough serverless products. The term "serverless-first" refers in
+part to the minimizing of self-managed services. More importantly, the
+balance is to swing from the current Boss architecture of a
+non-serverless frame with a serverless engine to one which builds out
+from the serverless core and then adds on long running, self-managed
+compute instances only as necessited by technical or financial
+concerns.
 
 Peta-scale datasets are unlikely to ever migrate from where they are
 initially reposited. Recognizing this and the fact that the existing
@@ -364,42 +354,19 @@ The first stage of Cuboids development is to be an architectural
 refresh of the existing Boss codebase. 
 
 Actually, the initial development work will be to simply stand up a
-Boss instance using the existing codebase. The deployment experience
-will be documented. Perhaps that will prove useful to other
-adminstrators of Boss deploys.
-
-This document was written after simply reading the code,
-documentation, and pre-prints; various assumptions need to be
-validated in a hands-on context. Surely the deployment experience will
-cause refinements to what is proposed in this manifesto.
+Boss instance using the existing codebase. That will be needed for
+testing backward compatibility. Surely the deployment experience will
+cause refinements to what is proposed in this document. That
+deployment experience will be documented. Perhaps that will prove
+useful to other adminstrators of Boss deploys.
 
 ** Overview
 
-[ *TODO:* This section currently is far enough along to where the
-logic can be followed but there is a lot of repetition. It needs to be
-made terser.]
 
-The red boxes are to be replaced with the AWS services in green.
 
-#+attr_html: :width 100%
-[[./images/boss_high_level_changes.png]]
 
-The architectural refresh is motivated by abstract goals and there is
-a resulting set specific coding projects. The abstract goals are to
-effect the following changes.
 
-| Before                     | After                         |
-|----------------------------+-------------------------------|
-| Hybrid architecture        | Serverless first architecture |
-| Some self-managed services | More fully managed services   |
-| Complex deployment         | Simplified deployment         |
-| JHU/APL's [[https://github.com/jhuapl-boss/heaviside][heaviside]]        | AWS CDK                       |
-
-The main goal of the architectural refresh is to reduce the complexity
-resulting from the hybrid architecture by moving towards a
-serverless-first architecture.
-
-[ *TODO:* cull?] This is to be accomplished by adopting into the
+This is to be accomplished by adopting into the
 codebase more AWS technologies -- some of which simply did not exist
 in 2015 when work started on the codebase. Replacing the
 non-serverless machinery with equivalent AWS services will reduce the
@@ -407,74 +374,94 @@ complexity of deploying and maintaining a Boss instance.
 
 The bossDB codebase was [[https://github.com/jhuapl-boss/boss/graphs/contributors][started in 2015]], which was early days for AWS
 serverless, nevermind using such young technology to scale to
-petabytes of data.
-
-In the interim, AWS has gotten around to providing fully managed
-services such as API Gateway, Cognito, and AWS Secrets Manager. They
-have also built out SDKs such as AWS CDK, the absense of which drove
-JHU/APL to create heaviside. Simply keeping the current serverless
-core architecture but rewriting those components which could be
-replaced with equivalent AWS service would make bossDB easier to
-deploy and maintain.
-
-Note that the goals include *not* significantly modifying the features
-of the Boss repository. Any distinctly novel functionality to be
-introduced in Cuboids which is not present in the Boss codebase will
-be constructed outside the Boss repository component. (Envisioned
-novelties are enumerated in later sections.)
-
-The serverless core will remain fundamental the same. The most
-significant change to the core will be its interface to the auth and
-audit system which is to be based on AWS Cognito.
-
-Any non-serverless components which can be replaced with AWS managed
-services will be jettisoned.
+petabytes of data. In the interim, AWS has gotten around to providing
+fully managed services such as API Gateway, Cognito, and AWS Secrets
+Manager. 
 
 
-In the above diagram, the three parts of the architecture to be refurbished are:
+
+
+   
+The architectural refresh is motivated by abstract goals and those
+resolve to a set of specific coding tasks.  The abstract goals are to
+effect the following changes.
+
+| Before                     | After                         |
+|----------------------------+-------------------------------|
+| Hybrid architecture        | Serverless first architecture |
+| Some self-managed services | More fully managed services   |
+| Complex deployment         | Simplified deployment         |
+
+The main goal of the architectural refresh is to reduce the complexity
+resulting from the hybrid architecture by moving towards a
+serverless-first architecture. Most of the specific coding tasks
+revolve around replacing self-managed sub-systems with equivalent
+fully managed AWS services. Simply keeping the current serverless
+core architecture but rewriting those components which can be replaced
+with equivalent AWS service will make bossDB easier to deploy and
+maintain.
+
+Note that the goals include *not* significantly modifying
+the features of the Boss repository. Specifically, the surface RESTful
+APIs are to maintain backward compatibility. Any distinctly novel
+functionality to be introduced in Cuboids which is not present in the
+Boss codebase will be constructed outside the Boss repository
+component.
+
+The refurbishments to be performed can be illustrates by further
+marking up the Boss high level architecture diagram from earlier.
+These annotations are color coded according to a stop light
+red-yellow-green color scheme. The red boxes are to be replace with
+the AWS services named in green. The red boxes are labeled by their
+roles in black bold text. Those same roles are to be resatisfied with
+the named (in green) AWS fully managed services.
+
+#+attr_html: :width 100%
+[[./images/boss_high_level_changes.png]]
+
+In the above diagram, the parts of the architecture to be refurbished are:
 - The RESTful interface machinery: to be handled by Amazon API Gateway
 - The Single-Sign On (SSO) machinery: to be migrated AWS Cognito
 - The secrets keeping machinery: to be replaces with AWS Secrets Manager
+- The Redis cache: to be managed by Amazon ElastiCache
 
-These sub-systems to be modified are simply necessary
-support infrastructure, not to the core serverless engine of the
-spatial database which is to remain essentially unchanged.
+These sub-systems to be modified are simply necessary support
+infrastructure -- undifferentiated, off-the-shelf app infrastructure,
+not the bespoke domain specific innovations contained in the core serverless
+engine of the spatial database. The code to be replaced is perfectly
+good code; that is proven platform independent, scalable open
+source. But as pre-serverless tech it requires self management and
+related infrastructure.
 
-The three changes seek to minimize management by adopting equivalent
-fully managed AWS services.
-
-To be clear, the code to be replaced is good code but require
-management and related infrastructure.
-- Proven platform independent, scalable open source.
-- It's solid pre-serverless tech
-
-Features of the parts to be update
-- Undifferentiated, off-the-shelf app infrastructure, not domain specific
-- Quality, proven, platform-independent open source
-- Not serverless
-- Requiring server management
-
-Features of the parts being kept essentially as they are
-- AWS serverless. The core engine of bossDB
-- Bespoke code for dealing with cuboids
-- Domain specific
-- AWS only open source
+Besides the above mentioned machinery refurbishments there is also a
+tooling library, [[https://github.com/jhuapl-boss/heaviside][heaviside]], which is to be replaced with AWS
+equivalent tooling, that is the Python AWD CDK Heaviside is another
+instance of JHU/APL banging out a wheel before AWS got around to
+recreating an equivalent. Heaviside does its job just fine but the
+goal here is to set the Boss up for the next ten years. While in Rome
+do as the Romans, and in AWS the CDK is the way to do what heaviside
+does.  Might as well benefit from the freely available tooling
+supported by AWS money.
 
 In the following before-and-after juxtaposition diagram, the image on
-the left is a repeat of a diagram from earlier in this
-document. Notice that the yellow backgrounded serverless core remains
-the same.
+the left is the raw image taken from the bossDB preprint. The image on the
+right is the envisioned, streamlined, serverless-first Boss.
 
 #+attr_html: :width 100%
 [[./images/arch_before_and_after.png]]
 
+[ *TODO:* Remove the yellow boxes. On the right, drop in the icon for ElastiCache ]
+#+attr_html: :width 10%
+https://miro.medium.com/max/500/0*v8onW_lyehi_EGIs.png
+
 ** Cache machinery
 
-THe Read/Write Cache is part of the core engine, enabling high
-performance. The cache manager is not serverless; it is an EC2
-instance.  The cache manager instance will be removed and its
-functionality taken over by Amazon ElastiCache for Redis, hopefully. With that
-the core will be fully serverless-first architected.
+THe Read/Write Cache is part of the core engine and as such its code
+is in the spdb repo, enabling high performance. The cache manager is
+not serverless; it is an EC2 instance.  The cache manager instance
+will be removed and its functionality taken over by Amazon ElastiCache
+for Redis, hopefully. With that the core will be fully
+serverless-first architected.
 
 [ *TODO:* Confirm: Will there still be a need for the Redis cache manager or will
   migrating to fully managed [[https://aws.amazon.com/elasticache/redis/fully-managed-redis/][Amazon ElastiCache for Redis]] remove the
@@ -642,6 +629,29 @@ written in Python so it is only logical to use the Python AWS CDK.
 * Architectural extensions
 ** Additional services as Step Functions based programs
 
+The main AWS service
+than enables serverless-first is Step Functions, which has already
+been adopted into the Boss machinery. For example, the Downsample
+service is currently a Step Function. Doing so will set Cuboids on a
+path to be more of a "whole product" for microscopy workflows rather
+than, as with the Boss, essentially a repository accessed by external
+analysis tools.
+
+Note that "serverless-first" does not exclude non-serverless
+processes. Step Functions can orchestrate both types. Step Functions
+can invoke serverless Lambdas, and other non-serverless processes can
+interact with Step Functions as Activity workers performing
+Tasks. From a Step Function's perspective, the former are "pushed to"
+and the latter "pull from." This means that Step Functions based
+services can benefit from massively scalable serverless tech as
+implemented by AWS Lambdas yet also work with legacy code and/or
+processes which are too big or long running to be executed within AWS
+Lambda. For example, reconstruction can be orchestrated using the
+Seung Lab's [[https://github.com/seung-lab/chunkflow][chunkflow]], which can be wrapped as a Activity which polls
+Step Functions for reconstruction jobs to perform. This is how Cuboids
+will recapitulate the MICrONS multi-system workflow.
+   
+   
 - [[https://aws.amazon.com/blogs/compute/implementing-serverless-manual-approval-steps-in-aws-step-functions-and-amazon-api-gateway/][Implementing Serverless Manual Approval Steps in AWS Step Functions and Amazon API Gateway]]
 - [[https://aws.amazon.com/about-aws/whats-new/2017/02/amazon-api-gateway-integration-with-aws-step-functions/][Amazon API Gateway Integration with AWS Step Functions]]
 - [[https://docs.aws.amazon.com/step-functions/latest/dg/tutorial-api-gateway.html][Creating a Step Functions API Using API Gateway]]
@@ -861,10 +871,6 @@ commercial purposes, all without asking permission.
   :PROPERTIES:
   :UNNUMBERED: notoc
   :END:
-- Cuboids repository
-  - [ ] Code on GitHub.com: [[https://github.com/reconstrue/cuboids][reconstrue/cuboids]]
-  - [ ] Website on GitHub.io;
-  - License: [[https://github.com/reconstrue/cuboids/blob/master/LICENSE][Apache 2.0]]
 - BossDB preprints
   - Hider, Kleissas, et alia, 2019
     - [[https://www.biorxiv.org/content/10.1101/217745v2][The Block Object Storage Service (bossDB): A Cloud-Native Approach for Petascale Neuroscience Discovery]]
