@@ -341,12 +341,13 @@ So, the Cuboids code will be very locked to AWS as the vendor
 platform, which is a rather ironic form of open source. It is assumed
 that these changes to bossDB are significantly disruptive enough that
 PRs back to bossDB would not be worth the hassle to the repo's
-maintainers. Maybe some chuncks of code will go upstream, say, the
-Step Function that works with chunkflow for neuron reconstruction;
-being novel that part would not involve major changes to existing
-code. Regardless, the Cuboids codebase will remain open source,
-intentionally maintaining the Apache 2.0 license is the hopes of
-building an community around the codebase.
+maintainers. But maybe some chuncks of code will go upstream, say, the
+heaviside replacement code. Perhaps upstream would be interested in
+the Step Function that works with chunkflow for neuron reconstruction;
+being novel that part would not involve major changes to existing code
+but that could be seen as feature creap. Regardless, the Cuboids
+codebase will remain open source, intentionally maintaining the Apache
+2.0 license is the hopes of building an community around the codebase.
 
 * Architectural updates
 
@@ -357,31 +358,19 @@ Actually, the initial development work will be to simply stand up a
 Boss instance using the existing codebase. That will be needed for
 testing backward compatibility. Surely the deployment experience will
 cause refinements to what is proposed in this document. That
-deployment experience will be documented. Perhaps that will prove
-useful to other adminstrators of Boss deploys.
-
-** Overview
-
-
-
-
-
-This is to be accomplished by adopting into the
-codebase more AWS technologies -- some of which simply did not exist
-in 2015 when work started on the codebase. Replacing the
-non-serverless machinery with equivalent AWS services will reduce the
-complexity of deploying and maintaining a Boss instance.
+deployment experience will be documented. Perhaps logging that will
+prove useful to other adminstrators of Boss deploys.
 
 The bossDB codebase was [[https://github.com/jhuapl-boss/boss/graphs/contributors][started in 2015]], which was early days for AWS
 serverless, nevermind using such young technology to scale to
-petabytes of data. In the interim, AWS has gotten around to providing
-fully managed services such as API Gateway, Cognito, and AWS Secrets
-Manager. 
+petabytes of data. In the interim, Lambda has become more
+sophisticated (e.g., layers) and AWS has gotten around to providing
+more fully managed services such as API Gateway, Cognito, and AWS
+Secrets Manager. The life of a Boss administrator could involve less
+hassles if the Boss were to adopt those innovations.
 
+** Overview
 
-
-
-   
 The architectural refresh is motivated by abstract goals and those
 resolve to a set of specific coding tasks.  The abstract goals are to
 effect the following changes.
@@ -431,64 +420,31 @@ not the bespoke domain specific innovations contained in the core serverless
 engine of the spatial database. The code to be replaced is perfectly
 good code; that is proven platform independent, scalable open
 source. But as pre-serverless tech it requires self management and
-related infrastructure.
+related infrastructures.
 
 Besides the above mentioned machinery refurbishments there is also a
 tooling library, [[https://github.com/jhuapl-boss/heaviside][heaviside]], which is to be replaced with AWS
-equivalent tooling, that is the Python AWD CDK Heaviside is another
+equivalent tooling, that is, the Python AWD CDK. Heaviside is another
 instance of JHU/APL banging out a wheel before AWS got around to
 recreating an equivalent. Heaviside does its job just fine but the
 goal here is to set the Boss up for the next ten years. While in Rome
 do as the Romans, and in AWS the CDK is the way to do what heaviside
-does.  Might as well benefit from the freely available tooling
-supported by AWS money.
+does. AWS sees their CDKs as important tools. Might as well benefit
+from the freely available tooling supported by AWS developer
+resource.
 
 In the following before-and-after juxtaposition diagram, the image on
-the left is the raw image taken from the bossDB preprint. The image on the
-right is the envisioned, streamlined, serverless-first Boss.
+the left is the raw image taken from the bossDB preprint, with the
+serverless core highlighted in yellow. The image on the right is the
+envisioned streamlined and serverless-first Boss. Notice how it has
+been reduced to a completely generic serverless architecture. That
+clearly illustrates the argument being made but has reduced the
+diagram to where it contains no specific detail. Going into such
+detail is beyond the scope of this document.
 
 #+attr_html: :width 100%
 [[./images/arch_before_and_after.png]]
 
-[ *TODO:* Remove the yellow boxes. On the right, drop in the icon for ElastiCache ]
-#+attr_html: :width 10%
-https://miro.medium.com/max/500/0*v8onW_lyehi_EGIs.png
-
-** Cache machinery
-
-THe Read/Write Cache is part of the core engine and as such its code
-is in the spdb repo, enabling high performance. The cache manager is
-not serverless; it is an EC2 instance.  The cache manager instance
-will be removed and its functionality taken over by Amazon ElastiCache
-for Redis, hopefully. With that the core will be fully
-serverless-first architected.
-
-[ *TODO:* Confirm: Will there still be a need for the Redis cache manager or will
-  migrating to fully managed [[https://aws.amazon.com/elasticache/redis/fully-managed-redis/][Amazon ElastiCache for Redis]] remove the
-  need for such ]
-
-The one component in sbdb (the yellow core) that is not currently
-serverless is the cache manager instance which will be removed and its
-functionality subsumed into the equivalent fully managed service,
-[[https://aws.amazon.com/elasticache/redis/fully-managed-redis/][Amazon ElastiCache for Redis]]. AWS's variant of Redis provides
-integration with other AWS services such as Amazon EC2, Amazon
-CloudWatch, AWS CloudTrail, and Amazon SNS. Those are useful if going
-all-in on building out for AWS only.
-
-There will still be a Redis cluster with EC2 instances containing the
-in memory data but that will be autoscaling and fully managed. If
-cache things are fully automatable then spdb qualifies as a puiat's
-fully managed serverless app. Any Redis machinery is simply
-CloudFormations config of supporting services used in a serverless
-application.
-
-  
-*TODO:*
-Move out?
-  The Boss has a Redis in-memory cache. For cases like working with the
-  actual MICrONS data accessable via api.theboss.io might want to have some parts
-  in a local S3 cache? But how could that be faster than getting out of the main bossDB? Also avoid a copy of data, within S3.
- 
 ** RESTful interface machinery
 
 [ *TODO:* API Gateway was [[https://aws.amazon.com/about-aws/whats-new/2015/07/introducing-amazon-api-gateway/][introduced in 2015-07]]. The repo for the boss
@@ -595,47 +551,104 @@ seeing costs from within Jupyter i.e. a dashboard in Jupyter.
   - Vault servers are Secrets which store their info in Consul
   - Consul Servers are for key/value store
 
+** Cache machinery
+
+[ *TODO:* - How does bossDB spin up Redis? Is it fully managed? The
+diagram seems to imply it is, with the asterix. ]
+   
+The above tasks involve migrating generice, support infrastructure
+from self-managed code to fully managed AWS services. In contrast,
+refurbishing the cache machinery is a modification to the serverless
+core i.e. the code in the spdb repository. Nonetheless this task is
+another instance of streamlining by migrating to fully managed
+services.
+   
+The Read/Write Cache is part of the core engine, enabling higher
+performance. It is a Redis cache running on a cluster of EC2
+instances. It is arguably serverless because the cache is wired up to
+Lambdas which sync (read and write) the data in the Redis in-memory
+cache with the persistant store, S3.
+
+The one component in sbdb that is not currently serverless is the
+cache manager instance which is an EC2 instance. It will be removed
+and its functionality subsumed into the equivalent fully managed
+service, [[https://aws.amazon.com/elasticache/redis/fully-managed-redis/][Amazon ElastiCache for Redis]]. 
+
+There will still be a Redis cluster with EC2 instances containing the
+in-memory data but that will be autoscaling and fully managed by
+ElastiCache. The goal is for any Redis machinery to be reduced to
+CloudFormations config of supporting services used in a serverless
+application.
+
+AWS's variant of Redis provides integration with other
+AWS services such as Amazon EC2, Amazon CloudWatch, AWS CloudTrail,
+and Amazon SNS. Such integrations can be useful if going all-in on
+building out for AWS only.
+
+The main code is in the [[https://github.com/jhuapl-boss/spdb][jhuapl-boss/spdb]] repo. The most significant
+files is [[https://github.com/jhuapl-boss/spdb/blob/master/spdb/spatialdb/rediskvio.py][rediskvio.py]] which is all about using Redis as a cache for
+cuboids. There is also [[https://github.com/jhuapl-boss/spdb/blob/master/spdb/spatialdb/state.py][CacheStateDB class]]: "to implement the Boss
+cache state database and associated functionality...Database is a
+redis instance." The code that generates the CloudFormation for the Redis
+cache machinery is in the boss-manage repo, in
+[[https://github.com/jhuapl-boss/boss-manage/blob/master/cloud_formation/configs/redis.py][cloudformation/configs/redis.py]].
+
 ** Infrastructure as code tooling
-The forth main subproject is to replace heaviside with AWS CDK Python code.
-- Want to write bossDB based programs/experiments which are StepFunctions
-- Say, convolving some Vaa3D plug-ins over a volume
-- Say, countless (2,2,2) => (1,1,1) fast pyramid builder
-- Dont want to do that on heaviside.
-- So, replace all existing heaviside with equivalent CDK code, then go forward on AWS tech
-  - much bigger community than heaviside-users, better community support
 
-Also related is how they are generated. It is proposed to drop
-Heaviside and adopt AWS CDK in stead.
-
-Additionally, there is a non-service technology of the Boss which will
-be replace with equivalent AWS tecnology: Heaviside, which will be
-replaced with AWS CDK based code.
+Finally, there is another technology of the Boss which will be replace
+with an equivalent AWS technology. Unlike the above tasks this is not
+about services. Rather, JHU/APL's developer tool, Heaviside, it to be
+replaced with AWS CDK.
+   
+The core of the Boss is a sophisticated serverless application which
+relies heavily on AWS StepFunctions.  Actually writing StepFunctions
+in the [[https://docs.aws.amazon.com/step-functions/latest/dg/concepts-amazon-states-language.html][Amazon States Language]] -- raw JSON -- is an ugly hassle. To
+address this inconvenience, JHU/APL created an infrastructure-as-code tool they call
+[[https://github.com/jhuapl-boss/heaviside][Heaviside]], a "Python library and DSL for working with AWS
+StepFunctions."
 
 Heaviside is another example of JHU/APL (specifically, Derek Pryor)
-inventing tech needed for sanely building AWS serverless applications.
-Eventually AWS got around to releasing their own equivalent
-technology, AWS CDK.
+inventing tech needed in order to sanely build AWS serverless
+applications, in this case apps involving StepFunctions.  Eventually AWS
+got around to releasing their own equivalent technology, AWS CDK.
 
 So, a decision presents itself: continue to build the core high level
 logic of Boss internal programs atop a one-off tooling library by a
 small team or take the hit of rewriting the existing
-heaviside code as AWS CDK code in order to reap the benefits of
+Heaviside code, porting it to the now dominant standard tool, AWS CDK?
+Migrating to AWS CDK would position the Boss to reap the benefits of
 working with a more mature implementation of a tech which is currently
-diffused throughout a much larger community of developers.
+diffused throughout a much larger community of developers with the weight
+of AWS support behind it.
 
-AWS CDK is available for multiple programming languages. The Boss is
-written in Python so it is only logical to use the Python AWS CDK.
+The decision for Cuboids is to replace all existing Heaviside code
+with equivalent CDK code, then move forward atop the standard AWS
+technology. AWS CDK is available for multiple programming
+languages. The Boss is written in Python so it is only logical to use
+the Python AWS CDK.
+
+In the boss-manage repository, [[https://github.com/jhuapl-boss/boss-manage/tree/master/cloud_formation/stepfunctions][18 StepFunctions]] already exist, written
+to be "compiled" by Heaviside. These are to be rewritten to use the
+standard tool for such things: AWS CDK.
 
 * Architectural extensions
-** Additional services as Step Functions based programs
+** Additional services as serverless-first Step Functions
 
-The main AWS service
-than enables serverless-first is Step Functions, which has already
-been adopted into the Boss machinery. For example, the Downsample
-service is currently a Step Function. Doing so will set Cuboids on a
-path to be more of a "whole product" for microscopy workflows rather
-than, as with the Boss, essentially a repository accessed by external
-analysis tools.
+- Want to write bossDB based programs/experiments which are StepFunctions
+- Say, convolving some Vaa3D plug-ins over a volume
+- Say, countless (2,2,2) => (1,1,1) fast pyramid builder
+- Dont want to do that on heaviside which is why Heaviside is to be
+  jettisoned and Cuboids is to move forward using CDK instead.
+
+The main AWS service than enables serverless-first is Step Functions,
+which has already been adopted into the Boss machinery. There are
+already at least [[https://github.com/jhuapl-boss/boss-manage/tree/master/cloud_formation/stepfunctions][18 StepFunctions]]. For example, the Downsample service
+involves [[https://github.com/jhuapl-boss/boss-manage/blob/master/cloud_formation/stepfunctions/resolution_hierarchy.hsd][a Step Function]]. 
+
+Doing so will set Cuboids on a path to be
+more of a "whole product" for microscopy workflows rather than, as
+with the Boss, essentially a repository accessed by external analysis
+tools.
 
 Note that "serverless-first" does not exclude non-serverless
 processes. Step Functions can orchestrate both types. Step Functions
@@ -650,7 +663,10 @@ Lambda. For example, reconstruction can be orchestrated using the
 Seung Lab's [[https://github.com/seung-lab/chunkflow][chunkflow]], which can be wrapped as a Activity which polls
 Step Functions for reconstruction jobs to perform. This is how Cuboids
 will recapitulate the MICrONS multi-system workflow.
-   
+
+The above point is not obvious from the Boss codebase. The Boss has
+lots of StepFunctions but they deal primarily with Lambdas, not long
+running processes as task Activities. [ *TODO:* any?]
    
 - [[https://aws.amazon.com/blogs/compute/implementing-serverless-manual-approval-steps-in-aws-step-functions-and-amazon-api-gateway/][Implementing Serverless Manual Approval Steps in AWS Step Functions and Amazon API Gateway]]
 - [[https://aws.amazon.com/about-aws/whats-new/2017/02/amazon-api-gateway-integration-with-aws-step-functions/][Amazon API Gateway Integration with AWS Step Functions]]
@@ -805,9 +821,8 @@ was not possible in 2015.
 
 * Open questions
 
-
-- How does bossDB deal with Redis? Is it fully managed?
-  - Figure #7 seems to imply it is
+- [[https://github.com/jhuapl-boss/boss-manage/blob/master/docs/InstallGuide.md#configure-scalyr-account][Scalyer for logging?]]
+  - Surely this can be replaced at this time?
 - What to do about high-resolution billing so the costs can be billed
   to specific organizations and departments.
   - Since this in to be an all-in with AWS project the system should
@@ -888,6 +903,8 @@ commercial purposes, all without asking permission.
   - [[https://www.sciencedirect.com/science/article/pii/S221112471631676X][Long-Term Optical Access to an Estimated One Million Neurons in the Live Mouse Cortex]]
   - [[https://www.phenosys.com/products/virtual-reality/jetball-tft/][JetBall-TFT]]
   - [[https://www.slideshare.net/InsideScientific/mobile-homecage-ssneurotar][Making Optical and Electrophysiological Measurements in the Brain of Head-Fixed, Freely-Moving Rodents]]
+- AWS technologies
+  - [[https://aws.amazon.com/blogs/developer/aws-tech-talk-infrastructure-is-code-with-the-aws-cdk/][AWS Tech Talk: Infrastructure is Code with the AWS CDK]] AWS Developer Blog 2019-08
 - Kool-Aid
   - The image in the introduction is a hacked up Marvel image, found via [[https://vsbattles.fandom.com/wiki/Kool-Aid_Man_(Marvel_Comics)][fandom.com]]
   - [[https://www.youtube.com/watch?v=_fjEViOF4JE][Kool-Aid Pitcher Man wall breaks]]
