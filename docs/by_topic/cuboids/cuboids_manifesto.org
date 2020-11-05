@@ -447,27 +447,35 @@ detail is beyond the scope of this document.
 
 ** RESTful interface machinery
 
-[ *TODO:* API Gateway was [[https://aws.amazon.com/about-aws/whats-new/2015/07/introducing-amazon-api-gateway/][introduced in 2015-07]]. The repo for the boss
-REST API was [[https://github.com/jhuapl-boss/boss/graphs/contributors][started in 2015-11]]. So not sure why it was not adopted. ]
-
-Maintain backwards compatibility of the interface. This is purely
-about simplyfying the machinery which implements the interface, not
-about change the user experience of the interface. There should be a
-test suite which ensures this; one test client that can work with both
-the Boss and Cuboids simply by changing the end-point URL.
-
-API Gateway's main purpose is to provide HTTP interfaces to AWS
-Lambda. Since the core is Lambda-based serverless it is only natural
-to use API Gateway. This is an instance of an undifferentiated
-component which the Boss needed but for which there was no available
-AWS service at the time of initial development of the Boss.
-
 API Gateway
 - The upper left red zone can be replaced by API Gateway etc.
-- [ ] What's in that RDS instance
-  - "data model objects & permissions"
-  - Sounds pretty scheme-esque
-  - Aurora Serverless? (if even need a SQL machine)
+
+nginx is used to run some Python, a django app using rest_framework to
+handle REST API calls coming in over the public network. Cuboids can
+come in and out, optionally being compressed via HTTP content
+negotiation.
+
+It is a goal to maintain backwards compatibility of the
+interface. This refurbishment is purely about simplyfying the
+machinery which implements the interface, not about changing the user
+experience of the interface.
+
+One way to test for compatibiilty is to have one test client which can
+work with both the existing Boss and Cuboids simply by changing the
+end-point URL.  The existing Boss integration test suites should prove
+useful.
+
+API Gateway's main purpose is to provide HTTP interfaces to AWS
+Lambda. Since the Boss core is Lambda-based serverless it is only
+natural to use API Gateway. This is an instance of an undifferentiated
+component which the Boss needed but for which there was no available
+AWS service at the time of initial development of the Boss (actually
+API Gateway had just been released at the time but was passed over,
+seemingly).
+
+The code for the boss API machinery and schema is in the repository
+named [[https://github.com/jhuapl-boss/boss][jhuap-boss/boss]].
+
 
 ** Single sign-on
 - Keep [[https://docs.theboss.io/docs/authentication][the Boss auth REST APIs]] but replace the machinery with Cognito
@@ -836,6 +844,8 @@ was not possible in 2015.
   serverless spatial DB as single CloudFormation. Cuboids itself will
   probably be a separate CloudFormation. But it is to early to predict
   this. First active coding needs to proceed and then revisit this.
+- API Gateway was [[https://aws.amazon.com/about-aws/whats-new/2015/07/introducing-amazon-api-gateway/][introduced in 2015-07]]. The repo for the boss REST API was [[https://github.com/jhuapl-boss/boss/graphs/contributors][started in 2015-11]]. So not sure why it was not adopted. ]
+
 
 * Conclusion
 
