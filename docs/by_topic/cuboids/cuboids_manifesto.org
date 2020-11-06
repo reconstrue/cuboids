@@ -546,16 +546,21 @@ bossdb.io user are and can create Cognito user roles for them while in
 Cuboids, running analysis on data in the MICrONS Boss repository.
 
 ** Secrets
-- The lower reg zone can be replace with AWS Secrets Manager
-- Existing
-  - Vault servers are Secrets which store their info in Consul
-  - Consul Servers are for key/value store
+
+The lower red zone can be replace with [[https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html][AWS Secrets Manager]]. The
+existing machinery is more auto-scaling EC2 instances:
+- Vault servers maintain secrets
+  - [[https://github.com/jhuapl-boss/boss-manage/blob/master/cloud_formation/configs/core.py#L138][Provisioned via CloudFormations]]
+- Vault nodes store their encrypted info in Consul key/value store
+  - Looks like [[https://github.com/jhuapl-boss/boss-manage/blob/master/cloud_formation/configs/core.py#L131][Consul was replaced with DynamoDB]]
+  
+This should be a pretty straightforward migration from two
+self-managed services to an equivalent AWS fully managed
+service. There is a bespoke [[https://github.com/jhuapl-boss/boss-manage/blob/master/cloud_formation/lambda/monitors/chk_vault.py][~chk_vault~]] admin Lambda, the sort of thing
+which can be jettisoned and replaced with AWS Console dashboardery.
 
 ** Cache machinery
 
-[ *TODO:* - How does bossDB spin up Redis? Is it fully managed? The
-diagram seems to imply it is, with the asterix. ]
-   
 The above tasks involve migrating generice, support infrastructure
 from self-managed code to fully managed AWS services. In contrast,
 refurbishing the cache machinery is a modification to the serverless
@@ -593,6 +598,9 @@ redis instance." The code that generates the CloudFormation for the Redis
 cache machinery is in the boss-manage repo, in
 [[https://github.com/jhuapl-boss/boss-manage/blob/master/cloud_formation/configs/redis.py][cloudformation/configs/redis.py]].
 
+[ *TODO:* The diagram seems to imply current Redis R/W cache is fully
+managed, with the asterix. Is it, really? ]
+   
 ** Infrastructure as code tooling
 
 Finally, there is another technology of the Boss which will be replace
