@@ -5,7 +5,7 @@
 
 
 | Author   | [[http://tigue.com][John Tigue]]           |
-| Version  | 2020-11-04-1         |
+| Version  | 2020-11-05-1         |
 | License  | CC0 1.0              |
 
 * Abstract
@@ -388,7 +388,11 @@ revolve around replacing self-managed sub-systems with equivalent
 fully managed AWS services. Simply keeping the current serverless
 core architecture but rewriting those components which can be replaced
 with equivalent AWS service will make bossDB easier to deploy and
-maintain.
+maintain. 
+
+Additionally, another potential benefit lk;;lkllkklk;lkjk serverless costs are variable while self-magaged
+services with constantly running servers have higher fixed costs. Minimizing
+self-managed services can lead to lower costs, depending on use case.
 
 Note that the goals include *not* significantly modifying
 the features of the Boss repository. Specifically, the surface RESTful
@@ -445,113 +449,101 @@ detail is beyond the scope of this document.
 #+attr_html: :width 100%
 [[./images/arch_before_and_after.png]]
 
-** RESTful interface machinery
+The following tasks are broken out into isolatable chucks of work. The
+plan is to spin up a Boss deploy and then treat each of the followings
+tasks as a GitHub Issues Project. The Projects are to be worked on
+individually so that overall progress can be broken out to milestones,
+testable along the way via integration tests.
 
-API Gateway
-- The upper left red zone can be replaced by API Gateway etc.
+** RESTful API
 
-nginx is used to run some Python, a django app using rest_framework to
-handle REST API calls coming in over the public network. Cuboids can
-come in and out, optionally being compressed via HTTP content
-negotiation.
+In the color coded architectural diagram, the RESTful API subsystem is
+in the upper left red zone. The code for that Boss API machinery and
+schema is currently in the repository named [[https://github.com/jhuapl-boss/boss][jhuap-boss/boss]]. That
+machinery is to be replaced with Amazon API Gateway. Any Python logic
+in the repo will be migrated to Lambdas.
 
-It is a goal to maintain backwards compatibility of the
-interface. This refurbishment is purely about simplyfying the
-machinery which implements the interface, not about changing the user
-experience of the interface.
+API Gateway's was originally created to provide HTTP interfaces to AWS
+serverless apps. Since the Boss core is serverless it is only natural
+to use API Gateway to implement the REST interface. This is an
+instance of an undifferentiated component which the Boss needed but
+for which there was no available AWS service at the time of initial
+development of the Boss. 
 
-One way to test for compatibiilty is to have one test client which can
+(Actually it looks like API Gateway had just been released at the time
+but was passed over. Perhaps there was a design choice of localizing
+the platform dependend code to specific repositories in the hope of
+someday porting the code to other cloud platforms.)
+
+Currently, there is a cluster using nginx to run some Python. That
+Python is a django app using =rest_framework= to handle REST API calls
+coming in over the public network. Cuboids can come in and out,
+optionally being compressed to blosc, numpy, or npygz via HTTP content
+negotiation (see [[https://github.com/jhuapl-boss/boss/blob/master/django/bossspatialdb/parsers.py][parsers.py]]).
+
+It is a goal to maintain backwards compatibility of the interface with
+the original Boss APIs. This refurbishment is purely about simplyfying
+the machinery which implements the interface, not about changing the
+user experience of the interface.
+
+One way to test for compatibility is to have one test client which can
 work with both the existing Boss and Cuboids simply by changing the
 end-point URL.  The existing Boss integration test suites should prove
 useful.
 
-API Gateway's main purpose is to provide HTTP interfaces to AWS
-Lambda. Since the Boss core is Lambda-based serverless it is only
-natural to use API Gateway. This is an instance of an undifferentiated
-component which the Boss needed but for which there was no available
-AWS service at the time of initial development of the Boss (actually
-API Gateway had just been released at the time but was passed over,
-seemingly).
-
-The code for the boss API machinery and schema is in the repository
-named [[https://github.com/jhuapl-boss/boss][jhuap-boss/boss]].
-
-
 ** Single sign-on
-- Keep [[https://docs.theboss.io/docs/authentication][the Boss auth REST APIs]] but replace the machinery with Cognito
-  - It is important to precisely mimic these so that Cuboids hosted apps can get their data from MICrONS if necessary.
-  - Use API Gateway to host/expose a Swift file that mimics the Boss auth APIs
-    - And compute needed will be some trivial Lambda's (which who
-      knows may well already exist somewhere)
-  - Existing OIDC Indentity Providers (such as the one at auth.bossdb.io) can be added to a Cognito User Pool
-    - This means Cuboids can know who the existing bossdb.io user are and can create Cognito user roles for them while in Cuboids
-- Boss APIs look to be pretty much proxies to Cognito APIs
-  - List User: https://api.theboss.io/v1/sso/user/:user_name
-  - List users groups
-  - Create a user
-  - Delete a user
-  - Assign user roles
-  - Revoke user roles
-  - Create a group
-  - Delete a group
-  - List users groups
-  - List group members
-  - Assign user to group
-  - Remove user from group
-  - Assign group to resource with a permission set
-  - Create resource
-  - Delete resource  
-- Perhaps modify or use the code for boss-oidc
-  - https://github.com/jhuapl-boss/boss-oidc
-- Moving to Cognito will simplify per tenant billing and logging.
-- The upper right red zone can be replaced by Cognito
+
+Referring to the color coded architecture diagram again, the upper
+right red zone is the single sign-on (SSO) service.  Notice the two
+domains in the diagram: api.theboss.io and auth.theboss.io. Quoting
+from the Boss pre-print:
+  #+begin_quote
+  Our identity provider server intentionally runs independently from
+  the rest of bossDB system, forcing the bossDB API to authenticate
+  just like any other SSO integrated tool or application, and making
+  future *federation with other data archives or authentication systems
+  easy.*
+  #+end_quote
+
+Cuboids will maintain the architecture, that is, auth as a separate
+microservice. This also means that this work can be done completely
+independently of the other refurbishment tasks in this section of the
+manifesto.
+
+Returning to the Boss pre-print:
   #+begin_quote
   We use the open source software package Keycloak as an identity
   provider to manage users and roles. We created a Django OpenID
   Connect plugin to simplify the integration of services with the SSO
-  provider.
-  ...
-
-  Our identity provider server intentionally runs in- dependently from
-  the rest of bossDB system, forc- ing the bossDB API to authenticate
-  just like any other SSO integrated tool or application, and making
-  fu- ture federation with other data archives or authenti- cation
-  systems easy.
-
-  The Keycloak server is deployed in an auto-scaling group that sits
-  behind an Elastic Load Balancer.
+  provider... The Keycloak server is deployed in an auto-scaling group
+  that sits behind an Elastic Load Balancer.
   #+end_quote
 
-An envisioned use case of Cuboids is to run analysis on parts of the MICrONS dataset.
-This implies that Cuboids should maintain the
-architecural structure of the single sign-on machinery including the
-APIs. Behind the SSO APIs in Cuboids will be Lambdas that work with
-Cognito. This way analysis in Cuboids can fetch data from the MICrONS bossDB
-as easily as it's internal bossDB.
+In other words, another cluster of servers being self-managed. This
+machinery can be replaced by Cognito and some support Lambdas. The
+plan is to keep the same APIs but, in Cuboids, behind the Boss SSO APIs
+will be API Gateway reading from a Swagger file that mimics the Boss
+auth APIs, and some Lambdas that are essentially a wrapper for AWS
+Cognito API method calls.
 
-Data fetched from the MICrONS repo would go into the local cache, and stick around
-for the duration of analysis?
+This work can be done in stages. Could start with the existing
+Keycloak based SSO code and do [[https://www.wolfe.id.au/2017/11/05/aws-user-federation-with-keycloak/][federation with AWS SAML]]. Any API Gateway
+based auth can [[https://aws.amazon.com/blogs/security/use-aws-lambda-authorizers-with-a-third-party-identity-provider-to-secure-amazon-api-gateway-rest-apis/][treat the Boss SSO Keycloak service as a third party
+identity provider]] (e.g., [[https://github.com/vzakharchenko/keycloak-lambda-authorizer][Keycloak adapter for AWS Lambda]]). Perhaps
+such code exists already somewhere. Perhaps modify or use the code for
+[[https://github.com/jhuapl-boss/boss-oidc][boss-oidc]].
 
-Cuboids allows "real time" exploratory analysis of bossDB data. The
-serverlessness makes it fast and easy to provision and compute for the
-analysis. The analysis happens in Jupyter. Write little chuncks that start up analysis in Cuboids  There needs to be ways of
-seeing costs from within Jupyter i.e. a dashboard in Jupyter.
+In the docs for [[https://docs.theboss.io/docs/authentication][the Boss Auth REST APIs]], The Boss single sign on (SSO)
+service has about 16 methods, comprising the usual suspects of sign on
+APIs: CRUD operations for users, groups, resources, and
+permissions. For example, "List User" via
+https://api.theboss.io/v1/sso/user/:user_name
 
-- Want to be able to have a high res billing system.
-  - Cognito makes that easier
-  - Want a University to deploy yet be able to bill distinct departments
-  - Want multi-tenant SaaS, which is similar to the university and departments
-
-- Consider a security interface or delegator
-  - core serverless engine would only talk to the interface/delegator
-  - then security could be config to a Cognito provider
-  - Or maybe even a dummy provider i.e. let anybody, do anything.
-    - simpler management :)
-
-- Perhaps there is already a bridge between Cogniton and whatever they are using for SSO
-  - this way could still respect whatever they have going on but core code only talks Cognito
-  - i.e. the pluggable interface IS Cognito.
-    - So, dummy security would be a Cognito provider that says "whatevs" to anything.
+Note, existing OIDC Indentity Providers (such as the one at
+auth.bossdb.io with existing MICrONS data users) can be added to a
+Cognito User Pool. This means Cuboids can know who the existing
+bossdb.io user are and can create Cognito user roles for them while in
+Cuboids, running analysis on data in the MICrONS Boss repository.
 
 ** Secrets
 - The lower reg zone can be replace with AWS Secrets Manager
@@ -817,15 +809,6 @@ image recognition can be performed within a bossDB-based system, which
 was not possible in 2015.
 
 [[https://medium.com/@adhorn/getting-started-with-aws-lambda-layers-for-python-6e10b1f9a5d][Getting started with AWS Lambda Layers for Python]]
-
-** High resolution billing
-
-- Cuboids aims to have multiple users from multiple organizations.
-- Users can initially be anonymous but through Cognito become authenticated.
-  - For the anonymous users, resource usage costs need to be assigned to the hosted dataset.
-  - Authenticated users will be Reconstrue users, probably members of organizations
-  - Grafting on exist userbases is possible with Cognito. What about mapping that to billing?
-- Fortunately, Lambda makes multi-tenancy easy [[https://narrativescience.com/resource/blog/how-aws-lambda-changed-the-game-of-multi-tenancy/][{1}]] [[https://techcrunch.com/2016/09/01/serverless-is-the-new-multitenancy/][{2}]]
 
 * Open questions
 
