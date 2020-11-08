@@ -1,45 +1,279 @@
-* MICrONS Project
+* MICrONS Program
 
-Note that bossDB, the serverless technology, was used in all three Phases.
+The JHU/APL team already had a lot of open source based coding
+experience before the MICrONS projectq. As such they leveraged that
+knowledge while working on BossDB. For example, they deployed various
+code repositories for storing secrets, managing single sign-on,
+handling RESTful API requests, etc. 
+It made sense to reapply what they already knew how to
+use.
 
-- [[https://www.iarpa.gov/index.php/research-programs/microns/microns-baa][2014 proposal by R. Jacob Vogelstein]]
-  #+begin_quote
-  Each phase ends with an information processing challenge that assesses
-  how well the new algorithms perform on increasingly challenging
-  machine learning tasks: similarity discrimination in Phase 1,
-  generalization and classification in Phase 2, and invariant
-  recognition in Phase 3. Performers use the results of their
-  experiments in each phase to guide their development of improved
-  algorithms in the subsequent phase (in Phase 1, performers base their
-  algorithms on the existing neuroscience literature).
+
+anatomical and physiological
+
+
+
+[[https://www.simonsfoundation.org/2017/09/11/using-artificial-intelligence-to-map-the-brains-wiring/][Using Artificial Intelligence to Map the Brain’s Wiring]] Simons on Seung 2017-09
+#+begin_quote
+In July, neuroscientist Sebastian Seung and his collaborators finished
+an 18-month marathon task. Working with roughly a terabyte of data,
+his team used artificial intelligence to reconstruct all the neural
+wiring within a 0.001 cubic millimeter chunk of mouse cortex...
+
+Seung hasn’t had time to savor the accomplishment, however. His team
+is racing to complete the next stage of the project — they plan to
+expand their efforts a thousand-fold to reconstruct a cubic millimeter
+chunk of mouse cortex...
+
+In this slice of brain tissue from the *MICrONS* reconstructed dataset,
+each neuron is assigned a unique color. The final three-dimensional
+*reconstruction is made up of 1,000 two-dimensional slices* like this
+one.
+
+Seung hopes that *the technologies they develop for the IARPA project*,
+including automated image acquisition and automated analysis and
+reconstruction of circuits, will *spread much more broadly*. “I think as
+the technology develops, it will be easy for anyone to adopt,” he
+says.
+#+end_quote
+[[https://arxiv.org/abs/1706.00120][Superhuman Accuracy on the SNEMI3D Connectomics Challenge]] Seung Lab 2017
+
   
-  The MICrONS program comprises three Technical Areas (TAs):
-  
-  TA1 
-  – experimental design, theoretical neuroscience, computational
-    neural modeling, machine learning, neurophysiological data collection,
-    and data analysis;
-  
-  TA2 
-  – neuroanatomical data collection; and
-  
-  TA3 
-  – reconstruction of cortical circuits from neuroanatomical data
-    and development of information technology systems to store, align, and
-    access neural circuit reconstructions with the associated
-    neurophysiological and neuroanatomical data.
-  #+end_quote
-** Phase 1
-[[microns_phase_one_orgs.jpg]]
-** Phase 2
-[[microns_phase_two_dataflow.jpg]]
-** The datasets
-- [ ] Pinky and what?
+** Phases of the program
+ Note that bossDB, the serverless technology, was used in all three Phases.
 
-** Future: Reconstructions atop bossDB
+ - [[https://www.iarpa.gov/index.php/research-programs/microns/microns-baa][2014 proposal by R. Jacob Vogelstein]]
+   #+begin_quote
+   Each phase ends with an information processing challenge that assesses
+   how well the new algorithms perform on increasingly challenging
+   machine learning tasks: similarity discrimination in Phase 1,
+   generalization and classification in Phase 2, and invariant
+   recognition in Phase 3. Performers use the results of their
+   experiments in each phase to guide their development of improved
+   algorithms in the subsequent phase (in Phase 1, performers base their
+   algorithms on the existing neuroscience literature).
+  
+   The MICrONS program comprises three Technical Areas (TAs):
+  
+   TA1 
+   – experimental design, theoretical neuroscience, computational
+     neural modeling, machine learning, neurophysiological data collection,
+     and data analysis;
+  
+   TA2 
+   – neuroanatomical data collection; and
+  
+   TA3 
+   – reconstruction of cortical circuits from neuroanatomical data
+     and development of information technology systems to store, align, and
+     access neural circuit reconstructions with the associated
+     neurophysiological and neuroanatomical data.
+   #+end_quote
 
-It is not yet known how Seung Lab produced the reconstructed. 
-Suspects: [[https://github.com/seung-lab/chunkflow][Chunkflow]], [[https://github.com/seung-lab/igneous][Igneous]], [[https://github.com/seung-lab/cloud-volume][cloud-volume]], [[https://github.com/seung-lab/kimimaro][kimimaro]], etc.
+*** Phase 1
+ [[microns_phase_one_orgs.jpg]]
+*** Phase 2
+ [[microns_phase_two_dataflow.jpg]]
 
-It is a goal of Reconstrue Cuboids to merge some appropriate
-reconstruction code with bossDB.
+*** Phase 3
+
+
+** The software and data
+
+*** The datasets
+ - [ ] Pinky and what?
+
+*** Future: Reconstructions atop bossDB
+
+ It is not yet known how Seung Lab produced the reconstructed. 
+ Suspects: [[https://github.com/seung-lab/chunkflow][Chunkflow]], [[https://github.com/seung-lab/igneous][Igneous]], [[https://github.com/seung-lab/cloud-volume][cloud-volume]], [[https://github.com/seung-lab/kimimaro][kimimaro]], etc.
+
+** From the manifesto
+
+*** Funding
+ According to the MICrONS program site:
+ #+begin_quote
+ MICrONS seeks to revolutionize machine learning by reverse-engineering
+ the algorithms of the brain. The program is expressly designed as a
+ dialogue between data science and neuroscience.
+ #+end_quote
+
+ On Wikipedia, [[https://en.wikipedia.org/wiki/MICrONS][the description]] is:
+ #+begin_quote
+ The MICrONS program (Machine Intelligence from Cortical Networks) is a
+ five-year program run by the United States government through the
+ Intelligence Advanced Research Projects Activity (IARPA) with the goal
+ of reverse engineering one cubic millimeter—spanning many petabytes of
+ volumetric data—of a rodent's brain tissue and use insights from its
+ study to improve machine learning and artificial intelligence by
+ constructing a connectome. The program is part of the White
+ House BRAIN Initiative.
+ #+end_quote
+
+ These goofy names -- such as the Boss and MICrONS -- are simply
+ artifacts of a deadly serious culture. Specifically, the funding of
+ the MICrONS program comes from IARPA, an organization of the US
+ intelligence community. IARPA serves an analogous role as that of
+ DARPA, as implied by their similar names; the "D" is for defense and
+ the "I" is for intelligence. Most bluntly, the spooks are willing to
+ fund neuroscientific research so that the USA will have better
+ artifical intelligence than the Chinese and Russians (and sundry dark
+ horses and black swans). DARPA and IARPA are engines of "dual use"
+ technological innovation in America. (Note Tang is not a good exemplar
+ of dual use; the "dual" is one part "solve immediate warfare needs"
+ and one part "form corporations which can be taxed to buy the next
+ generation of weapons.")
+
+*** The MICrONS experiment
+   
+ Although the Boss is currently being used in other projects, the
+ marque benchmark of bossDB performance is still the approximately two
+ and a half petabyte dataset generated as part of the MICrONS
+ program. This section describes the experiment.
+
+ The MICrONS data includes the output images from electron microscopes
+ which scanned a cubic millimeter of neural tissue. After imaging, the
+ data was transfered via Boss HTTP APIs from the laboratory to a bossDB
+ instance running on AWS, sometimes in forty terabyte spurts involving
+ tens of millions of file.
+
+ Subsequently, the data was downloaded from the repository to
+ Princton's servers where machine learning based image recognition
+ software processed the raw data to reconstruct 3D models of
+ approximately 100,000 neurons, down to individual synapses (roughly a
+ dozen million synapses). Along with the neurons, other cells are
+ reconstruct, such as glia and vascular cells.  The segmentation image
+ recognition was performed on systems external to bossDB but the
+ resulting reconstructions were uploaded to the bossDB repository.
+
+
+ For those unfamiliar with the neuroscientific jargan, the distinction
+ between *structural imaging* and *functional imaging* is analogous to
+ that between the map of a road network and recordings of traffic over
+ the network, respectively. Functional imaging is done while the animal
+ is alive performing experimental learning tasks. After the animal
+ has been sacrifice and the brain removed, structural imaging is similar
+ to passing a leg of ham through a deli slicer and photographing each
+ slice. Subsequently, *reconstruction* amounts to using those raw 2D
+ image to construct -- via ML image recognition -- 3D models the
+ original biological structures.
+
+ #+attr_html: :width 100%
+ #+caption: Functional Imaging of a Head-Fixed, Freely-Moving Mouse in a VR Rig
+ [[./images/vr_imaging_experiment.png]]
+
+ The mice put in the VR rig are transgenic mice engineered such that
+ when their neurons fire they also flash green light.
+
+ Data from the functional imaging experiment can be thought of as an
+ array of movies at various depths in the volume of brain. Figure A
+ below illustrates the functional movie stack co-registered into the 3D
+ volume from the structural imaging (colored by segmentation). 
+
+ When a neuron fires, at the cell body of a neuron there will be a
+ point flash in a movie -- as if a star were going nova. The analysis
+ software must first identify where the individual stars are (C) and
+ then study each individual brigthness ("dF/F") timeline to find the firing
+ events of each neuron (D). The following diagram is taken from Figure
+ 6 of a 2020 pre-print, [[https://www.biorxiv.org/content/10.1101/2020.10.14.338681v2][Multiscale and multimodal reconstruction of
+ cortical structure and function]]. It ilustrates the software analysis
+ of the functional data.
+
+ #+attr_html: :width 100%
+ [[./images/mults_figure_6.png]]
+
+ - (A) 2-photon calcium recording overview and image plane
+   coregistration. Black squares on the right are the image planes,
+   cropped to only indicate the vertical location.
+ - (B) Visual stimulus presented during recording. Oriented stimuli
+   moving in 16 directions were presented, interspersed with the pink
+   noise stimulus, for 30 trials (row: single trial).
+ - (C) Example slice of 2-photon recording (A: Anterior, P: Posterior,
+   M: Medial, L: Lateral) with the central area (white dashed box)
+   zoomed in on the lower right.
+ - (D) Noise-normalized dF/F traces and deconvolved traces (dashed:
+   activity threshold for “active” trials) for example cells marked in
+   (C) during a single trial (white shade: directional stimulus shown,
+   gray shade: noise stimulus shown). Directions are ordered
+   pseudo-randomly in each trial.
+
+*** The teams
+
+The technical architecture of the data system of the MICrONS program
+reflects the multi-team nature of the MICrONS program for which the
+Boss was created. 
+#+attr_html: :width 100%
+[[./images/microns_phase_2.jpg]]
+
+
+Four different teams each focused on their particular area of
+expertise.
+
+- JHU/APL wrote the Boss repository code and supporting tools
+- Baylor University performed functional imaging experiments on a live mouse
+- The Allen Institute structurally imaged a cubic millimeter of that mouse's sacrificed brain
+- The Seung Lab wrote the machine learning code to reconstruct the imaged neurons
+
+JHU/APL]] had the perfect experience for coding up the Boss. JHU/APL was
+behind the Hubble telescope. Hubble can be thought of as a fancy
+imaging machine pumping out lots of data over a constrained data
+channel, that is, from space. Analogously, the MICrONS program has
+fancy microscopes pumping out an extraordinary amount of data, the
+transmission of which taxed some computer networks. Subsequent to
+their Hubble work -- and more specific to neuroscience -- JHU/APL
+worked on [[https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3278382/][the Open Connectome Project]] and [[https://neurodata.io/][NeuroData]]. Therefore, they
+seem like an excellent choice for developing the Boss codebase.
+
+
+
+The Boss is where Baylor and the Allen uploaded the raw experimental
+data they collected, and from where the Seung Lab downloaded that raw
+data to then run through machine learning algorithms in order to reconstruct the
+neurons from within the stacks of images, generating surface mesh
+models. 
+
+After experimental data images were experimentally collected and
+uploaded to the Boss, they were analyzed the Seung Lab at Princeton to
+reconstruct the neurons and identify synapse via machine learning.
+
+Click on the following image to see a video which demonstrates how
+such reconstruction algorithms work:
+
+#+macro: imglnk @@html:<a href="$1"><img src="$2"></a>@@
+{{{imglnk(https://youtu.be/X4eVmSxTZ8Y,images/reconstruction_demo.jpg)}}}
+
+Via [[https://ai.googleblog.com/2018/07/improving-connectomics-by-order-of.html][Improving Connectomics by an Order of Magnitude]]
+
+*** Take aways
+   
+ Beyond the technical limitations of AWS serverless technology in 2015,
+ there are good reasons why the original bossDB did not perform neuron
+ reconstruction internally. 
+
+
+ Notice that the MICrONS program involved uploading and subsequent
+ downloading of all that data. Also notice that when the 2D images are
+ stacked they form a volumetric cuboid -- the core data model of the
+ Boss -- hence the working title of Cuboids.
+
+ For more on the technical architecture of the Boss, see the pre-prints
+ [X, X] and the Dean Kleissas AWS talks [X, X] ([X] is a rather
+ entertaining tech talk with high production value).
+
+ In scale, the MICrONS program was the first of its kind. Seeing the
+ database pass a 2.5 petabyte stress test is 
+
+ The volume of
+ data processed by the Boss is a nice stress test, half way between a
+ benchmark and and ad.
+
+ is an  gave the Boss codebase serious confirmation evidence by stress
+ testing it with petabytes of data. Subsequently, [[https://bossdb.org/projects][other projects]] have
+ productively used the Boss. The Boss codebase is a poster child for
+ software technology produced via DARPA or IARPA grants.
+
+ is a quintessential
+ example of how US government research grants are supposed to work. Now it
+ is time for industry to carry the baton to the next stage.
+
+
