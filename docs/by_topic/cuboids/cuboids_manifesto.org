@@ -667,18 +667,76 @@ to be "compiled" by Heaviside. These are to be rewritten to use the
 standard tool for such things: AWS CDK.
 
 * Architectural extensions
-** Serverless-first design
 
-Also a safety valve if things get really heavy and steady. Then can
-take the code deployed on Lambda and move it to EC2 clusters. That's
-financially worth considering when scale gets in the range of 10M
-monthly hits. Same Step Function, different states to talk to the EC2
-workers.
+The previous section enumerated various architectural updates which
+together will position a streamlined Boss for higher diffusion of
+innovation. Those refurbishments add almost no new functionality to
+the Boss. In contrast, this section discusses novel machinery to be
+deployed alongside a Boss repository. The conglomerate is to be called
+Cuboids.
 
-The main AWS service than enables serverless-first is Step Functions,
+As argued above, for peta-scale datasets, it is desirable for the
+compute of analysis to happen as close to the data as
+possible. Cuboids does that by inserting the compute into the same
+system as the core Boss repository, similar to how SQL databases have
+stored procedures.
+
+*The existing library of 18 Step Functions in the Boss can be seen as a library of code containing serverless components 
+which perform fundimental CRUD and visualization operations on cuboids in a Boss repository, utilizing a scalable cache.* 
+Analysis programs which run close to the
+data can be built atop those base operators. The platform is already
+there but it has not yet been exploited to the level where non-trivial
+data pipelines have been built atop it. Cubiods is laying the
+foundation for more interesting pipelines moving forward.
+
+This section has two parts: first, an explanation of the design
+pattern, serverless-first, which is being followed for building new
+components in Cuboids. Then the design pattern will be put to use to
+add neuron reconstruction machinery to Cuboids.
+
+Doing so will set Cuboids on a path to be
+more of a "whole product" for microscopy workflows rather than, as
+with the Boss, essentially a repository accessed by external analysis
+tools.
+
+** Serverless-first design pattern
+
+The core design innovation is that the architecture is being
+re-oriented to be serverless-first. This section explains what is
+meant by that.
+   
+The main AWS service than enables serverless-first designs is Step Functions,
 which has already been adopted into the Boss machinery. There are
-already at least [[https://github.com/jhuapl-boss/boss-manage/tree/master/cloud_formation/stepfunctions][18 StepFunctions]]. For example, the Downsample service
+already at least [[https://github.com/jhuapl-boss/boss-manage/tree/master/cloud_formation/stepfunctions][18 Step Functions]]. For example, the Downsample service
 involves [[https://github.com/jhuapl-boss/boss-manage/blob/master/cloud_formation/stepfunctions/resolution_hierarchy.hsd][a Step Function]]. 
+
+From an external perspective, analysis programs can be built which
+call on the Boss REST APIs. From an internal perspective, programs are
+built as Step Functions which orchestrate Lambda and Docker container
+based components. A Step Function program can be exposed in an API
+Gateway hosted REST API. 
+
+This section clarifies the distinction between the surface APIs of the
+Boss -- which are the HTTP API interface through which external
+programs interact with the Boss -- and the internal service component
+APIs upon which can be built programs that run within the Boss.
+
+So, say some novel is to be added, say cuboid segmentation. To the
+outside world the service will manifest as new methods added to the
+REST APIs. Inside AWS, The HTTP messages containing Boss REST
+requests are handled by AWS API Gateway (APIGW) which initiates a Step
+Function instance to run a job. So states will be lambdas; some states
+might be long runing Activities, an EC2 instance which runs chunkflow
+processes.
+
+Step Functions *are* programs -- programs that just so happen to have
+explicitly defined state machines. Step Functions bring state to the
+innately stateless AWS Lambda service. Any state which needs to
+bridges both serverless and non-serverless processes is maintained in
+a Step Function. The states -- as Lambdas and Activities -- are the
+program modules which get assembled into a Step Functions based
+program. The Boss Downsampler is the poster child program written atop
+the Boss libraries.
 
 Note that "serverless-first" does not exclude non-serverless
 processes. Step Functions can orchestrate both types. Step Functions
@@ -691,138 +749,106 @@ implemented by AWS Lambdas yet also work with legacy code and/or
 processes which are too big or long running to be executed within AWS
 Lambda. 
 
-The above point is not obvious from the Boss codebase. The Boss has
-lots of StepFunctions but they deal primarily with Lambdas, not long
-running processes as task Activities. [ *TODO:* any?]
-   
-This is what would make for a serverless first architecture. The state
-that bridges both serverless and non-serverless process is maintained
-in a Step Function.
+Another rarely mentioned valuable feature of the serverless-first
+design pattern is that there is a safety valve. The goal is to build
+out as much as can be in a serverless fashion based on Lambdas, but
+failing that various non-serverless components can be added into a
+Step Function as needed. Same Step Function, but with some state
+transitions driven by EC2 instances acting as Task Activities, rather
+than all states being implemented as Lambdas.
 
-As argued above, is would be desirable for the compute of analysis to
-happen close to the data. Ideally that would happen within the same
-VPN, but simply between AWS VPNs is good enough.
+At a certain level of traffic, for purely financial reasons is may be
+worth switching the compute from Lambda to EC2. For normal serverless
+applications, those sort of economics start to be financially worth
+considering when scale gets in the range of 10M monthly hits.
 
-This section clarifies the distinction between the surface APIs of the
-Boss -- which are the HTTP API interface through which external
-programs interact with the Boss -- and the internal service component
-APIs upon which can be built programs that run within the Boss.
+That Step Functions can orchestrate both serverless and server-based
+compute is not obvious from the Boss codebase. The Boss has lots of
+StepFunctions but they deal primarily with Lambdas, not long running
+processes as task Activities.
 
-Ergo, the compute of work of purely digital analysis and scientific
-experiments should be performed within the same *VPC* as the Boss
-repository wherein the data to be analyzed resides.  The base
-framework for such programs already exists within the Boss codebase in
-the form of the AWS Step Functions already written in the codebase.
-For example, the downsampling (Kleissa Hider 2017, Section 2.3.7):
+Reviewing some implementation points touched upon earlier, Cuboids
+will continue to build more Step Functions based programs that run
+within the platform.  Any new Step Functions based code will not use
+Heaviside, rather they will be written using the Python AWS
+CDK. (Note: that does not mean that de-Heavisiding the codebase is a
+prerequisite to such novel processes. CDK can live peacibly alongside
+Heaviside.) 
 
+This will make for a serverless first architecture. 
 
-From an external perspective, analysis programs can be built which
-call on the Boss REST APIs. From an internal perspective, programs are
-built as Step Functions which orchestrate Lambda and Docker container
-based components. A Step Function program can be exposed in the REST API.
+** Reconstruction: serverless CNN inference
 
-Want to write bossDB based programs/experiments which are StepFunctions.
-Doing so will set Cuboids on a path to be
-more of a "whole product" for microscopy workflows rather than, as
-with the Boss, essentially a repository accessed by external analysis
-tools.
+The first major functional extension to be added to Cubiods is
+reconstrution. The goal is to recapitulate part of the work done by
+the Seung Lab for the MICrONS program: neuron cell reconstruction via
+CNNs. The tool chosen to base this work on is Seung Lab's
+Chunkflow. The novel part is that it will need to be deployed in a
+serverless friendly manner.
 
-Step Functions *are* programs -- programs that just so happen to have
-explicitly defined state machines. (Step Functions bring state to the
-innately stateless Lambdas.)  The states, Lambdas and Activities, are
-the program modules which get assembled into a Step Functions based
-program.  The Downsampler is the poster childe program written atop
-the Boss platform.
+*** The Seung Lab
+  :PROPERTIES:
+  :UNNUMBERED: notoc
+  :END:
 
-Any new Step Functions based code will not use Heaviside. But that
-does not mean that de-Heavisiding the codebase is a prerequisite to
-such novel processes. CDK can live peacibly alongside Heaviside.
-
-#+begin_quote
-To allow users to quickly assess, process, and interact with their
-data, we need to iteratively build a resolution hierarchy for each
-dataset by downsampling the source data. This is a workflow that is
-run infrequently and on-demand, and needs to scale from gigabytes to
-petabytes of data. We developed a serverless architecture built on AWS
-Step Functions to manage failures and track process state. AWS Lambda
-is used to perform the underlying image processing in an
-embarrassingly parallel, scalable fashion. This approach allows us to
-minimize resource costs while scaling on-demand in a fully-automated
-paradigm
-#+end_quote
-
-** Reconstruction inference: Chunkflow
-
-The primary extension is reconstrution, which is to recapitulate the
-work done by the Seung Lab for the MICrONS program. The lab puts out a
-lot of software for connectomics. Most of it is open source, and a
-good deal of that is licenced in a commerically friendly way (Apache,
-MIT, BSD, etc.).
-   
-This section introduces the idea of a serverless variant of Chunkflow,
-which is going by the name "serverless Chunkflow." 
-   
-Cuboids will continue to build more Step Functions based programs that
-run within the platform. Neuron reconstruction will be the first one.
-
-Inference only. Not sure how training would be done serverless. But
-FFN training is such (repeatedly visiting voxels 75--95 times) that it
-might benefit nicely from Redis cache of cuboids.
-   
-ChunkFlow ([[https://github.com/seung-lab/chunkflow][chunkflow repo]], [[https://arxiv.org/abs/1904.10489][Chunkflow pre-print]]) is about running
-cuboids of microscopic imaging data through 3D CNNs. It comes out of
-the Seung Lab. The codebase was seemingly [[https://github.com/seung-lab/chunkflow/graphs/contributors][started in early 2018]]. The
-open source code is [[https://github.com/seung-lab/chunkflow/blob/master/LICENSE][licensed under Apache 2.0]].
-
-Seung Lab did the reconstruction work for MICrONS.  Chunkflow is their
-latest application for running 3D CNNs at scale. It is currently
-unknown if Chunkflow was used during MICrONS. Nonetheless, it seems
-like a good place to start.
-   
 The Seung Lab at Princeton is one of (if not the) best places for
-research applying CNNs to connectomics. Seems the lab has been at it
+research applying CNNs to connectomics. It seems the lab has been at it
 [[https://www.simonsfoundation.org/2017/09/11/using-artificial-intelligence-to-map-the-brains-wiring/][since around 2006]]. 
+
+The lab puts out a lot of software for connectomic data
+processing. Most of it is open source, and a good deal of that is
+licenced in a commerically friendly way (Apache, MIT, BSD, etc.).
+
+Seung Lab did the reconstruction work for the MICrONS program.
+Chunkflow is their latest reconstruction application for running 3D
+CNNs at scale. It is currently unknown if Chunkflow was used during
+MICrONS.
+
+Nonetheless, Chunkflow seems like a good place to start. The goal is
+to fold some Seung Lab code into Cubiods so that it has all the
+functionality needed to perform the MICrONS work. There is no reason
+not to use the latest and greatest. Cuboids is not a recreation to be
+put in a theoretical MICrONS museum.
+
+The following montage illustrates what the Seung Lab code does. First
+individual 2D "grayscale" images are segmented as indicated by the
+superimposed colors. Then 3D models are constructed by stacking the
+images.
 
 #+attr_html: :width 100%
 [[./images/seung_triptych.png]]
-Via Seung Lab as seen in [[https://www.simonsfoundation.org/2017/09/11/using-artificial-intelligence-to-map-the-brains-wiring/][Using Artificial Intelligence to Map the Brain’s Wiring]]
+[[https://www.simonsfoundation.org/2017/09/11/using-artificial-intelligence-to-map-the-brains-wiring/][Via Seung Lab]]
    
+*** CNN inference on Lambda
+  :PROPERTIES:
+  :UNNUMBERED: notoc
+  :END:  
 
-A serverless chunkflow will have low impedience mismatch with the rest
-of Boss system since everything in the core will be serverless.
-    
-So reconstruction jobs need to initiable. That will be implemented as a Step Funtion and exposed in the REST API.  
+Before getting into the specifics of Chuckflow, it is worth discussing
+whether CNN code can be run on AWS Lambda at all. Currently infernence
+tasks can be run on Lambda. Actually training models is out of scope
+for this task but that may eventually be added to Cuboids.
+  
+In 2015, the limitations of AWS Lambda were too tight to accommodate
+code packages including machine learning libraries such as
+scikit-learn. This is another valid reason why image processing was
+performed external to the Boss. 
 
-Not sure what's implied here: [[https://github.com/seung-lab/chunkflow/issues/55][use pytorch/dask/tensorflow for parallel execution #55]]
+In the interim, AWS Lambda -- the core technology of serverless -- has
+matured such that [[https://medium.com/@adhorn/getting-started-with-aws-lambda-layers-for-python-6e10b1f9a5d][larger Python codebases can now be deployed on
+Lambda]]. For example, [[https://towardsdatascience.com/deploying-sklearn-machine-learning-on-aws-lambda-with-sam-8cc69ee04f47][scikit-learn can now be deployed on AWS
+Lambda]]. By packaging popular ML frameoworks as [[https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html][Lambda layers]], Cuboids
+can be a serverless platform for 3D image recognition within a
+bossDB-based system, which was not easy to do, if even possible,
+in 2015.
 
-Lambda layers for image processing Python libraries:
-  In the case of the Boss, the raw image data resides in AWS S3 and is
-  indexed in DynamoDB. In 2015 Lambda could not accommodate code
-  packages of a size that would result from including the machine
-  learning tools, say, scikit-learn. This is another valid reason why image
-  processing was performed external to the Boss. Currently though with
-  things like Lambda layers and TensorFlow Light it can be done.
-  Additionally, AWS Lambda -- The core technology
-  of serverless -- has mature in the interim such that large Python
-  codebases can now be deployed on Lambda. By adopting [[https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html][Lambda layers]] 3D
-  image recognition can be performed within a bossDB-based system, which
-  was not possible in 2015.
-  [[https://medium.com/@adhorn/getting-started-with-aws-lambda-layers-for-python-6e10b1f9a5d][Getting started with AWS Lambda Layers for Python]]
+The TensorFlow Lite inference runtime can be [[https://www.edeltech.ch/tensorflow/machine-learning/serverless/2020/07/11/how-to-deploy-a-tensorflow-lite-model-on-aws-lambda.html][packaged for Lambda]] in
+under 25 MB. Currently, the Lambda deployment package size limit is 50 MB
+(zipped, for direct upload).  A maximum of 5 layers is allowed but all
+5 layers, unzipped, must fit in 250 MB.
 
-
-Chunkflow does not currently work with TensorFlow, it seems:
-[[https://github.com/seung-lab/chunkflow/blob/master/chunkflow/chunk/image/convnet/inferencer.py#L176][inferencer.py, L176]] but it looks like there's structure to build on to
-make something for TensorFlow, following [[https://github.com/seung-lab/chunkflow/blob/master/chunkflow/chunk/image/convnet/patch/pytorch.py][class PyTorch(PatchInferencerBase)]]. 
-The chunkflow pre-print says "To add a new inference backend, we only
-need to implement 5D patch processing including batch size, number of
-channel and patch size."
-
-TensorFlow Lite inference runtime can be [[https://www.edeltech.ch/tensorflow/machine-learning/serverless/2020/07/11/how-to-deploy-a-tensorflow-lite-model-on-aws-lambda.html][packaged for Lambda]] in under
-25 MB.  Currently, the deployment package size limit is 50 MB (zipped,
-for direct upload).  A maximum of 5 layers is allowed but all 5
-layers, unzipped, must fit in 250 MB.
-
-[[https://segments.ai/blog/pytorch-on-lambda][Deploying PyTorch on AWS Lambda]] is possible. There's even [[https://pypi.org/project/torchlambda/15858e85600/][tochlambda:]]
+[[https://segments.ai/blog/pytorch-on-lambda][Deploying PyTorch on AWS Lambda]] is also possible. There's even a package
+that does that, [[https://pypi.org/project/torchlambda/15858e85600/][tochlambda:]]
   #+begin_quote
   torchlambda is a tool to deploy PyTorch models on Amazon's AWS Lambda
   using AWS SDK for C++ and custom C++ runtime.
@@ -832,75 +858,135 @@ layers, unzipped, must fit in 250 MB.
   #+end_quote
 
 
-    
+*** Serverless Chunkflow
+  :PROPERTIES:
+  :UNNUMBERED: notoc
+  :END:
+
+This section introduces the idea of a serverless variant of Chunkflow,
+which is going by the name "serverless Chunkflow."
+
+ChunkFlow ([[https://github.com/seung-lab/chunkflow][repo]], [[https://arxiv.org/abs/1904.10489][pre-print]]) is all about running
+cuboids of microscopic imaging data through 3D CNNs. It comes out of
+the Seung Lab. The codebase was seemingly [[https://github.com/seung-lab/chunkflow/graphs/contributors][started in early 2018]]. The
+open source code is [[https://github.com/seung-lab/chunkflow/blob/master/LICENSE][licensed under Apache 2.0]].
+
+Figure 3 from the Chunkflow pre-print does a good job of illustrating
+the work to be done. Notice that the figure simplifies things for the
+purposed of illustration: "Note that the process was illustrated in 2D
+for simplicity, and the actual processing is in 3D. This illustration
+used 2 × 2 patches, but actual processing have much larger number of
+patches in 3D."
+
+#+attr_html: :width 40%
+[[./images/chunkflow_preprint_fig_3.png]]
+
+#+begin_quote
+ConvNet output patch normalization for overlapping regions. The raw
+image chunk (a) was decomposed to overlapping patches, and the patches
+was passed through a ConvNet to produce affinity map (b), the affinity
+map voxels were weighted according to the distance to boundary (d),
+the the weighted affinity map was recombined by summation to form a
+larger map (e), the larger map was then cropped to remove the weighted
+margin (f).
+#+end_quote   
+
+Chuckflow is a job systems for processing cuboids of data. DCNNs are
+run over small volumes (sub-cuboids) to perform ML based volume
+segmentation to individual neurons, synapses, cetc. There are masters
+(Chunk Generators) which initiate jobs and there are workers (Chunk
+Processors) who each do their little task. Their interaction is
+orchesrated by an AWS SQS queue.
+
+The Generators and Processors can be any machines but on AWS are
+normally EC2 instances. Chuckflow can be configured to work with cheap
+preemptible EC2 instances purchased via spot pricing. This can reduce
+the compute cost down to about one third that of non-spot
+pricing. 
+
+Following the serverless-first design pattern, a goal of deploying
+Chunkflow in Cuboids it to use it in a serverless fashion.  A
+serverless chunkflow will have low impedience mismatch with the rest
+of Boss system since everything in the core will be serverless.  
+
+
 Note that [[https://github.com/seung-lab/chunkflow/blob/master/chunkflow/lib/aws/sqs_queue.py][the core control bus in Chunkflow]] is built around AWS
 SQS. SQS is a common building block for serverless applications. There
 is nothing to prevent Lambdas from getting 3D CNN inference jobspecs
 from SQS and performing as chuckflow workers.
 
-Another reason to select chunkflow is that is could work well with the
-Boss cuboids cached in Redis. 
-
-Chunkflow Issue #68: [[https://github.com/seung-lab/chunkflow/issues/68][use geohash to schedule task respecting locality]]:
+*** Cache 
+  :PROPERTIES:
+  :UNNUMBERED: notoc
+  :END:
+  
+Another reason to select chunkflow is that it may well work well with
+the cuboids in-memory cache that the Boss has. Consider Chunkflow
+Issue #68: [[https://github.com/seung-lab/chunkflow/issues/68][use geohash to schedule task respecting locality]]:
 #+begin_quote
 scheduling task respecting locality will enhance usage of caches.
 1. the queue server stored the finished locations and unfinished locations (grid index).
 2. worker send request with a current center of processed grid positions.
 3. the server will assign task according to the history of worker and respect the locality.
 
-A good candidate is redis server with spatial indexes or geohash
+A good candidate is *redis server with spatial indexes or geohash*
 #+end_quote
 
-For example, reconstruction can be orchestrated using the Seung Lab's
-[[https://github.com/seung-lab/chunkflow][chunkflow]], which can be wrapped as a Activity which polls Step
-Functions for reconstruction jobs to perform. This is how Cuboids will
-recapitulate the MICrONS multi-system workflow.
+For example, Flood Filling Networks (FFN), on average repeatedly
+visiting voxels about 75 times.  During inference, FFNs are fed
+cuboids. They also tend to "walk" along cell membranes. This will look
+like a sequence of moves which keep asking for neighboring cuboids.
+As such, a serverless packaging of FFNs -- which are TensorFlow based
+-- might benefit nicely from the Boss Redis cache of cuboids.
 
-So, say some novel is to be added, say cuboid segmentation. To the
-outside world the service will manifest as new methods added to the
-REST APIs. Inside AWS, The HTTP messaages containing Boss REST
-requests are handled by AWS API Gateway (APIGW) which initiates a step
-function instance to run a job. So states will be lambdas; some states
-might be long runing Activities, an EC2 instance which runs chunkflow
-processes.
+*** Development roadmap
+  :PROPERTIES:
+  :UNNUMBERED: notoc
+  :END:
 
-Chuckflow is a job systems for processing cuboids of data where DCNNs
-are run over small volumes (sub-cuboids) to perform ML based volume
-segmentation to individual neurons etc. There are masters which
-initiate jobs and there are workers who each do their little task. The
-workers and masters could be any machines but are normally EC2
-instances. At its core, their interaction is orchesrated by an SQS queue.
+The easiest and first thing to do is stand up a stock Chunkflow deploy which
+reproduces the workflow they describe in the pre-print.
 
-The workers could easily be Lambdas. That's when it becomes hybrid but
-not in a serverless-first fashion. Next would be to wrap the existing
-chuckflow master as a Step Funtions activity. Still not
-serverless-first but could be a component in a StepFunction. So
-experiment first with Lambda chunkflow workers, then if that goes well
-figure out how to take the master code and shoehorn that into Lamba
-somehow. That would be the full serverless implementation achieved in
-stages.
+Then there are essentially two roles for computers in Chunkflow, Chuck
+Generators and Chunk Processors. It should be trivial to set up
+Lambdas to as Chuck Processors. That's when it becomes hybrid but not
+serverless-first. 
 
-Cuboids could also participate in old-school chunkflow systems. This
-could be simply as Lambdas deployed to work with a stock chunkflow
-system. Another option, Cuboids would be a worker in the main chunkflow system
-and would delegate internally to Lambdas in an internal SQS doing the
-same thing as chunkflow, or just passing through to individual Lambdas is small enough?]
+Chunkflow does not currently work with TensorFlow, it seems:
+[[https://github.com/seung-lab/chunkflow/blob/master/chunkflow/chunk/image/convnet/inferencer.py#L176][inferencer.py, L176]] but it looks like there's structure to build on to
+make something for TensorFlow, following [[https://github.com/seung-lab/chunkflow/blob/master/chunkflow/chunk/image/convnet/patch/pytorch.py][class
+PyTorch(PatchInferencerBase)]].  The chunkflow pre-print says "To add a
+new inference backend, we only need to implement 5D patch processing
+including batch size, number of channel and patch size." That comment
+in the pre-print seems to correspond to Chunkflow Issue #55 [[https://github.com/seung-lab/chunkflow/issues/55][use
+pytorch/dask/tensorflow for parallel execution]] of the Chunkflow repo
+on GitHub.
 
-This chuckflow example is used because it illustrates how Step
-Functions can involve both Lamba and EC2 instances. That's why it's
-worth implement services as Step Functions. Step Functions Activities
-(i.e. the EC2 instances) are the escape valve override mechanism for
-processes that cannot be made to work under the limitations of AWS
-serverless e.g. Lambda's runtime limit of 15 minutes. The Step
-Functions programs that treat Lambdas and Activities as equivalents
-(i.e. just state nodes in the main state machine) is the
-serverless-first way to have a hybrid architecture. Say, some CNN
-training needs to be done and the data to train on is in a Boss
-repository. By framing task as a Step Function, both Lambda-base and
-EC2-based servers can be mixed. [ *TODO:* Is this the best example?
-Why would one want to do that?  Ingest and train? ]
+An intermediate development state would be to have an EC2 instance
+running the existing Chunk Generator code. From the Step Functions
+perspective, that instance would be wrapped as a Activity which polls
+Step Functions for reconstruction jobs to perform. 
 
-** Future work
+The ability to switch from Lambdas to EC2 instances may come
+in handy in some use cases if demand is high and steady.
+
+That is still not serverless-first but could be a component in a
+StepFunction. So experiment first with Lambda chunkflow workers, then
+if that goes well figure out how to take the master code and shoehorn
+that into Lamba somehow. That would be the full serverless
+implementation achieved in stages.
+
+There needs to be a way for econstruction jobs to initiable. That
+will be implemented as a Step Funtion and exposed in the REST API.
+
+The final state of development would be for to have a Lambda which is a Chunk Generator.
+This is how an external API call can initiate a CNN job inside a Step Function.
+
+This chuckflow plan illustrates how Step Functions can involve both
+Lamba and EC2 instances. That's why it's worth implement services as
+Step Functions. 
+
+** Further analysis services
 
 This manifesto focuses on creating a single system which recapitulates
 the data processing that was done with multiple systems for the
@@ -926,8 +1012,11 @@ There are obvious things that could be done with such a platform, for example:
   - Could make this a chunkflow based algorithm
     - Or this could just happen client side?
 - [[https://www.biorxiv.org/content/10.1101/2020.08.30.274225v1.full][Distributed proof-reading via ChunkedGraph]] (think git for neural cell morphology proofreading)
-
+  
 *** FFN reconstruction
+  :PROPERTIES:
+  :UNNUMBERED: notoc
+  :END:
 
 Looks like inference phase should be parallelizable. Multiple
 attention heads could individually fill separate neurites.
@@ -936,6 +1025,9 @@ Looks like the same might be true for the training phase
     
     
 *** Cell type classification via CMN
+  :PROPERTIES:
+  :UNNUMBERED: notoc
+  :END:
     
 - [[https://www.nature.com/articles/s41467-019-10836-3][Learning cellular morphology with neural networks]]
   - [ ] This is Princeton work
