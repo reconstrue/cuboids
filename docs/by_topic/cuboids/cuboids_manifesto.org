@@ -5,13 +5,13 @@
 
 
 | Author   | [[http://tigue.com][John Tigue]]           |
-| Version  | 2020-11-07-1         |
+| Version  | 2020-11-08-1         |
 | License  | CC0 1.0              |
 
 * Abstract
 
-This document proposes refresh modifications and novel extentions to
-the bossDB volumentric database. The envisioned platform has been
+This document proposes refresh modifications and novel extensions to
+the bossDB volumetric database. The envisioned platform has been
 given the working title of Cuboids.
 
 During the MICrONS program, the bossDB (a.k.a., "the Boss") code has
