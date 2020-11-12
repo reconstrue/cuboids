@@ -49,7 +49,7 @@ learning models, and classification by cell type.
 The [[https://bossdb.org/][bossDB]] is a [[https://en.wikipedia.org/wiki/Volume_rendering][volumetric]] database capable of storing petabytes of
 data generated from microscopic imaging of neurological
 tissue. Colloquially, bossDB is also known as "the Boss" and in this
-document both terms are interchangable. 
+document both terms are interchangeable. 
 
 Initial development of the Boss was funded via grants from [[https://www.iarpa.gov/][IARPA]] under
 [[https://www.iarpa.gov/index.php/research-programs/microns][the MICrONS project]]. The resulting source code -- spanning multiple
