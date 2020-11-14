@@ -3,9 +3,9 @@
 #+options: toc:nil
 #+options: html-postamble:nil
 
-| Author   | [[http://tigue.com][John Tigue]]           |
-| Version  | 2020-11-13-1         |
-| License  | CC0 1.0              |
+| Author  | [[http://tigue.com][John Tigue]]   |
+| Version | 2020-11-14-2 |
+| License | CC0 1.0      |
 
 * Abstract
 
@@ -116,7 +116,7 @@ results of machine learning based analysis of the movies and images.
 
 The funding came out of IARPA. The code is open source and [[https://github.com/jhuapl-boss/spdb/blob/master/LICENSE.md][licensed]] in
 a commercially friendly manner, that is under the Apache 2.0
-license. The codebase was [[https://github.com/jhuapl-boss/boss/graphs/contributors][initiate in 2015]] and has continued
+license. The codebase was [[https://github.com/jhuapl-boss/boss/graphs/contributors][initiated in 2015]] and has continued
 (e.g. usage throttling was added in late 2019).
 
 ** The MICrONS program
@@ -576,7 +576,7 @@ APIs: CRUD operations for users, groups, resources, and
 permissions. For example, "List User" via
 https://api.theboss.io/v1/sso/user/:user_name
 
-Note, existing OIDC Indentity Providers (such as the one at
+Note, existing OIDC Identity Providers (such as the one at
 auth.bossdb.io with existing MICrONS data users) can be added to a
 Cognito User Pool. This means Cuboids can recognize the existing
 auth.bossdb.io users and can create Cognito user roles for their
@@ -996,7 +996,7 @@ The final state of development would be for to have a Lambda which is a Chunk Ge
 This is how an external API could initiate a CNN inference job inside a Step Function.
 
 This Chuckflow plan is a textbook illustration of how Step Functions
-can involve both Lamba and EC2 instances, demonstrating part of their
+can involve both Lambda and EC2 instances, demonstrating part of their
 value.
 
 ** Further analysis services
