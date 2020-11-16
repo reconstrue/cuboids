@@ -4,7 +4,7 @@
 #+options: html-postamble:nil
 
 | Author  | [[http://tigue.com][John Tigue]]   |
-| Version | 2020-11-14-2 |
+| Version | 2020-11-15-1 |
 | License | CC0 1.0      |
 
 * Abstract
@@ -69,13 +69,29 @@ does not change the high-level feature set of the repository.
 
 The original bossDB codebase evidences a valid and shrewd
 architectural style which values vendor neutral open source. Yet to
-deal with the sporadic, massive volume and velocity of data being
-throw off by electron microscopes, an AWS serverless engine was
-adopted. This worked well but resulted in a mixed architectural style
-which is more complex than currently necessary.  Cuboids aims to
-resolve the complexity by going all-in on AWS lock-in by jettisoning
-any existing components which can be replaced by equivalent fully
-managed AWS services.
+deal with the sporadic velocity and massive volume of data being throw
+off by electron microscopes, an AWS serverless engine was added in to
+the vendor neutral codebase. This worked well but resulted in a mixed
+architectural style.
+
+The Boss preprint addresses the obvious concerns raised by this:
+#+begin_quote
+When considering a cloud-native approach, vendor lock-in is one
+potential concern – as we not only use the AWS cloud to deploy bossDB,
+but have integrated many of its services into the system to
+substantially accelerate development and performance.  To minimize the
+development impact of expanding to an additional cloud provider or
+on-premise cluster, future work is needed to create a layer of
+abstraction between the core software and AWS services.
+#+end_quote
+
+*The core value proposition of this manifesto* is a realpolitik
+recognition that, although such concerns are valid, by accepting
+vendor lock-in the architecture can be simplified and the rate of
+progress can be increased. Cuboids aims to resolve the complexity of
+mixed architectural style by going all-in on AWS lock-in by
+jettisoning any existing components which can be replaced by
+equivalent fully managed AWS services.
 
 Beyond the aforementioned architectural refresh, Cuboids aims to build
 significant analysis functionality close around the repository. Given
@@ -720,9 +736,9 @@ repository accessed by external analysis tools.
 
 ** Serverless-first design pattern
 
-The core design innovation is that the architecture is being refined
-and elaborated in a serverless-first fashion. This section explains
-what is meant by that.
+The core design innovation of Cuboids is that the Boss architecture is
+being refined and elaborated in a serverless-first fashion. This
+section explains what is meant by that.
 
 Obviously from previous sections, part of the serverless-first mindset
 involves simply minimizing any self-managed infrastructure. Of course,
@@ -738,30 +754,13 @@ least [[https://github.com/jhuapl-boss/boss-manage/tree/master/cloud_formation/s
 Downsample service involves [[https://github.com/jhuapl-boss/boss-manage/blob/master/cloud_formation/stepfunctions/resolution_hierarchy.hsd][a Step Function]] with an Activity which is
 a trivial wrapper for [[https://github.com/jhuapl-boss/boss-tools/blob/master/activities/resolution_hierarchy.py][the core code]].
 
-From an external perspective, analysis programs can be built which
-call on [[https://docs.theboss.io/docs][the Boss REST APIs]]. For example, that is what
-happened during MICrONS. But from an internal perspective, programs
-are built as Step Functions which orchestrate Lambda and Docker
-container based components. (Optionally, a Step Function program can
-be exposed in an API Gateway hosted REST API.) Cuboids programs are
-built on the internal APIs i.e. the interfaces to the existing core
-Boss Lambdas and Step Functions.
-
-Consider the case of adding cuboid segmentation functionality. To the
-outside world the service will manifest as new methods added to the
-REST APIs. Inside AWS, The HTTP messages containing Boss REST requests
-will be handled by AWS API Gateway (APIGW) which will initiate a Step
-Function instance to run a segmentation job. Some states will be
-Lambdas; some states might be long running Activities, say, an EC2
-instance which runs chunkflow processes.
-
 Step Functions are programs -- programs that just so happen to have
 explicitly defined state machines. Step Functions bring state to
 serverless apps which are based on the innately stateless AWS Lambda
 service. Any state which needs to bridges both serverless and
 non-serverless processes is maintained in a Step Function. The states
 -- as Lambdas and Activities -- are the program modules which get
-assembled into a Step Functions based program. 
+assembled into hStep Functions based programs. 
 
 Note that "serverless-first" does not exclude non-serverless
 processes. Step Functions can orchestrate both types. Step Functions
@@ -793,17 +792,39 @@ might. Sure, low fixed costs are nice but the core value of serverless
 for the Boss is its ability to scale massively to the demands of large
 neuroscience experiments.
 
-From the Boss codebase, it is not obvious from that Step Functions can
-orchestrate both serverless and server-based compute. The Boss has
-lots of Step Functions but they deal primarily with Lambdas, not long
-running processes as task Activities.
+From the Boss codebase, it may not be obvious that Step Functions can
+orchestrate both serverless and server-based compute. Yet dig around
+in the source and it turns out that although the Boss Step Functions
+deal primarily with Lambdas, there are long running processes as task
+Activities. [ *TODO:* perhaps this is the source of the "it's slow"
+feedback? ]
+
+There are two perspectives from which the Boss can be seen as
+something to build upon. From an external perspective, analysis
+programs can be built which call on [[https://docs.theboss.io/docs][the Boss REST APIs]]. For example,
+that is what was done by the labs involved in the MICrONS
+program. From an internal perspective, programs can be built as Step
+Functions which orchestrate Lambda and EC2 based components (the
+latter includes Docker containers). Currently some of the Step
+Functions are available for use via the external REST APIs. New
+functionality added within Cuboids will build upon the internal
+libraries via the private APIs i.e. the interfaces to the existing
+core Boss Lambdas and Step Functions.
+
+Consider the case of adding cuboid segmentation functionality. To the
+outside world the service will manifest as new methods added to the
+REST APIs. Inside AWS, The HTTP messages containing REST requests
+will be handled by AWS API Gateway (APIGW) which will initiate a Step
+Function instance to run a segmentation job. Some states will be
+Lambdas; some states might be long running Activities, say, EC2
+instances running chunkflow processes.
 
 Following the serverless-first design pattern, Cuboids will continue
 to build more Step Functions based programs that run within the
 platform.  Any new Step Functions based code will not use heaviside,
-rather it will be written using the Python AWS CDK. (Note: that does
+rather it will be written using the Python AWS CDK. This does
 not mean that removing heaviside from the codebase is a prerequisite to such
-novel processes. CDK can live peaceably alongside heaviside.)
+novel processes. CDK can live peaceably alongside heaviside.
 
 ** Reconstruction: serverless CNN inference
 
@@ -1049,33 +1070,17 @@ involve using the Allens CTDB to classify each IDs neuron by type.
 
 This document is a roadmap for development. This plan has been drawn
 up before the start of coding. As per von Moltke, no plan survives
-contact with the enemy. For example, what to do about [[https://github.com/jhuapl-boss/boss-manage/blob/master/docs/InstallGuide.md#configure-scalyr-account][the Scalyr
-logging]]. The next phase, actually deploying a stock bossDB, is to be
-documented in boss_deploy_log.org.
-
-It is assumed that these changes to bossDB are significantly
-disruptive enough that PRs back to bossDB would not be worth the
-hassle to the repository's maintainers. But maybe some chunks of code
-will go upstream, say, the heaviside replacement code. Perhaps
-upstream would be interested in the Step Function that works with
-chunkflow for neuron reconstruction; being novel that part would not
-involve major changes to existing code but that could be seen as
-feature creep.
-
-This development roadmap may well lead to a fork of the Boss
-codebase. Forking is undesirable but may be inevitable. Although the
-main thrust of this proposal is simply an architectural refresh
-without significant changes to what the software does, these changes
-touch just about every component. That might be too radical a
-departure from the current roadmap. Nonetheless, a eye will be kept
-out for areas where interaction can be maintained. For example, a PR
-which simply replaces heaviside with AWS CDK code may be welcome
-upstream.
+contact with the enemy. Additionally, there are still open questions,
+for example, what to do about [[https://github.com/jhuapl-boss/boss-manage/blob/master/docs/InstallGuide.md#configure-scalyr-account][the Scalyr logging]]; the [[https://www.serverless.com/][Serverless
+Framework]] is already in the mix but perhaps that should be migrated to
+AWS SAM. The next phase, actually deploying a stock bossDB, is to be
+documented in boss_deploy_log.org. Surely that will surface more
+issues.
 
 The Boss has proven itself. A serverless architecture works well for
 connectomics data. In 2017 AWS was promoting the Boss as a poster
-child of serverless. The time is right to move the Boss back to the
-edge of the envelope.
+child for serverless. The time is right to move the Boss back to the
+edge of the envelope and into the future.
 
 * License
   :PROPERTIES:
