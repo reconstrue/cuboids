@@ -4,7 +4,7 @@
 #+options: html-postamble:nil
 
 | Author  | [[http://tigue.com][John Tigue]]   |
-| Version | 2020-11-15-1 |
+| Version | 2020-11-18-1 |
 | License | CC0 1.0      |
 
 * Abstract
@@ -15,15 +15,15 @@ given the working title of Cuboids.
 
 During the MICrONS program, the bossDB (a.k.a., "the Boss") code has
 proven to scale to petabytes of data. It is unusual for a codebase to
-be so extremely stress tested in its initial deployment. Although its
+be so extremely stress tested during its initial deployment. Although its
 serverless core is solid, in order to position the Boss as the open
 source backend for the next generation of neuroscientific microscopy,
-the codebase should be streamlined for ease of administration and to
+the codebase can be streamlined for ease of administration and to
 address feedback from the original users.
 
 The initial goal of the Cuboids project is an architectural update of
 bossDB to leverage the latest AWS serverless innovations and
-supporting fully managed services thereby simplifying deployment and
+various supporting fully managed services thereby simplifying deployment and
 maintenance of the existing system. This update is to jigger the Boss
 internals yet maintain the existing bossDB surface APIs.
 
@@ -33,15 +33,18 @@ visualize data. The resulting Cuboids platform is to be a "whole
 product" which recapitulates the multi-system architecture of the
 MICrONS project but with all processes -- storage, analysis,
 visualization, et cetera -- occuring within a Cuboids instance rather
-than being spread across multiple systems.
+than being spread across multiple systems. New functionality is to
+be implemented in a serverless-first fashion in order to have the entire
+machine be able to scale massively and perform at high speed.
 
 The first process to be moved into Cuboids is reconstruction of
 neurons via image recognition machine learning inference. After that
 the system will be an agile platform for further microscopy analysis
 processes. Examples include reconstruction inference using algorithms
 such as Google's Flood Filling Networks, classification of neurons by
-cell type, and beyond the simpler task of inference is the actual
-training of machine learning models.
+cell type, and -- more complex than the relatively simpler task of
+inference -- the actual training of machine learning models on
+volumentric data.
 
 #+attr_html: :width 80%
 [[./images/logos/cuboids_lettermark_bw.png]]
@@ -61,7 +64,7 @@ repositories -- is available under the [[https://www.apache.org/licenses/LICENSE
 
 The modified bossDB codebase proposed herein is designed to be the
 repository component of a platform which has been given the working
-title of Cuboids. Cuboids builds atop existing work by doubling down
+title of Cuboids. Cuboids builds atop the existing work by doubling down
 on the current AWS lock-in of bossDB, in the interests of streamlining
 the architecture in order to make it easier to administer. This part
 of the proposal is simply "better, faster, cheaper" thinking which
@@ -89,17 +92,17 @@ abstraction between the core software and AWS services.
 recognition that, although such concerns are valid, by accepting
 vendor lock-in the architecture can be simplified and the rate of
 progress can be increased. Cuboids aims to resolve the complexity of
-mixed architectural style by going all-in on AWS lock-in by
+the mixed architectural style by not fretting about AWS lock-in and
 jettisoning any existing components which can be replaced by
 equivalent fully managed AWS services.
 
 Beyond the aforementioned architectural refresh, Cuboids aims to build
-significant analysis functionality close around the repository. Given
-the current architecture of the Boss, image analysis has to be
-performed by separate external systems, requiring the transfer of
-mountains of data. Cuboids builds on the previous bossDB work such
-that analysis of the data within a bossDB repository can be performed
-close to where the data resides.
+significant analysis functionality as close as possible to the
+repository. Given the current architecture of the Boss, image analysis
+has to be performed by separate external systems, requiring the
+transfer of mountains of data. Cuboids builds on the previous bossDB
+work such that analysis of the data within a bossDB repository can be
+performed close to where the data resides.
 
 This functional expansion can be accomplished by shepherding the
 existing serverless boosted architecture towards a serverless-first
@@ -132,8 +135,8 @@ results of machine learning based analysis of the movies and images.
 
 The funding came out of IARPA. The code is open source and [[https://github.com/jhuapl-boss/spdb/blob/master/LICENSE.md][licensed]] in
 a commercially friendly manner, that is under the Apache 2.0
-license. The codebase was [[https://github.com/jhuapl-boss/boss/graphs/contributors][initiated in 2015]] and has continued
-(e.g. usage throttling was added in late 2019).
+license. The codebase was [[https://github.com/jhuapl-boss/boss/graphs/contributors][initiated in 2015]] and development has
+continued (e.g. usage throttling was added in late 2019).
 
 ** The MICrONS program
 
@@ -144,7 +147,7 @@ Primer, for more details.
 Tersely, the Boss -- created by JHU/APL -- was used in both Phase One
 and Phase Two of MICrONS. Phase One was a "small" trail run of the
 main task which occurred in Phase Two. The resulting EM image sets
-were 40 terabyte versus 2.5 petabyte, respectively, a ratio of
+were 40 terabyte and 2.5 petabyte, respectively, a ratio of
 1:62. Phase One involved three separate groups of organizations
 competitively trying out to be awarded the grant for the Phase Two
 work.  The winning team which moved on to Phase Two consisted of
@@ -183,26 +186,16 @@ structural data.)
 Click on the following image to see a video which demonstrates what
 such reconstruction algorithms do. The colored map on the 2D plane
 slice is the output of a segmentation algorithm, an intermediate
-product of the full reconstruction process:
+product of the full reconstruction process.
 
 #+macro: imglnk @@html:<a href="$1"><img src="$2"></a>@@
 {{{imglnk(https://youtu.be/X4eVmSxTZ8Y,images/reconstruction_demo.jpg)}}}
 
 Via [[https://ai.googleblog.com/2018/07/improving-connectomics-by-order-of.html][Improving Connectomics by an Order of Magnitude]], Google AI Blog, 2018-07
 
-
 ** The Boss technical architecture
 
-JHU/APL's coders in close collaboration with AWS built out a solid
-serverless architecture for the Boss. The complication was that this
-collaboration happened in 2015, a time when many support services for
-serverless had not yet been built out by AWS, so various
-non-serverless self-managed services were stood up to complete the
-Boss. This resulting in a hybrid architecture. Nonetheless, a well
-structured architecture enables individual component changes over
-time. As such the Boss can be
-   
-The docs describe the Boss as:
+The preprint describe the Boss as:
 #+begin_quote
 The Boss is a large-scale spatial database service for storing
 multi-dimensional neuroimaging data and associated voxel annotations
@@ -214,6 +207,15 @@ balance cost and performance, auto-scaling capabilities, and a
 high-bandwidth ingest process.
 #+end_quote   
    
+In close collaboration with AWS, JHU/APL's coders built out a solid
+serverless architecture for the Boss. The complication was that this
+collaboration happened in 2015, a time when many support services for
+serverless had not yet been built out by AWS. Therefore, various
+non-serverless self-managed services were stood up to complete the
+Boss. This resulted in a hybrid architecture. Nonetheless, a well
+structured architecture enables individual component to be modified over
+time.
+   
 In its current form the Boss architecture can be considered a hybrid
 of two styles. The foundational frame consists of non-serverless,
 platform neutral, open source machinery originally assembled for the
@@ -224,7 +226,7 @@ serverless tech. These decisions were made for valid reasons back in
 2015 and time has shown the resulting codebase has served its original
 purpose well.
 
-The following diagram is from the original bossDB pre-print. In order
+The following diagram is from the original bossDB preprint. In order
 to break it down, the yellow and red background boxes with labels in
 bold have been added as annotations. The yellow box highlights the
 serverless core of the architecture.  The red boxes define three
@@ -246,7 +248,7 @@ The other three sub-systems in red are proven non-serverless, open
 source technologies: Bastion, Vault, Keycloak, etc.
 - The upper left red zone is the REST interface
 - The Single Sign-on subsystem is in the upper right red zone
-- The lower reg zone can be replace with AWS Secrets Manager
+- The lower red zone can be replace with AWS Secrets Manager
 
 Those three sub-systems are not particularly interesting, domain
 specific machinery. Nonetheless, the functionality they provide
@@ -275,6 +277,14 @@ analysis tools written atop Cuboids will be able to interface with
 multiple bossDB repositories, including the one wherein the MICrONS
 data resides.
 
+For more on the Boss, see the two preprints and two talks by Dean
+Kleissas. Both the later preprint and later talk are more informative
+than the earlier versions. All can be found via [[*References][the References
+section]].  The place to start is [[https://youtu.be/ldNqVmW9c98?t=398][Kleissas' fifty minute talk at AWS
+re:Invent 2017]]/, which is all about the Boss and also a well done talk
+high production value, partially because the nature of the data is
+more visually entertaining than many that in many an AWS talk.
+
 * Realtechnik of cloud architecting
 
 Significant but non-core parts of the bossDB codebase (the red boxes
@@ -288,12 +298,12 @@ replaced with equivalent AWS fully managed services.
 
 This document is entitled "The Cuboids Manifesto" in reference to the
 "[[https://www.youtube.com/watch?v=s1AiBi5gf1s][manifesto]]" documents that circulate within the Swift programming
-community (and it is a bit long). This type of document serves the
-purpose of introducing a proposal which is larger in scope than a
-single, small, specific proposal. This document follows that
-lighthearted nomenclature, in order to highlight that there is a
-[[https://www.ribbonfarm.com/2012/08/16/realtechnik-nausea-and-technological-longing/][realtechnik]] "philosophy" driving the decisions behind what is proposed
-herein.
+community (as well as acknowledging that this document is a bit
+long). A Swift manifesto serves to introduce a proposal which is
+larger in scope than a single, small, specific idea. This document
+follows that lighthearted nomenclature, in order to highlight that
+there is a [[https://www.ribbonfarm.com/2012/08/16/realtechnik-nausea-and-technological-longing/][realtechnik]] "philosophy" driving the decisions behind what
+is proposed herein.
 
 There are two main assumptions to the argument:
 - The original Boss codebase can only be deployed on AWS
@@ -346,14 +356,12 @@ The two above assumptions drive the logic of this document. This
 proposal argues to dive headlong down the slippery slope of AWS
 lock-in. This recommended direction may seem counterintuitive and even
 distasteful given the platform vendor neutral, open source ecosystem
-out of which the Boss grew.
-
-Nonetheless, although the technological lead which AWS currently
-enjoys over the other cloud platform vendors [[https://cloudwars.co/amazon/inside-amazon-aws-no-longer-jeff-bezos-growth-engine/][is slipping]], it does not
-appear that a cross-platform serverless version of bossDB is possible
-at this time, given the state of those cloud platform offerings
-competing with AWS (e.g. a lack of an AWS Step Functions equivalent
-for Google Cloud Platform).
+out of which the Boss grew. Nonetheless, although the technological
+lead which AWS currently enjoys over the other cloud platform vendors
+[[https://cloudwars.co/amazon/inside-amazon-aws-no-longer-jeff-bezos-growth-engine/][is slipping]], it does not appear that a cross-platform serverless
+version of bossDB is possible at this time, given the state of those
+cloud platform offerings competing with AWS (e.g. a lack of an AWS
+Step Functions equivalent for Google Cloud Platform).
 
 Therefore, it is argued herein that the mixed architecture is
 retarding the [[https://en.wikipedia.org/wiki/Diffusion_of_innovations][diffusion of innovation]], especially with regards to that
@@ -369,13 +377,13 @@ passes almost all the checkpoints enumerated in that article: for
 example, all the code is written in Python (i.e. a language well
 supported by AWS Lambda), it is greenfield, and the entire app was
 explicitly designed to run on a cloud platform from the get go. The
-single concern raised which the Boss is guilty of vendor lock-in but
+single concern raised of which the Boss is guilty is vendor lock-in but
 as argued herein, that is acknowledged and accepted.
 
 So, the Cuboids code will be very locked to AWS as the vendor
 platform, which is an ironic form of open source. Regardless, the
 Cuboids codebase will remain open source, intentionally maintaining
-the Apache 2.0 license is the hopes of building an community around
+the Apache 2.0 license in the hopes of building an community around
 the codebase.
 
 * Architectural updates
@@ -519,9 +527,9 @@ machinery is to be replaced with Amazon API Gateway.
 
 Currently, there is a cluster using nginx to run some Python. That
 Python is a Django app using =rest_framework= to handle REST API calls
-coming in over the public network. Cuboids can come in and out,
-optionally being compressed to blosc, numpy, or npygz via HTTP content
-negotiation (see [[https://github.com/jhuapl-boss/boss/blob/master/django/bossspatialdb/parsers.py][parsers.py]]).
+coming in over the public network. Cuboid volumes of data can come in
+and go out, optionally being compressed to blosc, numpy, or npygz via
+HTTP content negotiation (see [[https://github.com/jhuapl-boss/boss/blob/master/django/bossspatialdb/parsers.py][parsers.py]]).
 
 API Gateway was originally created to provide HTTP interfaces to AWS
 serverless apps. Since the Boss core is serverless it is only natural
@@ -549,7 +557,7 @@ user experience of the interface.
 Referring to the color coded architecture diagram again, the upper
 right red zone is the single sign-on (SSO) service.  Notice the two
 domains in the diagram: api.theboss.io and auth.theboss.io. Quoting
-from the Boss pre-print:
+from the Boss preprint:
   #+begin_quote
   Our identity provider server intentionally runs independently from
   the rest of bossDB system, forcing the bossDB API to authenticate
@@ -563,7 +571,7 @@ separate microservice. This also means that this work can be done
 completely independently of the other refurbishment tasks in this
 section of the manifesto.
 
-Returning to the Boss pre-print:
+Returning to the Boss preprint:
   #+begin_quote
   We use the open source software package Keycloak as an identity
   provider to manage users and roles. We created a Django OpenID
@@ -586,7 +594,7 @@ identity provider]] (e.g., [[https://github.com/vzakharchenko/keycloak-lambda-au
 such code exists already somewhere. Perhaps modify or use the code for
 [[https://github.com/jhuapl-boss/boss-oidc][boss-oidc]].
 
-In the docs for [[https://docs.theboss.io/docs/authentication][the Boss Auth REST APIs]], The Boss single sign on (SSO)
+In the docs for [[https://docs.theboss.io/docs/authentication][the Boss Auth REST APIs]], the Boss single sign on (SSO)
 service has about 16 methods, comprising the usual suspects of sign on
 APIs: CRUD operations for users, groups, resources, and
 permissions. For example, "List User" via
@@ -653,9 +661,6 @@ redis instance." The code that generates the CloudFormation for the
 Redis cache machinery is in the boss-manage repository, in
 [[https://github.com/jhuapl-boss/boss-manage/blob/master/cloud_formation/configs/redis.py][cloudformation/configs/redis.py]].
 
-[ *TODO:* The diagram seems to imply current Redis R/W cache is fully
-managed, with the asterix. Is it, really? ]
-   
 ** Infrastructure as code tooling
 
 Finally, there is another technology of the Boss which will be replace
@@ -701,7 +706,7 @@ standard tool for such things: AWS CDK.
 * Architectural extensions
 
 The previous section enumerated various architectural updates which
-together will position a streamlined Boss for higher diffusion of
+together will position a streamlined Boss for broader diffusion of
 innovation. Those refurbishments add almost no new functionality to
 the Boss. In contrast, this section discusses novel machinery to be
 deployed alongside a Boss repository. The conglomerate is to be called
@@ -711,7 +716,9 @@ As argued above, for peta-scale datasets, it is desirable for the
 compute of analysis to happen as close to the data as
 possible. Cuboids does that by inserting the compute into the same
 system as the core Boss repository, similar to how SQL databases have
-stored procedures.
+stored procedures. Such machinery will be built a la serverless first
+in the hopes of reducing impedance mismatches between serverless and
+serverful components.
 
 The existing eighteen Step Functions and various Lambdas currently in
 the Boss can be seen as a library of code containing serverless
@@ -724,15 +731,15 @@ example of a program written atop this library.
 The platform is already there but it has not yet been exploited to the
 level where non-trivial data pipelines have been built atop
 it. Cuboids is laying the foundation for more interesting pipelines
-moving forward.
+to be built within a Boss deploy.
 
 This section has two parts: first is an explanation of the design
 pattern, serverless-first, which will guide the construction of new
 components in Cuboids. Then the serverless-first design pattern is put
 to use to add neuron reconstruction machinery to Cuboids. Doing so
 will set Cuboids on a path to be more of a "whole product" for
-microscopy workflows rather than, as with the Boss, essentially a
-repository accessed by external analysis tools.
+microscopy workflows beyond essentially just a repository accessed by
+external analysis tools.
 
 ** Serverless-first design pattern
 
@@ -760,7 +767,7 @@ serverless apps which are based on the innately stateless AWS Lambda
 service. Any state which needs to bridges both serverless and
 non-serverless processes is maintained in a Step Function. The states
 -- as Lambdas and Activities -- are the program modules which get
-assembled into hStep Functions based programs. 
+assembled into Step Functions based programs. 
 
 Note that "serverless-first" does not exclude non-serverless
 processes. Step Functions can orchestrate both types. Step Functions
@@ -777,15 +784,15 @@ Another rarely mentioned valuable feature of the serverless-first
 design pattern is that it allows for safety valves. The goal of
 serverless-first is to build out as much as can be in a serverless
 fashion based on Lambdas, but failing that various non-serverless
-components can be added into a Step Function as needed. Same Step
-Function, but with some state transitions driven by EC2 instances
-acting as Task Activities, rather than all states being implemented as
-Lambdas.
+components can be added into a Step Function as needed. In such cases
+it is the same Step Function program, but with some state transitions driven
+by EC2 instances acting as Task Activities, rather than all states
+being implemented as Lambdas.
 
 At a certain level of traffic, for purely financial reasons is may be
 worth switching the compute from Lambda to EC2. For normal serverless
 applications, those sort of economics start to be financially worth
-considering when scale gets in the range of 10M monthly hits. But the
+considering when scale gets in the range of ten million monthly hits. But the
 Boss is not a normal serverless application. The Boss is not primarily
 benefiting from serverless similar to how a small start-up
 might. Sure, low fixed costs are nice but the core value of serverless
@@ -796,8 +803,7 @@ From the Boss codebase, it may not be obvious that Step Functions can
 orchestrate both serverless and server-based compute. Yet dig around
 in the source and it turns out that although the Boss Step Functions
 deal primarily with Lambdas, there are long running processes as task
-Activities. [ *TODO:* perhaps this is the source of the "it's slow"
-feedback? ]
+Activities. 
 
 There are two perspectives from which the Boss can be seen as
 something to build upon. From an external perspective, analysis
@@ -850,7 +856,7 @@ BSD, etc.).
 Seung Lab did the reconstruction work for the MICrONS program.
 Chunkflow is their latest reconstruction application for running 3D
 CNNs at scale. It is currently unknown if chunkflow was used during
-MICrONS.
+MICrONS. [ *TODO:* doubt it. Wasn't that 2D segmentaion? Or is that still what is done in 
 
 Nonetheless, chunkflow seems like a good place to start. The goal is
 to fold some Seung Lab code into Cuboids so that it has all the
@@ -903,12 +909,12 @@ that does that, [[https://pypi.org/project/torchlambda/15858e85600/][tochlambda:
 This section introduces the idea of a serverless variant of chunkflow,
 which is going by the name "serverless chunkflow."
 
-Chunkflow ([[https://github.com/seung-lab/chunkflow][repo]], [[https://arxiv.org/abs/1904.10489][pre-print]]) is all about running
+Chunkflow ([[https://github.com/seung-lab/chunkflow][repo]], [[https://arxiv.org/abs/1904.10489][preprint]]) is all about running
 cuboids of microscopic imaging data through 3D CNNs. It comes out of
 the Seung Lab. The codebase was seemingly [[https://github.com/seung-lab/chunkflow/graphs/contributors][started in early 2018]]. The
 open source code is [[https://github.com/seung-lab/chunkflow/blob/master/LICENSE][licensed under Apache 2.0]].
 
-Figure 3 from the chunkflow pre-print does a good job of illustrating
+Figure 3 from the chunkflow preprint does a good job of illustrating
 the work to be done. Notice that the figure simplifies things for the
 purposed of illustration: "Note that the process was illustrated in 2D
 for simplicity, and the actual processing is in 3D. This illustration
@@ -968,8 +974,8 @@ scheduling task respecting locality will enhance usage of caches.
 A good candidate is *redis server with spatial indexes or geohash*
 #+end_quote
 
-For example, Flood Filling Networks (FFN), on average repeatedly
-visiting voxels about 75 times.  During inference, FFNs are fed
+For example, Flood Filling Networks (FFN) on average repeatedly
+visit any given voxel about 75 times.  During inference, FFNs are fed
 cuboids. They also tend to "walk" along cell membranes. This will look
 like a sequence of moves which keep asking for neighboring cuboids.
 As such, a serverless packaging of FFNs -- which are TensorFlow based
@@ -980,13 +986,12 @@ As such, a serverless packaging of FFNs -- which are TensorFlow based
   :UNNUMBERED: notoc
   :END:
 
-The easiest and first thing to do is stand up a stock chunkflow deploy which
-reproduces the workflow they describe in the pre-print.
-
-Then there are essentially two roles for computers in chunkflow, Chuck
+The easiest and first thing to do is stand up a stock chunkflow deploy
+which reproduces the workflow they describe in the preprint. Then
+there are essentially two roles for computers in chunkflow, Chuck
 Generators and Chunk Processors. It should be trivial to set up
 Lambdas to as Chuck Processors. That's when it becomes hybrid but not
-serverless-first. 
+serverless-first.
 
 There needs to be a way for reconstruction jobs to initiable. That
 will be implemented as a Step Funtion and exposed in the REST API.
@@ -994,10 +999,10 @@ will be implemented as a Step Funtion and exposed in the REST API.
 Chunkflow does not currently work with TensorFlow, it seems:
 [[https://github.com/seung-lab/chunkflow/blob/master/chunkflow/chunk/image/convnet/inferencer.py#L176][inferencer.py, L176]]. But it looks like there's structure to build on to
 extend the system to work with TensorFlow (see [[https://github.com/seung-lab/chunkflow/blob/master/chunkflow/chunk/image/convnet/patch/pytorch.py][class
-PyTorch(PatchInferencerBase)]]).  The chunkflow pre-print says "To add a
+PyTorch(PatchInferencerBase)]]).  The chunkflow preprint says "To add a
 new inference backend, we only need to implement 5D patch processing
 including batch size, number of channel and patch size." That comment
-in the pre-print seems to correspond to chunkflow Issue #55 on GitHub: [[https://github.com/seung-lab/chunkflow/issues/55][use
+in the preprint seems to correspond to chunkflow Issue #55 on GitHub: [[https://github.com/seung-lab/chunkflow/issues/55][use
 pytorch/dask/tensorflow for parallel execution]].
 
 An intermediate development state would be to have an EC2 instance
@@ -1007,14 +1012,10 @@ Step Functions for reconstruction jobs to perform. Also, the ability
 to switch from Lambdas to EC2 instances may come in handy in some use
 cases if demand is high and steady.
 
-The about would not qualify as serverless-first but could be a
-component in a Step Function. So experiment first with Lambda chunkflow
-workers, then if that goes well figure out how to take the master code
-and shoehorn that into Lamba somehow. That would be the full
-serverless implementation achieved in stages.
-
-The final state of development would be for to have a Lambda which is a Chunk Generator.
-This is how an external API could initiate a CNN inference job inside a Step Function.
+The final state of development would be for to have a Lambda which is
+a Chunk Generator.  This is how an external API could initiate a CNN
+inference job inside a Step Function.  That would be the full
+serverless chunkflow implementation achieved in stages.
 
 This Chuckflow plan is a textbook illustration of how Step Functions
 can involve both Lambda and EC2 instances, demonstrating part of their
@@ -1035,18 +1036,18 @@ massive workflows at high speed. The serverless-first Step Functions
 are a solid framework for building complex analysis pipelines.
 
 There are obvious things that could be done with such a platform, for example:
-- Other reconstruction algorithms
+- Other reconstruction algorithms such as FFNs
 - Convolving some Vaa3D plug-ins over a volume
-- [[https://towardsdatascience.com/countless-3d-vectorized-2x-downsampling-of-labeled-volume-images-using-python-and-numpy-59d686c2f75][COUNTLESS 3D for Vectorized 2x Downsampling of Labeled Volumes]] for
-  fast colored multi-resolution pyramid building ([[https://github.com/william-silversmith/countless][repo]])
-  - Downsampling of the output of classifiers and reconstructors
-  - Color by label then downsample.
+- [[https://towardsdatascience.com/countless-3d-vectorized-2x-downsampling-of-labeled-volume-images-using-python-and-numpy-59d686c2f75][COUNTLESS 3D for Vectorized 2x Downsampling of Labeled Volumes]] 
+  - Fast colored multi-resolution pyramid building ([[https://github.com/william-silversmith/countless][repo]])
+  - Colored as per the output of classifiers and reconstructors
+  - Can this be cast as a chunkflow job: recursively downsampling in a (2,2,2) => (1,1,1) algorithm using the Redis in memory cache to memoize the answer 
 - Deconvolution of brightfield data
-- Resolution pyramid building with an intensity threshold (filtering for brighfield)
-  - This way brightfield stacks can be view cleaned up
+- Resolution pyramids with an intensity threshold 
+  - This way brightfield stacks can be viewed with the field filtered out
   - Could make this a chunkflow based algorithm
-    - Or this could just happen client side?
-- [[https://www.biorxiv.org/content/10.1101/2020.08.30.274225v1.full][Distributed proof-reading via ChunkedGraph]] (think git for neural cell morphology proofreading)
+- [[https://www.biorxiv.org/content/10.1101/2020.08.30.274225v1.full][Distributed proof-reading via ChunkedGraph]] 
+  - Think git for neural cell morphology proofreading
   
 The first item in the above list is where Google's Flood-Filling
 Networks should be used for reconstruction inference.  Looks like FFN
@@ -1060,9 +1061,19 @@ Lab work so should hopefully work well with chunkflow. On a high
 level, first cell surface meshes are generated via reconstruction
 inference (via FFN), then they are classified by cell type. For
 example, they trained a CMN to classify as glia or not. Glia comprise
-about 90% of the cells and filtering them allows attention to focus on
-the more interesting neurons. A second generation of this would
-involve using the Allens CTDB to classify each IDs neuron by type.
+about 90% of the cells and filtering them out allows attention to
+focus on the more interesting neurons. A second generation of this
+would involve using the Allens Cell Types Database to classify each
+IDs neuron by type.
+
+Neuron2Vec is triple-loss based unsupervised (no labeling required)
+learning of cell morphologies (analogously to human bodyes: locally,
+fingers look different from arms and arms from bodies). This would
+make for a valuable t-SNE/UMAP 2D image mapping of neuron segments;
+maybe throw in some HDBSCAN clustering.  Use the top three priciple
+components to define a voxel's RGB color. This illustrateds how novel
+UI features can be added by multi-step analysis pipelines, whih would
+be implemented as a Step Function.
 
 [[./images/cmn.png]]
 
@@ -1070,12 +1081,12 @@ involve using the Allens CTDB to classify each IDs neuron by type.
 
 This document is a roadmap for development. This plan has been drawn
 up before the start of coding. As per von Moltke, no plan survives
-contact with the enemy. Additionally, there are still open questions,
-for example, what to do about [[https://github.com/jhuapl-boss/boss-manage/blob/master/docs/InstallGuide.md#configure-scalyr-account][the Scalyr logging]]; the [[https://www.serverless.com/][Serverless
-Framework]] is already in the mix but perhaps that should be migrated to
-AWS SAM. The next phase, actually deploying a stock bossDB, is to be
-documented in boss_deploy_log.org. Surely that will surface more
-issues.
+first contact with the enemy. Additionally, there are still open
+questions, for example, what to do about [[https://github.com/jhuapl-boss/boss-manage/blob/master/docs/InstallGuide.md#configure-scalyr-account][the Scalyr logging]]; the
+[[https://www.serverless.com/][Serverless Framework]] is already in the mix but perhaps that should be
+migrated to AWS SAM. The next phase, i.e. actually deploying a stock
+bossDB, is to be documented in ~boss_deploy_log.org~. Surely that will
+surface more issues.
 
 The Boss has proven itself. A serverless architecture works well for
 connectomics data. In 2017 AWS was promoting the Boss as a poster
