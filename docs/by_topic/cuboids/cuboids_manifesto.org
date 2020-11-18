@@ -4,7 +4,7 @@
 #+options: html-postamble:nil
 
 | Author  | [[http://tigue.com][John Tigue]]   |
-| Version | 2020-11-18-1 |
+| Version | 2020-11-18-2 |
 | License | CC0 1.0      |
 
 * Abstract
@@ -44,7 +44,7 @@ processes. Examples include reconstruction inference using algorithms
 such as Google's Flood Filling Networks, classification of neurons by
 cell type, and -- more complex than the relatively simpler task of
 inference -- the actual training of machine learning models on
-volumentric data.
+volumetric data.
 
 #+attr_html: :width 80%
 [[./images/logos/cuboids_lettermark_bw.png]]
@@ -58,7 +58,7 @@ data generated from microscopic imaging of neurological
 tissue. Colloquially, bossDB is also known as "the Boss" and in this
 document both terms are interchangeable. 
 
-Initial development of the Boss was funded via grants from [[https://www.iarpa.gov/][IARPA]] under
+Initial development of the Boss was funded by grants from [[https://www.iarpa.gov/][IARPA]] under
 [[https://www.iarpa.gov/index.php/research-programs/microns][the MICrONS project]]. The resulting source code -- spanning multiple
 repositories -- is available under the [[https://www.apache.org/licenses/LICENSE-2.0][Apache 2.0]] open source license.
 
@@ -72,8 +72,8 @@ does not change the high-level feature set of the repository.
 
 The original bossDB codebase evidences a valid and shrewd
 architectural style which values vendor neutral open source. Yet to
-deal with the sporadic velocity and massive volume of data being throw
-off by electron microscopes, an AWS serverless engine was added in to
+deal with the sporadic velocity and massive volume of data being thrown
+off by electron microscopes, an AWS serverless engine was inserted within
 the vendor neutral codebase. This worked well but resulted in a mixed
 architectural style.
 
@@ -107,7 +107,7 @@ performed close to where the data resides.
 This functional expansion can be accomplished by shepherding the
 existing serverless boosted architecture towards a serverless-first
 design. In 2015, when work on the Boss was started, a serverless-first
-architecture simply could not be build because AWS has not yet built
+architecture simply could not be built because AWS has not yet built
 out enough serverless products. The term "serverless-first" refers in
 part to the minimizing of self-managed services. More importantly, the
 balance is to swing from the current Boss architecture of a
@@ -172,7 +172,7 @@ Four organization each focused on their particular area of expertise:
 The functional calcium imaging generated many 4D movies of neural
 activities taken while the mouse was performing in various learning
 experiments.  Next the structural imaging involved scanning a cubic
-millimeter of the mouse's brain via a industrialized EM workflow which
+millimeter of the mouse's brain via an industrialized EM workflow which
 generated 2.5 petabyte of TIFF image files. (The distinction between
 structural imaging and functional imaging is analogous to that between
 the map of a road network and recordings of traffic over the network,
@@ -213,7 +213,7 @@ collaboration happened in 2015, a time when many support services for
 serverless had not yet been built out by AWS. Therefore, various
 non-serverless self-managed services were stood up to complete the
 Boss. This resulted in a hybrid architecture. Nonetheless, a well
-structured architecture enables individual component to be modified over
+structured architecture enables individual components to be modified over
 time.
    
 In its current form the Boss architecture can be considered a hybrid
@@ -383,7 +383,7 @@ as argued herein, that is acknowledged and accepted.
 So, the Cuboids code will be very locked to AWS as the vendor
 platform, which is an ironic form of open source. Regardless, the
 Cuboids codebase will remain open source, intentionally maintaining
-the Apache 2.0 license in the hopes of building an community around
+the Apache 2.0 license in the hopes of building a community around
 the codebase.
 
 * Architectural updates
@@ -431,10 +431,10 @@ maintain backward compatibility. Any distinctly novel functionality to
 be introduced in Cuboids which is not present in the Boss codebase
 will be constructed outside the Boss repository component.
 
-The refurbishments to be performed can be illustrates by further
+The refurbishments to be performed can be illustrated by further
 marking up the Boss high level architecture diagram from earlier.
 These annotations are color coded according to a stop light
-red-yellow-green color scheme. The red boxes are to be replace with
+red-yellow-green color scheme. The red boxes are to be replaced with
 the AWS services named in green. The red boxes are labeled by their
 roles in black bold text. Those same roles are to be resatisfied with
 the named (in green) AWS fully managed services.
@@ -445,7 +445,7 @@ the named (in green) AWS fully managed services.
 In the above diagram, the parts of the architecture to be refurbished are:
 - The RESTful interface machinery: to be handled by Amazon API Gateway
 - The Single sign on machinery: to be migrated to AWS Cognito
-- The secrets keeping machinery: to be replaces with AWS Secrets Manager
+- The secrets keeping machinery: to be replaced with AWS Secrets Manager
 - The Redis cache: to be managed by Amazon ElastiCache
 
 These sub-systems to be modified are simply necessary support
@@ -548,7 +548,7 @@ migrated to Lambdas, but the Django on nginx foundation is to be
 replaced by API Gateway.
 
 It is a goal to maintain backwards compatibility of the interface with
-the original Boss APIs. This refurbishment is purely about simplyfying
+the original Boss APIs. This refurbishment is purely about simplifying
 the machinery which implements the interface, not about changing the
 user experience of the interface.
 
@@ -609,7 +609,7 @@ MICrONS Boss repository.
 
 ** Secrets
 
-The lower red zone can be replace with [[https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html][AWS Secrets Manager]]. The
+The lower red zone can be replaced with [[https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html][AWS Secrets Manager]]. The
 existing machinery is more auto-scaling groups of EC2 instances:
 - Vault servers maintain secrets
   - [[https://github.com/jhuapl-boss/boss-manage/blob/master/cloud_formation/configs/core.py#L138][Provisioned via CloudFormation]]
@@ -663,9 +663,9 @@ Redis cache machinery is in the boss-manage repository, in
 
 ** Infrastructure as code tooling
 
-Finally, there is another technology of the Boss which will be replace
+Finally, there is another technology of the Boss which will be replaced
 with an equivalent AWS technology. Unlike the above tasks this is not
-about services. Rather, JHU/APL's developer tool, heaviside, it to be
+about services. Rather, JHU/APL's developer tool, heaviside, is to be
 replaced with AWS CDK.
    
 The core of the Boss is a sophisticated serverless application which
@@ -749,13 +749,13 @@ section explains what is meant by that.
 
 Obviously from previous sections, part of the serverless-first mindset
 involves simply minimizing any self-managed infrastructure. Of course,
-one must keep an eye the costs. Serverless can be quite cost effective
+one must keep an eye on the costs. Serverless can be quite cost effective
 but when it comes to fully managed services (for serverless or not),
 sometimes AWS wants way too much money in return for simply removing a
 hassle.
    
 Setting aside services, from a coder's perspective the main AWS
-service than enables serverless-first designs is Step Functions, which
+service that enables serverless-first designs is Step Functions, which
 has already been adopted into the Boss machinery. There are already at
 least [[https://github.com/jhuapl-boss/boss-manage/tree/master/cloud_formation/stepfunctions][18 Step Functions]] in the Boss codebase. For example, the
 Downsample service involves [[https://github.com/jhuapl-boss/boss-manage/blob/master/cloud_formation/stepfunctions/resolution_hierarchy.hsd][a Step Function]] with an Activity which is
@@ -764,7 +764,7 @@ a trivial wrapper for [[https://github.com/jhuapl-boss/boss-tools/blob/master/ac
 Step Functions are programs -- programs that just so happen to have
 explicitly defined state machines. Step Functions bring state to
 serverless apps which are based on the innately stateless AWS Lambda
-service. Any state which needs to bridges both serverless and
+service. Any state which needs to bridge across both serverless and
 non-serverless processes is maintained in a Step Function. The states
 -- as Lambdas and Activities -- are the program modules which get
 assembled into Step Functions based programs. 
@@ -789,9 +789,9 @@ it is the same Step Function program, but with some state transitions driven
 by EC2 instances acting as Task Activities, rather than all states
 being implemented as Lambdas.
 
-At a certain level of traffic, for purely financial reasons is may be
+At a certain level of traffic, for purely financial reasons it may be
 worth switching the compute from Lambda to EC2. For normal serverless
-applications, those sort of economics start to be financially worth
+applications, those sorts of economics start to be financially worth
 considering when scale gets in the range of ten million monthly hits. But the
 Boss is not a normal serverless application. The Boss is not primarily
 benefiting from serverless similar to how a small start-up
@@ -856,7 +856,7 @@ BSD, etc.).
 Seung Lab did the reconstruction work for the MICrONS program.
 Chunkflow is their latest reconstruction application for running 3D
 CNNs at scale. It is currently unknown if chunkflow was used during
-MICrONS. [ *TODO:* doubt it. Wasn't that 2D segmentaion? Or is that still what is done in 
+MICrONS. [ *TODO:* doubt it. Wasn't that 2D segmentation? Or is that still what is done in 
 
 Nonetheless, chunkflow seems like a good place to start. The goal is
 to fold some Seung Lab code into Cuboids so that it has all the
@@ -870,7 +870,7 @@ put in a theoretical MICrONS museum.
   :END:  
 
 Before getting into the specifics of Chuckflow, it is worth discussing
-whether CNN code can be run on AWS Lambda at all. Currently infernence
+whether CNN code can be run on AWS Lambda at all. Currently inference
 tasks can be run on Lambda. Actually training models is out of scope
 for this task but that may eventually be added to Cuboids.
   
@@ -882,7 +882,7 @@ performed external to the Boss.
 In the interim, AWS Lambda -- the core technology of serverless -- has
 matured such that [[https://medium.com/@adhorn/getting-started-with-aws-lambda-layers-for-python-6e10b1f9a5d][larger Python codebases can now be deployed on
 Lambda]]. For example, [[https://towardsdatascience.com/deploying-sklearn-machine-learning-on-aws-lambda-with-sam-8cc69ee04f47][scikit-learn can now be deployed on AWS
-Lambda]]. By packaging popular ML frameoworks as [[https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html][Lambda layers]], Cuboids
+Lambda]]. By packaging popular ML frameworks as [[https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html][Lambda layers]], Cuboids
 can be a serverless platform for 3D image recognition within a
 bossDB-based system.
 
@@ -916,7 +916,7 @@ open source code is [[https://github.com/seung-lab/chunkflow/blob/master/LICENSE
 
 Figure 3 from the chunkflow preprint does a good job of illustrating
 the work to be done. Notice that the figure simplifies things for the
-purposed of illustration: "Note that the process was illustrated in 2D
+purpose of illustration: "Note that the process was illustrated in 2D
 for simplicity, and the actual processing is in 3D. This illustration
 used 2 × 2 patches, but actual processing have much larger number of
 patches in 3D."
@@ -934,12 +934,12 @@ larger map (e), the larger map was then cropped to remove the weighted
 margin (f).
 #+end_quote   
 
-Chuckflow is a job systems for processing cuboids of data. DCNNs are
+Chuckflow is a job system for processing cuboids of data. DCNNs are
 run over small volumes (sub-cuboids) to perform ML based volume
 segmentation down to individual neurons, synapses, etc. There are masters
 (Chunk Generators) which initiate jobs and there are workers (Chunk
 Processors) who each do their little task. Their interaction is
-orchesrated by an AWS SQS queue.
+orchestrated by an AWS SQS queue.
 
 The Generators and Processors can be any machines but on AWS are
 normally EC2 instances. Chuckflow can be configured to work with cheap
@@ -948,9 +948,9 @@ the compute cost down to about one third that of non-spot
 pricing. 
 
 Following the serverless-first design pattern, a goal of deploying
-chunkflow in Cuboids it to use it in a serverless fashion.  A
-serverless chunkflow will have low impedience mismatch with the rest
-of Boss system since everything in the core will be serverless.  
+chunkflow in Cuboids is to use it in a serverless fashion.  A
+serverless chunkflow will have low impedance mismatch with the rest
+of the Boss system since everything in the core will be serverless.  
 
 Note that [[https://github.com/seung-lab/chunkflow/blob/master/chunkflow/lib/aws/sqs_queue.py][the core control bus in chunkflow]] is built around AWS
 SQS. SQS is a common building block for serverless applications. There
@@ -990,16 +990,16 @@ The easiest and first thing to do is stand up a stock chunkflow deploy
 which reproduces the workflow they describe in the preprint. Then
 there are essentially two roles for computers in chunkflow, Chuck
 Generators and Chunk Processors. It should be trivial to set up
-Lambdas to as Chuck Processors. That's when it becomes hybrid but not
+Lambdas to act as Chuck Processors. That's when it becomes hybrid but not
 serverless-first.
 
 There needs to be a way for reconstruction jobs to initiable. That
-will be implemented as a Step Funtion and exposed in the REST API.
+will be implemented as a Step Function and exposed in the REST API.
 
 Chunkflow does not currently work with TensorFlow, it seems:
 [[https://github.com/seung-lab/chunkflow/blob/master/chunkflow/chunk/image/convnet/inferencer.py#L176][inferencer.py, L176]]. But it looks like there's structure to build on to
-extend the system to work with TensorFlow (see [[https://github.com/seung-lab/chunkflow/blob/master/chunkflow/chunk/image/convnet/patch/pytorch.py][class
-PyTorch(PatchInferencerBase)]]).  The chunkflow preprint says "To add a
+extend the system to work with TensorFlow (see
+[[https://github.com/seung-lab/chunkflow/blob/master/chunkflow/chunk/image/convnet/patch/pytorch.py][class PyTorch(PatchInferencerBase)]]).  The chunkflow preprint says "To add a
 new inference backend, we only need to implement 5D patch processing
 including batch size, number of channel and patch size." That comment
 in the preprint seems to correspond to chunkflow Issue #55 on GitHub: [[https://github.com/seung-lab/chunkflow/issues/55][use
@@ -1007,12 +1007,12 @@ pytorch/dask/tensorflow for parallel execution]].
 
 An intermediate development state would be to have an EC2 instance
 running the existing Chunk Generator code. From the Step Functions
-perspective, that instance would be wrapped as a Activity which polls
+perspective, that instance would be wrapped as an Activity which polls
 Step Functions for reconstruction jobs to perform. Also, the ability
 to switch from Lambdas to EC2 instances may come in handy in some use
 cases if demand is high and steady.
 
-The final state of development would be for to have a Lambda which is
+The final state of development would be to have a Lambda which is
 a Chunk Generator.  This is how an external API could initiate a CNN
 inference job inside a Step Function.  That would be the full
 serverless chunkflow implementation achieved in stages.
@@ -1067,12 +1067,12 @@ would involve using the Allens Cell Types Database to classify each
 IDs neuron by type.
 
 Neuron2Vec is triple-loss based unsupervised (no labeling required)
-learning of cell morphologies (analogously to human bodyes: locally,
+learning of cell morphologies (analogously to human bodies: locally,
 fingers look different from arms and arms from bodies). This would
 make for a valuable t-SNE/UMAP 2D image mapping of neuron segments;
-maybe throw in some HDBSCAN clustering.  Use the top three priciple
-components to define a voxel's RGB color. This illustrateds how novel
-UI features can be added by multi-step analysis pipelines, whih would
+maybe throw in some HDBSCAN clustering.  Use the top three principle
+components to define a voxel's RGB color. This illustrates how novel
+UI features can be added by multi-step analysis pipelines, which would
 be implemented as a Step Function.
 
 [[./images/cmn.png]]
