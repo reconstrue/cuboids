@@ -4,14 +4,16 @@
 #+options: html-postamble:nil
 
 | Author  | [[http://tigue.com][John Tigue]]   |
-| Version | 2020-11-18-2 |
+| Version | 2020-11-20-1 |
 | License | CC0 1.0      |
 
 * Abstract
 
 This document proposes refresh modifications and novel extensions to
-the bossDB volumetric database. The envisioned platform has been
-given the working title of Cuboids.
+the bossDB volumetric database. The envisioned platform has been given
+the working title of Cuboids. Cuboids is a variant of bossDB: the AWS
+locked-in, serverless-first, next generation spin off which performs
+both data storage and analysis in one system.
 
 During the MICrONS program, the bossDB (a.k.a., "the Boss") code has
 proven to scale to petabytes of data. It is unusual for a codebase to
@@ -40,7 +42,7 @@ machine be able to scale massively and perform at high speed.
 The first process to be moved into Cuboids is reconstruction of
 neurons via image recognition machine learning inference. After that
 the system will be an agile platform for further microscopy analysis
-processes. Examples include reconstruction inference using algorithms
+pipelines. Examples include reconstruction inference using algorithms
 such as Google's Flood Filling Networks, classification of neurons by
 cell type, and -- more complex than the relatively simpler task of
 inference -- the actual training of machine learning models on
@@ -58,10 +60,6 @@ data generated from microscopic imaging of neurological
 tissue. Colloquially, bossDB is also known as "the Boss" and in this
 document both terms are interchangeable.
 
-Initial development of the Boss was funded by grants from [[https://www.iarpa.gov/][IARPA]] under
-[[https://www.iarpa.gov/index.php/research-programs/microns][the MICrONS project]]. The resulting source code -- spanning multiple
-repositories -- is available under the [[https://www.apache.org/licenses/LICENSE-2.0][Apache 2.0]] open source license.
-
 The modified bossDB codebase proposed herein is designed to be the
 repository component of a platform which has been given the working
 title of Cuboids. Cuboids builds atop the existing work by doubling down
@@ -72,10 +70,11 @@ does not change the high-level feature set of the repository.
 
 The original bossDB codebase evidences a valid and shrewd
 architectural style which values vendor neutral open source. Yet to
-deal with the sporadic velocity and massive volume of data being thrown
-off by electron microscopes, an AWS serverless engine was inserted within
-the vendor neutral codebase. This worked well but resulted in a mixed
-architectural style.
+deal with the sporadic velocity and massive volume of data being
+thrown off by electron microscopes ([[https://www.nature.com/articles/s41467-020-18659-3][3 gigapixel per second]]), an AWS
+serverless engine was inserted within the vendor neutral
+codebase. This worked well but resulted in a mixed architectural
+style.
 
 The Boss preprint addresses the obvious concerns raised by this:
 #+begin_quote
@@ -97,18 +96,18 @@ jettisoning any existing components which can be replaced by
 equivalent fully managed AWS services.
 
 Beyond the aforementioned architectural refresh, Cuboids aims to build
-significant analysis functionality as close as possible to the
-repository. Given the current architecture of the Boss, image analysis
-has to be performed by separate external systems, requiring the
-transfer of mountains of data. Cuboids builds on the previous bossDB
-work such that analysis of the data within a bossDB repository can be
-performed close to where the data resides.
+significant analysis functionality into the system, as close as
+possible to the repository. Given the current architecture of the
+Boss, image analysis has to be performed by separate external systems,
+requiring the transfer of mountains of data. Cuboids builds on the
+previous bossDB work such that analysis of the data within a bossDB
+repository can be performed close to where the data resides.
 
 This functional expansion can be accomplished by shepherding the
 existing serverless boosted architecture towards a serverless-first
 design. In 2015, when work on the Boss was started, a serverless-first
-architecture simply could not be built because AWS has not yet built
-out enough serverless products. The term "serverless-first" refers in
+architecture simply could not be built because AWS has not yet released
+enough serverless products. The term "serverless-first" refers in
 part to the minimizing of self-managed services. More importantly, the
 balance is to swing from the current Boss architecture of a
 non-serverless frame with a serverless engine to one which builds out
@@ -119,11 +118,11 @@ concerns.
 As implied by the name, Cuboids, *the core technical message is*: for
 volumetric biomedical imaging data the fundamental data structure is a
 cuboid, which is not simply a stack of independent 2D images. All core
-machinery should process cuboids. In order to minimize data transfer,
-data analysis should happen internally within the system. To minimize
-performance harming impedance mismatches, a serverless-first design
-should be followed which implements – as much as possible – each
-component using serverless technology.
+machinery should process cuboids. Additionally, in order to minimize
+data transfer, data analysis should happen internally within the
+system. To minimize performance harming impedance mismatches, a
+serverless-first design should be followed which implements – as much
+as possible – each component using serverless technology.
 
 
 Peta-scale datasets are unlikely to ever migrate from where they are
@@ -143,10 +142,12 @@ The Boss was written to be the repository for data generated by the
 MICrONS program. The data consists of videos, static images, and the
 results of machine learning based analysis of the movies and images.
 
-The funding came out of IARPA. The code is open source and [[https://github.com/jhuapl-boss/spdb/blob/master/LICENSE.md][licensed]] in
-a commercially friendly manner, that is under the Apache 2.0
-license. The codebase was [[https://github.com/jhuapl-boss/boss/graphs/contributors][initiated in 2015]] and development has
-continued (e.g. usage throttling was added in late 2019).
+Initial development of the Boss was funded by grants from [[https://www.iarpa.gov/][IARPA]] under
+[[https://www.iarpa.gov/index.php/research-programs/microns][the MICrONS project]]. The resulting source code -- spanning multiple
+repositories -- is open source and [[https://github.com/jhuapl-boss/spdb/blob/master/LICENSE.md][licensed]] in a commercially friendly
+manner, that is under the Apache 2.0 license. The codebase was
+[[https://github.com/jhuapl-boss/boss/graphs/contributors][initiated in 2015]] and development has continued (e.g. usage throttling
+was added in late 2019).
 
 ** The MICrONS program
 
@@ -173,7 +174,7 @@ during Phase Two.
 #+attr_html: :width 65%
 [[./images/microns_phase_two_dataflow.jpg]]
 
-Four organization each focused on their particular area of expertise:
+The four organizations each focused on their particular area of expertise:
 - JHU/APL wrote the Boss repository code and supporting tools
 - Baylor University performed functional imaging experiments on a live mouse
 - The Allen Institute electron microscope (EM) scanned that mouse's brain
@@ -182,16 +183,16 @@ Four organization each focused on their particular area of expertise:
 The functional calcium imaging generated many 4D movies of neural
 activities taken while the mouse was performing in various learning
 experiments.  Next the structural imaging involved scanning a cubic
-millimeter of the mouse's brain via an industrialized EM workflow which
-generated 2.5 petabyte of TIFF image files. (The distinction between
-structural imaging and functional imaging is analogous to that between
-the map of a road network and recordings of traffic over the network,
-respectively.) Finally, the reconstruction work involved downloading
-the EM images and mining them via custom built machine learning
-algorithms -- deep CNNs navigating through massive volumes of 3D data
-to recognize neurons down to individual synapses. (Not shown here is
-the work of co-registering the functional calcium videos to the EM
-structural data.)
+millimeter of the mouse's brain via an industrialized EM workflow
+which generated 2.5 petabyte of TIFF image files (~125,000,000
+files). (The distinction between structural imaging and functional
+imaging is analogous to that between the map of a road network and
+recordings of traffic over the network, respectively.) Finally, the
+reconstruction work involved downloading the EM images and mining them
+via custom built machine learning algorithms -- deep CNNs navigating
+through massive volumes of 3D data to recognize neurons down to
+individual synapses. (Not shown here is the work of co-registering the
+functional calcium videos to the EM structural data.)
 
 Click on the following image to see a video which demonstrates what
 such reconstruction algorithms do. The colored map on the 2D plane
@@ -221,10 +222,10 @@ In close collaboration with AWS, JHU/APL's coders built out a solid
 serverless architecture for the Boss. The complication was that this
 collaboration happened in 2015, a time when many support services for
 serverless had not yet been built out by AWS. Therefore, various
-non-serverless self-managed services were stood up to complete the
-Boss. This resulted in a hybrid architecture. Nonetheless, a well
-structured architecture enables individual components to be modified over
-time.
+non-serverless, self-managed services were stood up to complete the
+Boss. This resulted in a hybrid architecture. Nonetheless, a
+well-structured architecture enables individual components to be
+modified over time.
 
 In its current form the Boss architecture can be considered a hybrid
 of two styles. The foundational frame consists of non-serverless,
