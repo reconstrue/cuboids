@@ -56,7 +56,7 @@ volumetric data.
 The [[https://bossdb.org/][bossDB]] is a [[https://en.wikipedia.org/wiki/Volume_rendering][volumetric]] database capable of storing petabytes of
 data generated from microscopic imaging of neurological
 tissue. Colloquially, bossDB is also known as "the Boss" and in this
-document both terms are interchangeable. 
+document both terms are interchangeable.
 
 Initial development of the Boss was funded by grants from [[https://www.iarpa.gov/][IARPA]] under
 [[https://www.iarpa.gov/index.php/research-programs/microns][the MICrONS project]]. The resulting source code -- spanning multiple
@@ -116,6 +116,16 @@ from the serverless core and then adds on long running, self-managed
 compute instances only as necessitated by technical or financial
 concerns.
 
+As implied by the name, Cuboids, *the core technical message is*: for
+volumetric biomedical imaging data the fundamental data structure is a
+cuboid, which is not simply a stack of independent 2D images. All core
+machinery should process cuboids. In order to minimize data transfer,
+data analysis should happen internally within the system. To minimize
+performance harming impedance mismatches, a serverless-first design
+should be followed which implements – as much as possible – each
+component using serverless technology.
+
+
 Peta-scale datasets are unlikely to ever migrate from where they are
 initially reposited. Recognizing this and the fact that the existing
 AWS-only codebase is currently managing petabytes of data in AWS, this
@@ -144,8 +154,8 @@ In the interest of brevity, MICrONS is expounded upon only minimally in
 this document. See the companion document, the MICrONS Program
 Primer, for more details.
 
-Tersely, the Boss -- created by JHU/APL -- was used in both Phase One
-and Phase Two of MICrONS. Phase One was a "small" trail run of the
+The Boss -- created by JHU/APL -- was used in both Phase One
+and Phase Two of MICrONS. Phase One was a "small" trial run of the
 main task which occurred in Phase Two. The resulting EM image sets
 were 40 terabyte and 2.5 petabyte, respectively, a ratio of
 1:62. Phase One involved three separate groups of organizations
@@ -205,8 +215,8 @@ source data and annotations at various bit depths. The Boss was
 designed to live in the cloud and has a tiered storage architecture to
 balance cost and performance, auto-scaling capabilities, and a
 high-bandwidth ingest process.
-#+end_quote   
-   
+#+end_quote
+
 In close collaboration with AWS, JHU/APL's coders built out a solid
 serverless architecture for the Boss. The complication was that this
 collaboration happened in 2015, a time when many support services for
@@ -215,7 +225,7 @@ non-serverless self-managed services were stood up to complete the
 Boss. This resulted in a hybrid architecture. Nonetheless, a well
 structured architecture enables individual components to be modified over
 time.
-   
+
 In its current form the Boss architecture can be considered a hybrid
 of two styles. The foundational frame consists of non-serverless,
 platform neutral, open source machinery originally assembled for the
@@ -389,7 +399,7 @@ the codebase.
 * Architectural updates
 
 The first stage of Cuboids development is to be an architectural
-refresh of the existing Boss codebase. 
+refresh of the existing Boss codebase.
 
 The bossDB codebase was [[https://github.com/jhuapl-boss/boss/graphs/contributors][started in 2015]], which was early days for AWS
 serverless, nevermind using such young technology to scale to
@@ -496,7 +506,7 @@ instance is to maintain continuity of value. An alternative
 development roadmap could just take the Boss as proof that serverless
 can scale well to the task at hand but conclude that the code is so
 bit rotted that simply starting a new codebase from scratch is the
-easiest way forward. 
+easiest way forward.
 
 This manifesto is not going for a codebase restart. Cuboids is going
 for evolution, not revolution. Benefiting from the well formed
@@ -517,13 +527,13 @@ is to be tracked as a GitHub Issues Project. The Projects are to be
 worked on individually sequentially so that overall progress can be
 broken out to milestones, testable along the way via integration
 tests.
-   
+
 ** RESTful API
 
 In the color coded architectural diagram, the RESTful API subsystem is
 in the upper left red zone. The code for that Boss API machinery and
 schema is currently in the repository named [[https://github.com/jhuapl-boss/boss][jhuapl-boss/boss]]. That
-machinery is to be replaced with Amazon API Gateway. 
+machinery is to be replaced with Amazon API Gateway.
 
 Currently, there is a cluster using nginx to run some Python. That
 Python is a Django app using =rest_framework= to handle REST API calls
@@ -614,7 +624,7 @@ existing machinery is more auto-scaling groups of EC2 instances:
 - Vault servers maintain secrets
   - [[https://github.com/jhuapl-boss/boss-manage/blob/master/cloud_formation/configs/core.py#L138][Provisioned via CloudFormation]]
 - Vault nodes store their encrypted info in Consul key/value store
-  
+
 This should be a pretty straightforward migration from two
 self-managed services to an equivalent AWS fully managed
 services. (Actually it looks like
@@ -631,7 +641,7 @@ engine. In contrast, refurbishing the cache machinery is a
 modification to the serverless core i.e. the code in the spdb
 repository. Nonetheless this task is another instance of streamlining
 by migrating to fully managed services.
-   
+
 The Read/Write Cache is part of the core engine, enabling higher
 performance. It is a Redis cache running on a cluster of EC2
 instances. A cluster of self-managed EC2 instances is not
@@ -667,7 +677,7 @@ Finally, there is another technology of the Boss which will be replaced
 with an equivalent AWS technology. Unlike the above tasks this is not
 about services. Rather, JHU/APL's developer tool, heaviside, is to be
 replaced with AWS CDK.
-   
+
 The core of the Boss is a sophisticated serverless application which
 relies heavily on AWS Step Functions.  Actually writing Step Functions
 in the [[https://docs.aws.amazon.com/step-functions/latest/dg/concepts-amazon-states-language.html][Amazon States Language]] -- raw JSON -- is an ugly hassle. To
@@ -701,7 +711,7 @@ standard tool for such things: AWS CDK.
 
 #+attr_html: :width 100%
 [[./images/seung_triptych.png]]
-[[https://www.simonsfoundation.org/2017/09/11/using-artificial-intelligence-to-map-the-brains-wiring/][Via Seung Lab]]: grayscale 2D images to colored 3D cuboid   
+[[https://www.simonsfoundation.org/2017/09/11/using-artificial-intelligence-to-map-the-brains-wiring/][Via Seung Lab]]: grayscale 2D images to colored 3D cuboid
 
 * Architectural extensions
 
@@ -753,7 +763,7 @@ one must keep an eye on the costs. Serverless can be quite cost effective
 but when it comes to fully managed services (for serverless or not),
 sometimes AWS wants way too much money in return for simply removing a
 hassle.
-   
+
 Setting aside services, from a coder's perspective the main AWS
 service that enables serverless-first designs is Step Functions, which
 has already been adopted into the Boss machinery. There are already at
@@ -767,7 +777,7 @@ serverless apps which are based on the innately stateless AWS Lambda
 service. Any state which needs to bridge across both serverless and
 non-serverless processes is maintained in a Step Function. The states
 -- as Lambdas and Activities -- are the program modules which get
-assembled into Step Functions based programs. 
+assembled into Step Functions based programs.
 
 Note that "serverless-first" does not exclude non-serverless
 processes. Step Functions can orchestrate both types. Step Functions
@@ -778,7 +788,7 @@ and the latter "pull from." This means that Step Functions based
 services can benefit from massively scalable serverless tech as
 implemented by AWS Lambdas yet also work with legacy code and/or
 processes which are too big or long running to be executed within AWS
-Lambda. 
+Lambda.
 
 Another rarely mentioned valuable feature of the serverless-first
 design pattern is that it allows for safety valves. The goal of
@@ -803,7 +813,7 @@ From the Boss codebase, it may not be obvious that Step Functions can
 orchestrate both serverless and server-based compute. Yet dig around
 in the source and it turns out that although the Boss Step Functions
 deal primarily with Lambdas, there are long running processes as task
-Activities. 
+Activities.
 
 There are two perspectives from which the Boss can be seen as
 something to build upon. From an external perspective, analysis
@@ -856,7 +866,7 @@ BSD, etc.).
 Seung Lab did the reconstruction work for the MICrONS program.
 Chunkflow is their latest reconstruction application for running 3D
 CNNs at scale. It is currently unknown if chunkflow was used during
-MICrONS. [ *TODO:* doubt it. Wasn't that 2D segmentation? Or is that still what is done in 
+MICrONS. [ *TODO:* doubt it. Wasn't that 2D segmentation? Or is that still what is done in
 
 Nonetheless, chunkflow seems like a good place to start. The goal is
 to fold some Seung Lab code into Cuboids so that it has all the
@@ -867,17 +877,17 @@ put in a theoretical MICrONS museum.
 *** CNN inference on Lambda
   :PROPERTIES:
   :UNNUMBERED: notoc
-  :END:  
+  :END:
 
 Before getting into the specifics of Chuckflow, it is worth discussing
 whether CNN code can be run on AWS Lambda at all. Currently inference
 tasks can be run on Lambda. Actually training models is out of scope
 for this task but that may eventually be added to Cuboids.
-  
+
 In 2015, the limitations of AWS Lambda were too tight to accommodate
 many code packages which include machine learning libraries, say,
 scikit-learn. This is another valid reason why image processing was
-performed external to the Boss. 
+performed external to the Boss.
 
 In the interim, AWS Lambda -- the core technology of serverless -- has
 matured such that [[https://medium.com/@adhorn/getting-started-with-aws-lambda-layers-for-python-6e10b1f9a5d][larger Python codebases can now be deployed on
@@ -896,7 +906,7 @@ that does that, [[https://pypi.org/project/torchlambda/15858e85600/][tochlambda:
   #+begin_quote
   torchlambda is a tool to deploy PyTorch models on Amazon's AWS Lambda
   using AWS SDK for C++ and custom C++ runtime.
-  
+
   Using static compilation of dependencies package size is only 30 Mb
   with all necessary dependencies
   #+end_quote
@@ -932,7 +942,13 @@ map voxels were weighted according to the distance to boundary (d),
 the the weighted affinity map was recombined by summation to form a
 larger map (e), the larger map was then cropped to remove the weighted
 margin (f).
-#+end_quote   
+#+end_quote
+
+Note that one reason why chunkflow has been selected is that its
+fundamental datastructure is a cuboids. That is operations are on 3D
+volumes. Some earlier neurite reconstruction algorithms actually perform
+the machine learning inference on 2D slice images and then perform
+simple (non-CNN) averaging over the stack to detect 3D objects.
 
 Chuckflow is a job system for processing cuboids of data. DCNNs are
 run over small volumes (sub-cuboids) to perform ML based volume
@@ -945,23 +961,23 @@ The Generators and Processors can be any machines but on AWS are
 normally EC2 instances. Chuckflow can be configured to work with cheap
 preemptible EC2 instances purchased via spot pricing. This can reduce
 the compute cost down to about one third that of non-spot
-pricing. 
+pricing.
 
 Following the serverless-first design pattern, a goal of deploying
 chunkflow in Cuboids is to use it in a serverless fashion.  A
 serverless chunkflow will have low impedance mismatch with the rest
-of the Boss system since everything in the core will be serverless.  
+of the Boss system since everything in the core will be serverless.
 
 Note that [[https://github.com/seung-lab/chunkflow/blob/master/chunkflow/lib/aws/sqs_queue.py][the core control bus in chunkflow]] is built around AWS
 SQS. SQS is a common building block for serverless applications. There
 is nothing to prevent Lambdas from getting 3D CNN inference jobspecs
 from SQS and performing as chuckflow workers.
 
-*** Cache 
+*** Cache
   :PROPERTIES:
   :UNNUMBERED: notoc
   :END:
-  
+
 Another reason to select chunkflow is that it may well work well with
 the cuboids in-memory cache that the Boss has. Consider chunkflow
 Issue #68: [[https://github.com/seung-lab/chunkflow/issues/68][use geohash to schedule task respecting locality]]:
@@ -1029,7 +1045,7 @@ MICrONS program. Doing so serves as a marque proof of concept.
 
 But that is hopefully only the beginning. The goal is for Cuboids to
 be an open source, cloud-native serverless, relatively easy to manage
-platform for 3D and 4D microscopy data storage and analysis. 
+platform for 3D and 4D microscopy data storage and analysis.
 
 The cache-accelerated serverless core should be able to handle
 massive workflows at high speed. The serverless-first Step Functions
@@ -1038,21 +1054,23 @@ are a solid framework for building complex analysis pipelines.
 There are obvious things that could be done with such a platform, for example:
 - Other reconstruction algorithms such as FFNs
 - Convolving some Vaa3D plug-ins over a volume
-- [[https://towardsdatascience.com/countless-3d-vectorized-2x-downsampling-of-labeled-volume-images-using-python-and-numpy-59d686c2f75][COUNTLESS 3D for Vectorized 2x Downsampling of Labeled Volumes]] 
+- [[https://towardsdatascience.com/countless-3d-vectorized-2x-downsampling-of-labeled-volume-images-using-python-and-numpy-59d686c2f75][COUNTLESS 3D for Vectorized 2x Downsampling of Labeled Volumes]]
   - Fast colored multi-resolution pyramid building ([[https://github.com/william-silversmith/countless][repo]])
   - Colored as per the output of classifiers and reconstructors
-  - Can this be cast as a chunkflow job: recursively downsampling in a (2,2,2) => (1,1,1) algorithm using the Redis in memory cache to memoize the answer 
+  - Can this be cast as a chunkflow job: recursively downsampling in a (2,2,2) => (1,1,1) algorithm using the Redis in memory cache to memoize the answer
 - Deconvolution of brightfield data
-- Resolution pyramids with an intensity threshold 
+- Resolution pyramids with an intensity threshold
   - This way brightfield stacks can be viewed with the field filtered out
   - Could make this a chunkflow based algorithm
-- [[https://www.biorxiv.org/content/10.1101/2020.08.30.274225v1.full][Distributed proof-reading via ChunkedGraph]] 
+- [[https://www.biorxiv.org/content/10.1101/2020.08.30.274225v1.full][Distributed proof-reading via ChunkedGraph]]
   - Think git for neural cell morphology proofreading
-  
+
 The first item in the above list is where Google's Flood-Filling
 Networks should be used for reconstruction inference.  Looks like FFN
 inference phase should be parallelizable. Multiple attention heads
-could individually fill separate neurites.
+could individually fill separate neurites. Part of the interest in FFN
+for Cuboids is similar to that of chunkflow: the fundamental operation
+is on cuboids, not 2D image data.
 
 Finally, an example of a complex pipeline would be cell type
 classification via Convolutional Morphology Networks (CMNs, see
@@ -1147,4 +1165,3 @@ commercial purposes, all without asking permission.
 [[./images/pyramidal_reconst_microns.jpeg]]
 
 [[https://twitter.com/MarwanAbdellah/status/1270326157607608321][A reconstruction of a layer 2/3 pyramidal neuron from the MICrONS dataset]]
-
