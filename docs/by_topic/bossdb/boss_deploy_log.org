@@ -1,0 +1,27 @@
+* Reconstrue's log of deploying the Boss
+
+** Repositories  
+- https://github.com/jhuapl-boss/boss-tools
+  - "General Boss Python3 library used by many of the VMs running Boss code."
+  - [[https://github.com/jhuapl-boss/boss-tools/blob/master/activities/resolution_hierarchy.py][Downsampler]]  
+
+** Resources
+- https://bossdb.org/
+*** Contributors
+- https://github.com/aplmicrons
+  - iarpamicrons@jhuapl.edu
+
+** Boss preprint analysis
+There are two public versions of the Boss preprint, the 2017 version and the 2019 version:
+- Hider, Kleissas, et alia, 2019
+  - [[https://www.biorxiv.org/content/10.1101/217745v2][The Block Object Storage Service (bossDB): A Cloud-Native Approach for Petascale Neuroscience Discovery]]
+  - doi: https://doi.org/10.1101/217745
+- Kleissas, Hider, et alia, 2017
+  - [[https://www.biorxiv.org/content/10.1101/217745v1.abstract][The Block Object Storage Service (bossDB): A Cloud-Native Approach for Petascale Neuroscience Discovery]]
+  - doi: https://doi.org/10.1101/217745
+
+   
+** Dev log
+*** [2020-11-13 Fri]
+- Forked  jhuapl-boss/boss-manage to reconstrue: [[https://github.com/reconstrue/boss-manage][reconstrue/boss-manage]]
+  

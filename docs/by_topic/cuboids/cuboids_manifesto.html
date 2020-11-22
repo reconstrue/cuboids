@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-11-16 Mon 17:07 -->
+<!-- 2020-11-18 Wed 11:44 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Cuboids Manifesto</title>
@@ -236,7 +236,7 @@
 
 <tr>
 <td class="org-left">Version</td>
-<td class="org-left">2020-11-16-2</td>
+<td class="org-left">2020-11-18-1</td>
 </tr>
 
 <tr>
@@ -246,8 +246,8 @@
 </tbody>
 </table>
 
-<div id="outline-container-org55e7afa" class="outline-2">
-<h2 id="org55e7afa"><span class="section-number-2">1</span> Abstract</h2>
+<div id="outline-container-orgb7411a8" class="outline-2">
+<h2 id="orgb7411a8"><span class="section-number-2">1</span> Abstract</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 This document proposes refresh modifications and novel extensions to
@@ -258,7 +258,7 @@ given the working title of Cuboids.
 <p>
 During the MICrONS program, the bossDB (a.k.a., "the Boss") code has
 proven to scale to petabytes of data. It is unusual for a codebase to
-be so extremely stress tested in its initial deployment. Although its
+be so extremely stress tested during its initial deployment. Although its
 serverless core is solid, in order to position the Boss as the open
 source backend for the next generation of neuroscientific microscopy,
 the codebase can be streamlined for ease of administration and to
@@ -297,7 +297,7 @@ volumentric data.
 </p>
 
 
-<div id="org7294b5c" class="figure">
+<div id="org67f2088" class="figure">
 <p><img src="./images/logos/cuboids_lettermark_bw.png" alt="cuboids_lettermark_bw.png" width="80%" />
 </p>
 </div>
@@ -306,42 +306,42 @@ volumentric data.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org55e7afa">1. Abstract</a></li>
-<li><a href="#orgdfe26b7">2. Introduction</a></li>
-<li><a href="#orgbd75093">3. The history of the Boss</a>
+<li><a href="#orgb7411a8">1. Abstract</a></li>
+<li><a href="#org32d96e4">2. Introduction</a></li>
+<li><a href="#org2c234d9">3. The history of the Boss</a>
 <ul>
-<li><a href="#orgb1842ad">3.1. The MICrONS program</a></li>
-<li><a href="#org028ceb2">3.2. The Boss technical architecture</a></li>
+<li><a href="#org4178c2c">3.1. The MICrONS program</a></li>
+<li><a href="#orgcef464d">3.2. The Boss technical architecture</a></li>
 </ul>
 </li>
-<li><a href="#org89379e3">4. Realtechnik of cloud architecting</a></li>
-<li><a href="#orgf1566cc">5. Architectural updates</a>
+<li><a href="#org27f2c15">4. Realtechnik of cloud architecting</a></li>
+<li><a href="#orga19c9d8">5. Architectural updates</a>
 <ul>
-<li><a href="#org4ba7e8b">5.1. Overview</a></li>
-<li><a href="#orga443c4a">5.2. Development roadmap</a></li>
-<li><a href="#org9c192fe">5.3. RESTful API</a></li>
-<li><a href="#org09b26e9">5.4. Single sign-on</a></li>
-<li><a href="#orgfb93acc">5.5. Secrets</a></li>
-<li><a href="#orgf351d4a">5.6. Cache machinery</a></li>
-<li><a href="#orgcd08b93">5.7. Infrastructure as code tooling</a></li>
+<li><a href="#org471e1b7">5.1. Overview</a></li>
+<li><a href="#orgfc5a8e2">5.2. Development roadmap</a></li>
+<li><a href="#org27f516d">5.3. RESTful API</a></li>
+<li><a href="#org43da8c2">5.4. Single sign-on</a></li>
+<li><a href="#org2466f2a">5.5. Secrets</a></li>
+<li><a href="#orga68f388">5.6. Cache machinery</a></li>
+<li><a href="#org0fd62e0">5.7. Infrastructure as code tooling</a></li>
 </ul>
 </li>
-<li><a href="#org8f28cda">6. Architectural extensions</a>
+<li><a href="#org995d121">6. Architectural extensions</a>
 <ul>
-<li><a href="#org93d4216">6.1. Serverless-first design pattern</a></li>
-<li><a href="#orgbd0b2b4">6.2. Reconstruction: serverless CNN inference</a></li>
-<li><a href="#orgb63641f">6.3. Further analysis services</a></li>
+<li><a href="#org9c7260b">6.1. Serverless-first design pattern</a></li>
+<li><a href="#org43a00ea">6.2. Reconstruction: serverless CNN inference</a></li>
+<li><a href="#org0411c37">6.3. Further analysis services</a></li>
 </ul>
 </li>
-<li><a href="#orge0dbb55">7. Conclusion</a></li>
+<li><a href="#org8a1c38c">7. Conclusion</a></li>
 </ul>
 </div>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgdfe26b7" class="outline-2">
-<h2 id="orgdfe26b7"><span class="section-number-2">2</span> Introduction</h2>
+<div id="outline-container-org32d96e4" class="outline-2">
+<h2 id="org32d96e4"><span class="section-number-2">2</span> Introduction</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 The <a href="https://bossdb.org/">bossDB</a> is a <a href="https://en.wikipedia.org/wiki/Volume_rendering">volumetric</a> database capable of storing petabytes of
@@ -435,15 +435,15 @@ services.
 </p>
 
 
-<div id="org3631508" class="figure">
+<div id="org8e6fa43" class="figure">
 <p><img src="./images/aws_pitcher.png" alt="aws_pitcher.png" width="25%" />
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgbd75093" class="outline-2">
-<h2 id="orgbd75093"><span class="section-number-2">3</span> The history of the Boss</h2>
+<div id="outline-container-org2c234d9" class="outline-2">
+<h2 id="org2c234d9"><span class="section-number-2">3</span> The history of the Boss</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 The Boss was written to be the repository for data generated by the
@@ -459,8 +459,8 @@ continued (e.g. usage throttling was added in late 2019).
 </p>
 </div>
 
-<div id="outline-container-orgb1842ad" class="outline-3">
-<h3 id="orgb1842ad"><span class="section-number-3">3.1</span> The MICrONS program</h3>
+<div id="outline-container-org4178c2c" class="outline-3">
+<h3 id="org4178c2c"><span class="section-number-3">3.1</span> The MICrONS program</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 In the interest of brevity, MICrONS is expounded upon only minimally in
@@ -489,7 +489,7 @@ during Phase Two.
 </p>
 
 
-<div id="orgeb1d8ac" class="figure">
+<div id="org4603ff2" class="figure">
 <p><img src="./images/microns_phase_two_dataflow.jpg" alt="microns_phase_two_dataflow.jpg" width="65%" />
 </p>
 </div>
@@ -537,8 +537,8 @@ Via <a href="https://ai.googleblog.com/2018/07/improving-connectomics-by-order-o
 </div>
 </div>
 
-<div id="outline-container-org028ceb2" class="outline-3">
-<h3 id="org028ceb2"><span class="section-number-3">3.2</span> The Boss technical architecture</h3>
+<div id="outline-container-orgcef464d" class="outline-3">
+<h3 id="orgcef464d"><span class="section-number-3">3.2</span> The Boss technical architecture</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 The preprint describe the Boss as:
@@ -591,7 +591,7 @@ red.
 </p>
 
 
-<div id="org6565ef0" class="figure">
+<div id="orgbde7c8e" class="figure">
 <p><img src="./images/bossdb_delta_components.png" alt="bossdb_delta_components.png" width="75%" />
 </p>
 </div>
@@ -652,14 +652,18 @@ data resides.
 <p>
 For more on the Boss, see the two preprints and two talks by Dean
 Kleissas. Both the later preprint and later talk are more informative
-than the earlier versions. All can be found via <a href="#orgac88c1c">the References section</a>.
+than the earlier versions. All can be found via <a href="#org2610c02">the References
+section</a>.  The place to start is <a href="https://youtu.be/ldNqVmW9c98?t=398">Kleissas' fifty minute talk at AWS
+re:Invent 2017</a>/, which is all about the Boss and also a well done talk
+high production value, partially because the nature of the data is
+more visually entertaining than many that in many an AWS talk.
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org89379e3" class="outline-2">
-<h2 id="org89379e3"><span class="section-number-2">4</span> Realtechnik of cloud architecting</h2>
+<div id="outline-container-org27f2c15" class="outline-2">
+<h2 id="org27f2c15"><span class="section-number-2">4</span> Realtechnik of cloud architecting</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 Significant but non-core parts of the bossDB codebase (the red boxes
@@ -742,7 +746,7 @@ Mahomet, Mahomet wil go to the hil. [sic]
 </blockquote>
 
 
-<div id="org57a1cda" class="figure">
+<div id="org95b5216" class="figure">
 <p><img src="./images/mohammed_and_the_mountain.jpg" alt="mohammed_and_the_mountain.jpg" width="400px" />
 </p>
 </div>
@@ -791,8 +795,8 @@ the codebase.
 </div>
 </div>
 
-<div id="outline-container-orgf1566cc" class="outline-2">
-<h2 id="orgf1566cc"><span class="section-number-2">5</span> Architectural updates</h2>
+<div id="outline-container-orga19c9d8" class="outline-2">
+<h2 id="orga19c9d8"><span class="section-number-2">5</span> Architectural updates</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 The first stage of Cuboids development is to be an architectural
@@ -810,8 +814,8 @@ hassles if the Boss were to adopt those innovations.
 </p>
 </div>
 
-<div id="outline-container-org4ba7e8b" class="outline-3">
-<h3 id="org4ba7e8b"><span class="section-number-3">5.1</span> Overview</h3>
+<div id="outline-container-org471e1b7" class="outline-3">
+<h3 id="org471e1b7"><span class="section-number-3">5.1</span> Overview</h3>
 <div class="outline-text-3" id="text-5-1">
 <p>
 The architectural refresh is motivated by abstract goals and those
@@ -888,7 +892,7 @@ the named (in green) AWS fully managed services.
 </p>
 
 
-<div id="org107ec52" class="figure">
+<div id="org705f073" class="figure">
 <p><img src="./images/boss_high_level_changes.png" alt="boss_high_level_changes.png" width="100%" />
 </p>
 </div>
@@ -939,15 +943,15 @@ as is.
 </p>
 
 
-<div id="org247c856" class="figure">
+<div id="org9dc7d97" class="figure">
 <p><img src="./images/arch_before_and_after.png" alt="arch_before_and_after.png" width="100%" />
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orga443c4a" class="outline-3">
-<h3 id="orga443c4a"><span class="section-number-3">5.2</span> Development roadmap</h3>
+<div id="outline-container-orgfc5a8e2" class="outline-3">
+<h3 id="orgfc5a8e2"><span class="section-number-3">5.2</span> Development roadmap</h3>
 <div class="outline-text-3" id="text-5-2">
 <p>
 The very first development work will be to simply stand up a Boss
@@ -997,8 +1001,8 @@ tests.
 </div>
 </div>
 
-<div id="outline-container-org9c192fe" class="outline-3">
-<h3 id="org9c192fe"><span class="section-number-3">5.3</span> RESTful API</h3>
+<div id="outline-container-org27f516d" class="outline-3">
+<h3 id="org27f516d"><span class="section-number-3">5.3</span> RESTful API</h3>
 <div class="outline-text-3" id="text-5-3">
 <p>
 In the color coded architectural diagram, the RESTful API subsystem is
@@ -1044,8 +1048,8 @@ user experience of the interface.
 </div>
 </div>
 
-<div id="outline-container-org09b26e9" class="outline-3">
-<h3 id="org09b26e9"><span class="section-number-3">5.4</span> Single sign-on</h3>
+<div id="outline-container-org43da8c2" class="outline-3">
+<h3 id="org43da8c2"><span class="section-number-3">5.4</span> Single sign-on</h3>
 <div class="outline-text-3" id="text-5-4">
 <p>
 Referring to the color coded architecture diagram again, the upper
@@ -1120,8 +1124,8 @@ MICrONS Boss repository.
 </div>
 </div>
 
-<div id="outline-container-orgfb93acc" class="outline-3">
-<h3 id="orgfb93acc"><span class="section-number-3">5.5</span> Secrets</h3>
+<div id="outline-container-org2466f2a" class="outline-3">
+<h3 id="org2466f2a"><span class="section-number-3">5.5</span> Secrets</h3>
 <div class="outline-text-3" id="text-5-5">
 <p>
 The lower red zone can be replace with <a href="https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html">AWS Secrets Manager</a>. The
@@ -1146,8 +1150,8 @@ which can be jettisoned and replaced with AWS Console dashboards.
 </div>
 </div>
 
-<div id="outline-container-orgf351d4a" class="outline-3">
-<h3 id="orgf351d4a"><span class="section-number-3">5.6</span> Cache machinery</h3>
+<div id="outline-container-orga68f388" class="outline-3">
+<h3 id="orga68f388"><span class="section-number-3">5.6</span> Cache machinery</h3>
 <div class="outline-text-3" id="text-5-6">
 <p>
 The above tasks involve migrating generic, support infrastructure
@@ -1198,8 +1202,8 @@ Redis cache machinery is in the boss-manage repository, in
 </div>
 </div>
 
-<div id="outline-container-orgcd08b93" class="outline-3">
-<h3 id="orgcd08b93"><span class="section-number-3">5.7</span> Infrastructure as code tooling</h3>
+<div id="outline-container-org0fd62e0" class="outline-3">
+<h3 id="org0fd62e0"><span class="section-number-3">5.7</span> Infrastructure as code tooling</h3>
 <div class="outline-text-3" id="text-5-7">
 <p>
 Finally, there is another technology of the Boss which will be replace
@@ -1257,8 +1261,8 @@ standard tool for such things: AWS CDK.
 </div>
 </div>
 
-<div id="outline-container-org8f28cda" class="outline-2">
-<h2 id="org8f28cda"><span class="section-number-2">6</span> Architectural extensions</h2>
+<div id="outline-container-org995d121" class="outline-2">
+<h2 id="org995d121"><span class="section-number-2">6</span> Architectural extensions</h2>
 <div class="outline-text-2" id="text-6">
 <p>
 The previous section enumerated various architectural updates which
@@ -1307,8 +1311,8 @@ external analysis tools.
 </p>
 </div>
 
-<div id="outline-container-org93d4216" class="outline-3">
-<h3 id="org93d4216"><span class="section-number-3">6.1</span> Serverless-first design pattern</h3>
+<div id="outline-container-org9c7260b" class="outline-3">
+<h3 id="org9c7260b"><span class="section-number-3">6.1</span> Serverless-first design pattern</h3>
 <div class="outline-text-3" id="text-6-1">
 <p>
 The core design innovation of Cuboids is that the Boss architecture is
@@ -1423,8 +1427,8 @@ novel processes. CDK can live peaceably alongside heaviside.
 </div>
 </div>
 
-<div id="outline-container-orgbd0b2b4" class="outline-3">
-<h3 id="orgbd0b2b4"><span class="section-number-3">6.2</span> Reconstruction: serverless CNN inference</h3>
+<div id="outline-container-org43a00ea" class="outline-3">
+<h3 id="org43a00ea"><span class="section-number-3">6.2</span> Reconstruction: serverless CNN inference</h3>
 <div class="outline-text-3" id="text-6-2">
 <p>
 The first major functional extension to be added to Cuboids is
@@ -1436,9 +1440,9 @@ serverless friendly manner.
 </p>
 </div>
 
-<div id="outline-container-orgfea7d71" class="outline-4">
-<h4 id="orgfea7d71">The Seung Lab</h4>
-<div class="outline-text-4" id="text-orgfea7d71">
+<div id="outline-container-org558677b" class="outline-4">
+<h4 id="org558677b">The Seung Lab</h4>
+<div class="outline-text-4" id="text-org558677b">
 <p>
 The Seung Lab at Princeton is one of (if not the) best places for
 research applying CNNs to connectomics. It seems the lab has been at
@@ -1452,7 +1456,7 @@ BSD, etc.).
 Seung Lab did the reconstruction work for the MICrONS program.
 Chunkflow is their latest reconstruction application for running 3D
 CNNs at scale. It is currently unknown if chunkflow was used during
-MICrONS.
+MICrONS. [ <b>TODO:</b> doubt it. Wasn't that 2D segmentaion? Or is that still what is done in 
 </p>
 
 <p>
@@ -1465,9 +1469,9 @@ put in a theoretical MICrONS museum.
 </div>
 </div>
 
-<div id="outline-container-orgd9a03a2" class="outline-4">
-<h4 id="orgd9a03a2">CNN inference on Lambda</h4>
-<div class="outline-text-4" id="text-orgd9a03a2">
+<div id="outline-container-orgb21c9d4" class="outline-4">
+<h4 id="orgb21c9d4">CNN inference on Lambda</h4>
+<div class="outline-text-4" id="text-orgb21c9d4">
 <p>
 Before getting into the specifics of Chuckflow, it is worth discussing
 whether CNN code can be run on AWS Lambda at all. Currently infernence
@@ -1516,9 +1520,9 @@ with all necessary dependencies
 </div>
 </div>
 
-<div id="outline-container-org56f9196" class="outline-4">
-<h4 id="org56f9196">Serverless chunkflow</h4>
-<div class="outline-text-4" id="text-org56f9196">
+<div id="outline-container-org7ba3d67" class="outline-4">
+<h4 id="org7ba3d67">Serverless chunkflow</h4>
+<div class="outline-text-4" id="text-org7ba3d67">
 <p>
 This section introduces the idea of a serverless variant of chunkflow,
 which is going by the name "serverless chunkflow."
@@ -1541,7 +1545,7 @@ patches in 3D."
 </p>
 
 
-<div id="orgf51e760" class="figure">
+<div id="orge6380c8" class="figure">
 <p><img src="./images/chunkflow_preprint_fig_3.png" alt="chunkflow_preprint_fig_3.png" width="40%" />
 </p>
 </div>
@@ -1591,9 +1595,9 @@ from SQS and performing as chuckflow workers.
 </div>
 </div>
 
-<div id="outline-container-orgb16efd0" class="outline-4">
-<h4 id="orgb16efd0">Cache</h4>
-<div class="outline-text-4" id="text-orgb16efd0">
+<div id="outline-container-orgc3ab6f7" class="outline-4">
+<h4 id="orgc3ab6f7">Cache</h4>
+<div class="outline-text-4" id="text-orgc3ab6f7">
 <p>
 Another reason to select chunkflow is that it may well work well with
 the cuboids in-memory cache that the Boss has. Consider chunkflow
@@ -1625,9 +1629,9 @@ As such, a serverless packaging of FFNs &#x2013; which are TensorFlow based
 </div>
 </div>
 
-<div id="outline-container-org793a18d" class="outline-4">
-<h4 id="org793a18d">Development roadmap</h4>
-<div class="outline-text-4" id="text-org793a18d">
+<div id="outline-container-org6333335" class="outline-4">
+<h4 id="org6333335">Development roadmap</h4>
+<div class="outline-text-4" id="text-org6333335">
 <p>
 The easiest and first thing to do is stand up a stock chunkflow deploy
 which reproduces the workflow they describe in the preprint. Then
@@ -1678,8 +1682,8 @@ value.
 </div>
 </div>
 
-<div id="outline-container-orgb63641f" class="outline-3">
-<h3 id="orgb63641f"><span class="section-number-3">6.3</span> Further analysis services</h3>
+<div id="outline-container-org0411c37" class="outline-3">
+<h3 id="org0411c37"><span class="section-number-3">6.3</span> Further analysis services</h3>
 <div class="outline-text-3" id="text-6-3">
 <p>
 This manifesto focuses on creating a single system which recapitulates
@@ -1709,6 +1713,7 @@ There are obvious things that could be done with such a platform, for example:
 <ul class="org-ul">
 <li>Fast colored multi-resolution pyramid building (<a href="https://github.com/william-silversmith/countless">repo</a>)</li>
 <li>Colored as per the output of classifiers and reconstructors</li>
+<li>Can this be cast as a chunkflow job: recursively downsampling in a (2,2,2) =&gt; (1,1,1) algorithm using the Redis in memory cache to memoize the answer</li>
 </ul></li>
 <li>Deconvolution of brightfield data</li>
 <li>Resolution pyramids with an intensity threshold 
@@ -1743,8 +1748,19 @@ would involve using the Allens Cell Types Database to classify each
 IDs neuron by type.
 </p>
 
+<p>
+Neuron2Vec is triple-loss based unsupervised (no labeling required)
+learning of cell morphologies (analogously to human bodyes: locally,
+fingers look different from arms and arms from bodies). This would
+make for a valuable t-SNE/UMAP 2D image mapping of neuron segments;
+maybe throw in some HDBSCAN clustering.  Use the top three priciple
+components to define a voxel's RGB color. This illustrateds how novel
+UI features can be added by multi-step analysis pipelines, whih would
+be implemented as a Step Function.
+</p>
 
-<div id="org5f25ff2" class="figure">
+
+<div id="orgfc292d4" class="figure">
 <p><img src="./images/cmn.png" alt="cmn.png" />
 </p>
 </div>
@@ -1752,8 +1768,8 @@ IDs neuron by type.
 </div>
 </div>
 
-<div id="outline-container-orge0dbb55" class="outline-2">
-<h2 id="orge0dbb55"><span class="section-number-2">7</span> Conclusion</h2>
+<div id="outline-container-org8a1c38c" class="outline-2">
+<h2 id="org8a1c38c"><span class="section-number-2">7</span> Conclusion</h2>
 <div class="outline-text-2" id="text-7">
 <p>
 This document is a roadmap for development. This plan has been drawn
@@ -1775,9 +1791,9 @@ edge of the envelope and into the future.
 </div>
 </div>
 
-<div id="outline-container-org6c4069b" class="outline-2">
-<h2 id="org6c4069b">License</h2>
-<div class="outline-text-2" id="text-org6c4069b">
+<div id="outline-container-orgd09f9bb" class="outline-2">
+<h2 id="orgd09f9bb">License</h2>
+<div class="outline-text-2" id="text-orgd09f9bb">
 <p>
 This document is licensed under
 <a href="https://creativecommons.org/publicdomain/zero/1.0/">the CC0 1.0 Universal (CC0 1.0) Public Domain Dedication</a>.
@@ -1803,9 +1819,9 @@ commercial purposes, all without asking permission.
 </div>
 </div>
 
-<div id="outline-container-orgac88c1c" class="outline-2">
-<h2 id="orgac88c1c">References</h2>
-<div class="outline-text-2" id="text-orgac88c1c">
+<div id="outline-container-org2610c02" class="outline-2">
+<h2 id="org2610c02">References</h2>
+<div class="outline-text-2" id="text-org2610c02">
 <ul class="org-ul">
 <li>BossDB preprints
 <ul class="org-ul">
@@ -1852,7 +1868,7 @@ commercial purposes, all without asking permission.
 
 
 
-<div id="orgde528de" class="figure">
+<div id="orga87efd2" class="figure">
 <p><img src="./images/pyramidal_reconst_microns.jpeg" alt="pyramidal_reconst_microns.jpeg" width="100%" />
 </p>
 </div>
