@@ -1,0 +1,30 @@
+* Introduction to the Boss  
+** Repositories
+- https://github.com/jhuapl-boss/boss-tools
+  - "General Boss Python3 library used by many of the VMs running Boss code."
+  - [[https://github.com/jhuapl-boss/boss-tools/blob/master/activities/resolution_hierarchy.py][Downsampler]]  
+- A contributor:
+  - https://github.com/aplmicrons
+  - iarpamicrons@jhuapl.edu
+
+** Docs
+- https://bossdb.org/
+- bossdb docs
+  - [[https://github.com/jhuapl-boss/boss-manage/tree/master/docs/object_indexing][Object indexing]]
+  - [[https://github.com/jhuapl-boss/boss-manage/tree/master/docs/ingest][Ingest]] UML diagras
+  - [[https://github.com/jhuapl-boss/spdb/tree/master/spdb/spatialdb/diagrams][spdb bboxing]]
+  - [[https://github.com/jhuapl-boss/spdb/tree/master/docs][spdb docs (weak)]]
+  - [[https://github.com/jhuapl-boss/boss/tree/master/docs][boss REST docs]]   
+- boss-manage
+  - https://github.com/jhuapl-boss/boss-manage/tree/master/docs
+    - https://github.com/jhuapl-boss/boss-manage/tree/master/docs/object_indexing
+      - https://github.com/jhuapl-boss/boss-manage/blob/master/docs/object_indexing/Overview.png
+*** Boss preprint analysis
+ There are two public versions of the Boss preprint, the 2017 version and the 2019 version:
+ - Hider, Kleissas, et alia, 2019
+   - [[https://www.biorxiv.org/content/10.1101/217745v2][The Block Object Storage Service (bossDB): A Cloud-Native Approach for Petascale Neuroscience Discovery]]
+   - doi: https://doi.org/10.1101/217745
+ - Kleissas, Hider, et alia, 2017
+   - [[https://www.biorxiv.org/content/10.1101/217745v1.abstract][The Block Object Storage Service (bossDB): A Cloud-Native Approach for Petascale Neuroscience Discovery]]
+   - doi: https://doi.org/10.1101/217745
+
