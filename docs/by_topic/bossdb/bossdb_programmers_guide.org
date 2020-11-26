@@ -6,7 +6,11 @@
 - A contributor:
   - https://github.com/aplmicrons
   - iarpamicrons@jhuapl.edu
-
+*** boss-tools
+- "Utilities and libraries used across Boss applications"
+- https://github.com/jhuapl-boss/boss-tools
+- [ ] Lambda layers?
+  - https://www.youtube.com/watch?v=stovPJCVXcw
 ** Docs
 - https://bossdb.org/
 - bossdb docs
